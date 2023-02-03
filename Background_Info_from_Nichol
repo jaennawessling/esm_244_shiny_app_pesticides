@@ -1,0 +1,21 @@
+1) What is the purpose of the data?
+13% of California’s waterways designated as impaired by pesticides of those assessed for non-point source pollution under the Clean Water Act, 56% are present within the Bay Delta Watershed (BDW), home to over 90 threatened and endangered species.  As humans move toward pesticides that are lower in toxicity for mammals, but are orders of magnitude more toxic to invertebrates and aquatic organisms, my project seeks aimed to identify 1) Which activities are imposing the greatest pesticide loads? 2) Who is responsible? 3) How can tradeoffs between the benefits of chemical use be managed to restore and preserve ecosystem health? To answer these questions, I developed a tool, the Pesticide Management Prioritization Module (PMPM).  
+
+2) What does the data encompass?
+
+With support from the Bay Delta Science Fellowship, and initiative of the California Sea Grant, I've built a tool (freely accessible) to predict spatiotemporal explicit concentrations of pesticides soil, water, and sediment specific concentrations of pesticides from agricultural use. The use data is compiled from pesticide use reports with data at the daily time-step (required by growers in CA). Pesticide concentrations are predicted using mechanistic models that consider climate, hydrology, irrigation practices, and pesticide properties in the 226 watersheds within ~100 km of the Bay Delta Watershed (22,000 km2).
+
+3) What story does the data tell?
+The model does not only predict pesticide concentrations, but predicts risk based on the toxicity to four taxonomic groups: fish, aquatic invertebrates, aquatic nonvascular plants (algae), and aquatic vascular plants. For the next year of pesticide use data, a user can download a zipfile of pesticide use reports, unzip it, and drag it into a directory of the model. The model will then run for a few hours and can update all risk information, and provide it at a daily time-step.
+
+4) What types of visuals would I think to be very helpful? (see attached images)
+
+a) Data showing where toxicity is increasing (file included in repository) 
+
+
+b) Temporal trends by crop, e.g.: (file included in repository) 
+
+
+c) Bar plots which compare toxicities of the relative taxonomic groups.
+d) Boxplots showing toxicity ranges in water and sediment.
+e) Table illustrating the number of days in each watershed that water or sediment concentrations exceed aquatic health benchmarks. 

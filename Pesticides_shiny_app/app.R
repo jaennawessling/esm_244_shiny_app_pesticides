@@ -8,56 +8,76 @@
 #
 
 library(shiny)
-library(palmerpenguins)
 library(tidyverse)
+library(bslib) # Bootstrapping library to make the Shiny App look even cooler
+# ?bs_theme() put in console to see what we can do 
+
+my_theme <- bs_theme(
+  bootswatch = "minty")
+
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
+ui <- fluidPage(theme = my_theme,
 
     # Application title
-    titlePanel("Pesticide Distribution in the Bay Delta Watershed"),
+    titlePanel("The Pesticide Management Prioritization Module (PMPM)"),
     
     # Adding our tabs panel
     tabsetPanel(
-      tabPanel("Welcome"), 
+      tabPanel("Welcome",
+                 mainPanel(
+                   strong("Purpose"),
+                   p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
+                     based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
+                     and aquatic vascular plants in the Bay Delta Watershed. "), # End paragraph 1 
+                   br(), # Line break
+                   strong("Background"),
+                   p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
+                     concentrations of pesticides from agricultural use in soil, water, and sediment. The use
+                     data is compiled from pesticide use reports with data at the daily time-step (required
+                     by growers in CA). Pesticide concentrations are predicted using mechanistic models that
+                     consider climate, hydrology, irrigation practices, and pesticide properties in the 226 
+                     watersheds within ~100 km of the Bay Delta Watershed (22,000 km2). 13% of California’s 
+                     waterways are designated as impaired by pesticides of those assessed for non-point 
+                     source pollution under the Clean Water Act. 56% are present within the Bay Delta 
+                     Watershed (BDW), home to over 90 threatened and endangered species. As humans move
+                     toward pesticides that are lower in toxicity for mammals, but are orders of magnitude
+                     more toxic to invertebrates and aquatic organisms, the PMPM aims to identify 
+                     1) Which activities are imposing the greatest pesticide loads? 
+                     2) Who is responsible? 
+                     3) How can tradeoffs between the benefits of chemical use be managed to restore
+                     and preserve ecosystem health?") # end paragraph 2
+                 ) # End mainPanel - Welcome page
+              ), # End tabPanel - Welcome Page
+      
       tabPanel("Map of Pesticide Risk"),
       tabPanel("Temporal Trends by Crop"),
-      tabPanel("Pesticide Impact on Animals")
-      ), # tabsetPanel end
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30) # end sliderInput
-        ),  # end sidebarPanel 
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-           
-           
-        ) # end mainPanel  
-    ) # end sidebar layout 
-) # fluidPage end parenthesis 
+      tabPanel("Pesticide Impact on Animals",
+               sidebarLayout(
+                 sidebarPanel("WIDGETS",
+                  selectInput(
+                      "select", 
+                      label = h3("Select box"), 
+                      choices = list("Animal 1" = 1, "Animal 2" = 2, "Animal 3" = 3, "Animal 4" = 4, "Animal 5" = 5), 
+                      selected = 1)
+                    ), # end sidebarPanel widgets
+                 
+                 mainPanel("OUTPUT", 
+                           "output$value")
+              
+             ), # End sidebarLayout - Animals
+           ) # End tabPanel - Animals
+     ) # End tabsetPanel
+) # end fluidPage 
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
-    })
-}
+  
+  
+  # Tab 4 - Animals output (sample output)
+  output$value <- renderPrint({ input$select })
+  
+} # end server function 
 
 # Run the application 
 shinyApp(ui = ui, server = server)

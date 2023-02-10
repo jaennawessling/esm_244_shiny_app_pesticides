@@ -24,6 +24,8 @@ ui <- fluidPage(theme = my_theme,
     
     # Adding our tabs panel
     tabsetPanel(
+      
+      # Welcome Tab - Jaenna 
       tabPanel("Welcome",
                  mainPanel(
                    strong("Purpose"),
@@ -50,8 +52,13 @@ ui <- fluidPage(theme = my_theme,
                  ) # End mainPanel - Welcome page
               ), # End tabPanel - Welcome Page
       
+      # Map tab - Kira 
       tabPanel("Map of Pesticide Risk"),
+      
+      # Temporal trends tab - Sadie 
       tabPanel("Temporal Trends by Crop"),
+      
+      # Animals tab - Jaenna 
       tabPanel("Pesticide Impact on Animals",
                sidebarLayout(
                  sidebarPanel("WIDGETS",

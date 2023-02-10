@@ -8,12 +8,22 @@
 #
 
 library(shiny)
+library(palmerpenguins)
+library(tidyverse)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("Pesticide Distribution in the Bay Delta Watershed"),
+    
+    # Adding our tabs panel
+    tabsetPanel(
+      tabPanel("Welcome"), 
+      tabPanel("Map of Pesticide Risk"),
+      tabPanel("Temporal Trends by Crop"),
+      tabPanel("Pesticide Impact on Animals")
+      ), # tabsetPanel end
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
@@ -22,15 +32,17 @@ ui <- fluidPage(
                         "Number of bins:",
                         min = 1,
                         max = 50,
-                        value = 30)
-        ),
+                        value = 30) # end sliderInput
+        ),  # end sidebarPanel 
 
         # Show a plot of the generated distribution
         mainPanel(
            plotOutput("distPlot")
-        )
-    )
-)
+           
+           
+        ) # end mainPanel  
+    ) # end sidebar layout 
+) # fluidPage end parenthesis 
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {

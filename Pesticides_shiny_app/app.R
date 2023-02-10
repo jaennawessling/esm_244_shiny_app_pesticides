@@ -67,24 +67,32 @@ ui <- fluidPage(theme = my_theme,
                       label = h3("Select box"), 
                       choices = list("Animal 1" = 1, "Animal 2" = 2, "Animal 3" = 3, "Animal 4" = 4, "Animal 5" = 5), 
                       selected = 1)
-                    ), # end sidebarPanel widgets
+                    ), # end sidebarPanel widgets - Animals tab
                  
                  mainPanel("OUTPUT", 
                            "output$value")
-              
-             ), # End sidebarLayout - Animals
-           ) # End tabPanel - Animals
+             ), # End sidebarLayout - Animals tab
+           ) # End tabPanel - Animals tab
+      
      ) # End tabsetPanel
 ) # end fluidPage 
 
-# Define server logic required to draw a histogram
+
+# Define server logic required to display outputs into each tab
 server <- function(input, output) {
   
+  # Tab 1 - Welcome output - Jaenna
+  
+  # Tab 2 - Map output - Kira 
+  
+  # Tab 3 - Temporal trends output - Sadie
   
   # Tab 4 - Animals output (sample output)
   output$value <- renderPrint({ input$select })
   
 } # end server function 
+
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)

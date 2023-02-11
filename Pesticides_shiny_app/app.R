@@ -15,10 +15,12 @@ library(janitor)
 library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
-# Reading in our data
+# Reading in our example data (just temporary to practice until we get the real data set)
 pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
   clean_names() %>% 
   mutate(across(where(is.character), tolower))
+# View(pesticides) # can uncomment this if you want to view the temporary data 
+# Should I try to remove the numbers and letters before each pesticide name, or is it part of the name? 
 
 
 my_theme <- bs_theme(
@@ -39,7 +41,7 @@ ui <- fluidPage(theme = my_theme,
                
                # Creating sidebar widget first 
                sidebarLayout(
-                 sidebarPanel("WIDGETS",
+                 sidebarPanel("WIDGET",
                               selectInput(
                                 "select", 
                                 label = h3("Select pesticide type"), 
@@ -69,7 +71,10 @@ ui <- fluidPage(theme = my_theme,
                      1) Which activities are imposing the greatest pesticide loads? 
                      2) Who is responsible? 
                      3) How can tradeoffs between the benefits of chemical use be managed to restore
-                     and preserve ecosystem health?") # end paragraph 2
+                     and preserve ecosystem health?"), # end paragraph 2
+                   # Adding the output from our server (temporary - need to add in the real function later)
+                   strong("OUTPUT"), # Subheader
+                   "output$value1" # Temporary function
                  ) # End mainPanel - Welcome page
                 ) # end sidebarLayout - Welcome tab 
               ), # End tabPanel - Welcome Page
@@ -83,7 +88,7 @@ ui <- fluidPage(theme = my_theme,
       # Animals tab - Jaenna 
       tabPanel("Pesticide Impact on Animals",
                sidebarLayout(
-                 sidebarPanel("WIDGETS",
+                 sidebarPanel("WIDGET",
                   selectInput(
                       "select", 
                       label = h3("Select animal species"), 
@@ -91,8 +96,10 @@ ui <- fluidPage(theme = my_theme,
                       selected = 1)
                     ), # end sidebarPanel widgets - Animals tab
                  
-                 mainPanel("OUTPUT", 
-                           "output$value")
+                 mainPanel(
+                   # Adding the output from our server (temporary - need to add in the real function later)
+                     strong("OUTPUT"), # Subheader
+                           "output$value2") # Temporary function
              ) # End sidebarLayout - Animals tab
            ) # End tabPanel - Animals tab
       
@@ -103,6 +110,8 @@ ui <- fluidPage(theme = my_theme,
 server <- function(input, output) {
 
   # Tab 1 - Welcome output - Jaenna
+  # Just using sample output from the widget gallery website for now 
+  output$value1 <- renderPrint({ input$select })
   
   # Tab 2 - Map output - Kira 
   
@@ -110,7 +119,7 @@ server <- function(input, output) {
   
   # Tab 4 - Animals output - Jaenna 
   # Just using sample output from the widget gallery website for now 
-  output$value <- renderPrint({ input$select })
+  output$value2 <- renderPrint({ input$select })
   
 } # end server function 
 

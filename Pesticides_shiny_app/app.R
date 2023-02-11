@@ -27,7 +27,7 @@ my_theme <- bs_theme(
   bootswatch = "minty")
 
 
-# Define UI for application that draws a histogram
+# Define UI ---- 
 ui <- fluidPage(theme = my_theme,
                 
     # Application title
@@ -36,7 +36,7 @@ ui <- fluidPage(theme = my_theme,
     # Adding our tabs panel
     tabsetPanel(
       
-      # Welcome Tab - Jaenna 
+      # Welcome Tab - Jaenna ----
       tabPanel("Welcome",
                
                # Creating sidebar widget first 
@@ -79,13 +79,28 @@ ui <- fluidPage(theme = my_theme,
                 ) # end sidebarLayout - Welcome tab 
               ), # End tabPanel - Welcome Page
       
-      # Map tab - Kira 
-      tabPanel("Map of Pesticide Risk"),
+      # Map tab - Kira ----
+      tabPanel("Map of Pesticide Risk", 
+               
+               #Leaftlet stuff here
+               
+               
+               
+               
+               #Need to determine layout 
+               
+               
+               
+               
+               
+               
+               
+               ), # END tabPanel 
       
-      # Temporal trends tab - Sadie 
+      # Temporal trends tab - Sadie ----
       tabPanel("Temporal Trends by Crop"),
       
-      # Animals tab - Jaenna 
+      # Animals tab - Jaenna ----
       tabPanel("Pesticide Impact on Animals",
                sidebarLayout(
                  sidebarPanel("WIDGET",
@@ -106,18 +121,18 @@ ui <- fluidPage(theme = my_theme,
      ) # End tabsetPanel
 ) # end fluidPage 
 
-# Define server logic required to display outputs into each tab
+# Define server ----
 server <- function(input, output) {
 
-  # Tab 1 - Welcome output - Jaenna
+  # Tab 1 - Welcome output - Jaenna ----
   # Just using sample output from the widget gallery website for now 
   output$value1 <- renderPrint({ input$select })
   
-  # Tab 2 - Map output - Kira 
+  # Tab 2 - Map output - Kira ----
   
-  # Tab 3 - Temporal trends output - Sadie
+  # Tab 3 - Temporal trends output - Sadie ----
   
-  # Tab 4 - Animals output - Jaenna 
+  # Tab 4 - Animals output - Jaenna ----
   # Just using sample output from the widget gallery website for now 
   output$value2 <- renderPrint({ input$select })
   
@@ -125,6 +140,6 @@ server <- function(input, output) {
 
 
 
-# Run the application 
+# Run the application ----
 shinyApp(ui = ui, server = server)
 

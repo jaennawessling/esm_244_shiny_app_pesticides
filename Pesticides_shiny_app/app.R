@@ -30,34 +30,34 @@ my_theme <- bs_theme(
 # Define UI ---- 
 ui <- fluidPage(theme = my_theme,
                 
-    # Application title
-    titlePanel("The Pesticide Management Prioritization Module (PMPM)"),
-    
-    # Adding our tabs panel
-    tabsetPanel(
-      
-      # Welcome Tab - Jaenna ----
-      tabPanel("Welcome",
-               
-               # Creating sidebar widget first 
-               sidebarLayout(
-                 sidebarPanel("WIDGET",
-                              selectInput(
-                                "select", 
-                                label = h3("Select pesticide type"), 
-                                choices = unique(pesticides$pesticide), 
-                                selected = 1) # end selectInput
-                 ), # end sidebarPanel widgets - Welcome tab
-               
-                # Adding text and ouput to the main panel
-                 mainPanel(
-                   strong("Purpose"),
-                   p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
+                # Application title
+                titlePanel("The Pesticide Management Prioritization Module (PMPM)"),
+                
+                # Adding our tabs panel
+                tabsetPanel(
+                  
+                  # Welcome Tab - Jaenna ----
+                  tabPanel("Welcome",
+                           
+                           # Creating sidebar widget first 
+                           sidebarLayout(
+                             sidebarPanel("WIDGET",
+                                          selectInput(
+                                            "select", 
+                                            label = h3("Select pesticide type"), 
+                                            choices = unique(pesticides$pesticide), 
+                                            selected = 1) # end selectInput
+                             ), # end sidebarPanel widgets - Welcome tab
+                             
+                             # Adding text and ouput to the main panel
+                             mainPanel(
+                               strong("Purpose"),
+                               p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
                      based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
                      and aquatic vascular plants in the Bay Delta Watershed. "), # End paragraph 1 
-                   br(), # Line break
-                   strong("Background"),
-                   p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
+                     br(), # Line break
+                     strong("Background"),
+                     p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
                      concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
                      by growers in CA). Pesticide concentrations are predicted using mechanistic models that
@@ -72,63 +72,81 @@ ui <- fluidPage(theme = my_theme,
                      2) Who is responsible? 
                      3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?"), # end paragraph 2
-                   # Adding the output from our server (temporary - need to add in the real function later)
-                   strong("OUTPUT"), # Subheader
-                   "output$value1" # Temporary function
-                 ) # End mainPanel - Welcome page
-                ) # end sidebarLayout - Welcome tab 
-              ), # End tabPanel - Welcome Page
-      
-      # Map tab - Kira ----
-      tabPanel("Map of Pesticide Risk", 
-               
-               #Leaftlet stuff here
-               
-               
-               
-               
-               #Need to determine layout 
-               
-               
-               
-               
-               
-               
-               
-               ), # END tabPanel 
-      
-      # Temporal trends tab - Sadie ----
-      tabPanel("Temporal Trends by Crop"),
-      
-      # Animals tab - Jaenna ----
-      tabPanel("Pesticide Impact on Animals",
-               sidebarLayout(
-                 sidebarPanel("WIDGET",
-                  selectInput(
-                      "select", 
-                      label = h3("Select animal species"), 
-                      choices = list("Animal 1" = 1, "Animal 2" = 2, "Animal 3" = 3, "Animal 4" = 4, "Animal 5" = 5), 
-                      selected = 1)
-                    ), # end sidebarPanel widgets - Animals tab
-                 
-                 mainPanel(
-                   # Adding the output from our server (temporary - need to add in the real function later)
+                     # Adding the output from our server (temporary - need to add in the real function later)
                      strong("OUTPUT"), # Subheader
-                           "output$value2") # Temporary function
-             ) # End sidebarLayout - Animals tab
-           ) # End tabPanel - Animals tab
-      
-     ) # End tabsetPanel
+                     "output$value1" # Temporary function
+                             ) # End mainPanel - Welcome page
+                           ) # end sidebarLayout - Welcome tab 
+                  ), # End tabPanel - Welcome Page
+                  
+                  # Map tab - Kira ----
+                  tabPanel("Map of Pesticide Risk", 
+                           sidebarLayout(position = "right",
+                                         
+                                         sidebarPanel(
+                                           tags$strong("Pesticide Toxicity Over Time"), 
+                                           
+                                           sliderInput("tox_yr_slider", label = h3("Year(s)"), min = 2010, 
+                                                       max = 2020, value = c(2012, 2019), # NEED TO confirm year range when we get data
+                                                       sep = ""), 
+                                           
+                                           "PLACEHOLDER: Graph shoing total tox levels over time, that changes with slider"
+                                        
+                                         ), # END sidebar panel - Map tab
+                                         
+                                         
+                                         mainPanel(
+                                           
+                                           # Map Title 
+                                           
+                                           tags$strong("Pesticide Risk in Watersheds Surrounding the Bay Delta"), 
+                                           
+                                           #Leaflet map - NEED TO INCORPORATE REACTIVITY 
+                                           
+                                           leaflet() %>% 
+                                             addProviderTiles("Esri.WorldTopoMap") %>% 
+                                             setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>% 
+                                             addMiniMap(toggleDisplay = TRUE, minimized = TRUE)
+                                           
+                                         ), #END main panel - map tab
+                                         
+                           ) # END sidebarLayout - map tab
+                           
+                  ), # END tabPanel - map
+                  
+                  # Temporal trends tab - Sadie ----
+                  tabPanel("Temporal Trends by Crop"),
+                  
+                  # Animals tab - Jaenna ----
+                  tabPanel("Pesticide Impact on Animals",
+                           sidebarLayout(
+                             sidebarPanel("WIDGET",
+                                          selectInput(
+                                            "select", 
+                                            label = h3("Select animal species"), 
+                                            choices = list("Animal 1" = 1, "Animal 2" = 2, "Animal 3" = 3, "Animal 4" = 4, "Animal 5" = 5), 
+                                            selected = 1)
+                             ), # end sidebarPanel widgets - Animals tab
+                             
+                             mainPanel(
+                               # Adding the output from our server (temporary - need to add in the real function later)
+                               strong("OUTPUT"), # Subheader
+                               "output$value2") # Temporary function
+                           ) # End sidebarLayout - Animals tab
+                  ) # End tabPanel - Animals tab
+                  
+                ) # End tabsetPanel
 ) # end fluidPage 
 
 # Define server ----
 server <- function(input, output) {
-
+  
   # Tab 1 - Welcome output - Jaenna ----
   # Just using sample output from the widget gallery website for now 
   output$value1 <- renderPrint({ input$select })
   
   # Tab 2 - Map output - Kira ----
+  output$range <- renderPrint({ input$tox_yr_slider }) #PLACEHOLDER - will change with graph 
   
   # Tab 3 - Temporal trends output - Sadie ----
   

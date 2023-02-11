@@ -10,8 +10,12 @@
 library(shiny)
 library(tidyverse)
 library(readxl)
+library(here)
 library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
+
+# Reading in our data
+pesticides <- read_excel(here('Example_Output_DataTable.xlsx'))
 
 
 my_theme <- bs_theme(
@@ -36,9 +40,9 @@ ui <- fluidPage(theme = my_theme,
                               selectInput(
                                 "select", 
                                 label = h3("Select pesticide type"), 
-                                choices = list("Animal 1" = 1, "Animal 2" = 2, "Animal 3" = 3, "Animal 4" = 4, "Animal 5" = 5), 
-                                selected = 1)
-                            ), # end sidebarPanel widgets - Welcome tab
+                                choices = unique(pesticides$Pesticide), 
+                                selected = 1) # end selectInput
+                 ), # end sidebarPanel widgets - Welcome tab
                
                 # Adding text and ouput to the main panel
                  mainPanel(
@@ -63,8 +67,8 @@ ui <- fluidPage(theme = my_theme,
                      2) Who is responsible? 
                      3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?") # end paragraph 2
-                 ) # end sidebarLayout - Welcome tab
                  ) # End mainPanel - Welcome page
+                ) # end sidebarLayout - Welcome tab 
               ), # End tabPanel - Welcome Page
       
       # Map tab - Kira 
@@ -92,10 +96,9 @@ ui <- fluidPage(theme = my_theme,
      ) # End tabsetPanel
 ) # end fluidPage 
 
-
 # Define server logic required to display outputs into each tab
 server <- function(input, output) {
-  
+
   # Tab 1 - Welcome output - Jaenna
   
   # Tab 2 - Map output - Kira 

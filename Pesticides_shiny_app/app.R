@@ -11,11 +11,14 @@ library(shiny)
 library(tidyverse)
 library(readxl)
 library(here)
+library(janitor)
 library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
 # Reading in our data
-pesticides <- read_excel(here('Example_Output_DataTable.xlsx'))
+pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
+  clean_names() %>% 
+  mutate(across(where(is.character), tolower))
 
 
 my_theme <- bs_theme(
@@ -40,7 +43,7 @@ ui <- fluidPage(theme = my_theme,
                               selectInput(
                                 "select", 
                                 label = h3("Select pesticide type"), 
-                                choices = unique(pesticides$Pesticide), 
+                                choices = unique(pesticides$pesticide), 
                                 selected = 1) # end selectInput
                  ), # end sidebarPanel widgets - Welcome tab
                

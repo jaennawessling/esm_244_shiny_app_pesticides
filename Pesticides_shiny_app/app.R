@@ -9,8 +9,10 @@
 
 library(shiny)
 library(tidyverse)
+library(readxl)
 library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
+
 
 my_theme <- bs_theme(
   bootswatch = "minty")
@@ -18,7 +20,7 @@ my_theme <- bs_theme(
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = my_theme,
-
+                
     # Application title
     titlePanel("The Pesticide Management Prioritization Module (PMPM)"),
     
@@ -27,6 +29,18 @@ ui <- fluidPage(theme = my_theme,
       
       # Welcome Tab - Jaenna 
       tabPanel("Welcome",
+               
+               # Creating sidebar widget first 
+               sidebarLayout(
+                 sidebarPanel("WIDGETS",
+                              selectInput(
+                                "select", 
+                                label = h3("Select pesticide type"), 
+                                choices = list("Animal 1" = 1, "Animal 2" = 2, "Animal 3" = 3, "Animal 4" = 4, "Animal 5" = 5), 
+                                selected = 1)
+                            ), # end sidebarPanel widgets - Welcome tab
+               
+                # Adding text and ouput to the main panel
                  mainPanel(
                    strong("Purpose"),
                    p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
@@ -49,6 +63,7 @@ ui <- fluidPage(theme = my_theme,
                      2) Who is responsible? 
                      3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?") # end paragraph 2
+                 ) # end sidebarLayout - Welcome tab
                  ) # End mainPanel - Welcome page
               ), # End tabPanel - Welcome Page
       
@@ -64,14 +79,14 @@ ui <- fluidPage(theme = my_theme,
                  sidebarPanel("WIDGETS",
                   selectInput(
                       "select", 
-                      label = h3("Select box"), 
+                      label = h3("Select animal species"), 
                       choices = list("Animal 1" = 1, "Animal 2" = 2, "Animal 3" = 3, "Animal 4" = 4, "Animal 5" = 5), 
                       selected = 1)
                     ), # end sidebarPanel widgets - Animals tab
                  
                  mainPanel("OUTPUT", 
                            "output$value")
-             ), # End sidebarLayout - Animals tab
+             ) # End sidebarLayout - Animals tab
            ) # End tabPanel - Animals tab
       
      ) # End tabsetPanel
@@ -87,7 +102,8 @@ server <- function(input, output) {
   
   # Tab 3 - Temporal trends output - Sadie
   
-  # Tab 4 - Animals output (sample output)
+  # Tab 4 - Animals output - Jaenna 
+  # Just using sample output from the widget gallery website for now 
   output$value <- renderPrint({ input$select })
   
 } # end server function 

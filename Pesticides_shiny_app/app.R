@@ -114,9 +114,30 @@ ui <- fluidPage(theme = my_theme,
                            
                   ), # END tabPanel - map
                   
-                  # Temporal trends tab - Sadie ----
-                  tabPanel("Temporal Trends by Crop"),
+                  # Temporal trends by pesticide tab - Sadie ----
+                  tabPanel("Temporal Trends by Crop",
+                           sidebarLayout(
+                             #dropdown menus
+                             sidebarPanel("Pesticides",
+                                          #dropdown  menu for pesticide type
+                                          selectInput("pesticide_dropdown",
+                                                      label = "Select pesticide",
+                                                      choices = c("Pesticide 1" = 1, "Pesticide 2" = 2, "Pesticide 3" = 3, "Pesticide 4" = 4, "Pesticide 5" = 5)), #end pesticide dropdown
+                                          
+                                          #dropdown menu for watershed 
+                                          "Watersheds",
+                                          selectInput("watershed_dropdown",
+                                                      label = "Select watershed",
+                                                      choices = c("Watershed 1" = 1, "Watershed 2" = 2, "Watershed 3" = 3)) #end watershed dropdown
+                                          ), #end sidebarPanel
+                             #display  the graph of temporal trends for the selected pesticide and watershed
+                             mainPanel("Graph  of temporal trends by pesticide and watershed",
+                                       plotOutput(outputId = 'pesticide_plot') #tell the app where to put the graph
+                             ) #end sidebarPanel
+                           ) #end sidebarLayout        
+                  ), #end tabPanel - temporal trends by crop
                   
+  
                   # Animals tab - Jaenna ----
                   tabPanel("Pesticide Impact on Animals",
                            sidebarLayout(
@@ -148,7 +169,22 @@ server <- function(input, output) {
   # Tab 2 - Map output - Kira ----
   output$range <- renderPrint({ input$tox_yr_slider }) #PLACEHOLDER - will change with graph 
   
-  # Tab 3 - Temporal trends output - Sadie ----
+  # Tab 3 - Temporal trends for pesticide output - Sadie ----
+  #reactive data frame to select pesticide and watershed
+  pesticide_watershed_df <- reactive ({
+    pesticides %>% 
+      filter(pesticide == input$pesticide_dropdown) %>% 
+      filter(watershed == input$watershed_dropdown)
+     # group_by() %>% 
+     # summarize()
+  })
+  
+  #render plot of pesticide for a watershed
+  output$pesticide_plot <- renderPlot({
+    ggplot(data = pesticides_watershed_df(),
+           aes(x = year, y = pesticide_concentration)) +
+      geom_col() 
+  })
   
   # Tab 4 - Animals output - Jaenna ----
   # Just using sample output from the widget gallery website for now 

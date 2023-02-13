@@ -12,6 +12,7 @@ library(tidyverse)
 library(readxl)
 library(here)
 library(janitor)
+library(leaflet)
 library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
@@ -133,7 +134,7 @@ ui <- fluidPage(theme = my_theme,
                              #display  the graph of temporal trends for the selected pesticide and watershed
                              mainPanel("Graph  of temporal trends by pesticide and watershed",
                                        plotOutput(outputId = 'pesticide_plot') #tell the app where to put the graph
-                             ) #end sidebarPanel
+                             ) #end mainPanel
                            ) #end sidebarLayout        
                   ), #end tabPanel - temporal trends by crop
                   

@@ -23,7 +23,6 @@ pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>%
 # View(pesticides) # can uncomment this if you want to view the temporary data 
 # Should I try to remove the numbers and letters before each pesticide name, or is it part of the name? 
 
-
 my_theme <- bs_theme(
   bootswatch = "minty") 
 
@@ -123,13 +122,13 @@ ui <- fluidPage(theme = my_theme,
                                           #dropdown  menu for pesticide type
                                           selectInput("pesticide_dropdown",
                                                       label = "Select pesticide",
-                                                      choices = c("Pesticide 1" = 1, "Pesticide 2" = 2, "Pesticide 3" = 3, "Pesticide 4" = 4, "Pesticide 5" = 5)), #end pesticide dropdown
+                                                      choices = unique(pesticides$pesticide)), #end pesticide dropdown
                                           
                                           #dropdown menu for watershed 
                                           "Watersheds",
                                           selectInput("watershed_dropdown",
                                                       label = "Select watershed",
-                                                      choices = c("Watershed 1" = 1, "Watershed 2" = 2, "Watershed 3" = 3)) #end watershed dropdown
+                                                      choices = unique(pesticides$watershed)) #end watershed dropdown
                                           ), #end sidebarPanel
                              #display  the graph of temporal trends for the selected pesticide and watershed
                              mainPanel("Graph  of temporal trends by pesticide and watershed",

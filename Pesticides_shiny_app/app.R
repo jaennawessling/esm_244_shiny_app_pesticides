@@ -19,7 +19,7 @@ library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # Reading in our example data (just temporary to practice until we get the real data set)
 pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
   clean_names() %>% 
-  mutate(across(where(is.character), tolower))
+  mutate(across(where(is.character), tolower)) # changing the characters to lower case 
 # View(pesticides) # can uncomment this if you want to view the temporary data 
 # Should I try to remove the numbers and letters before each pesticide name, or is it part of the name? 
 
@@ -45,8 +45,8 @@ ui <- fluidPage(theme = my_theme,
                              sidebarPanel("WIDGET",
                                           selectInput(
                                             "select", 
-                                            label = h3("Select pesticide type"), 
-                                            choices = unique(pesticides$pesticide), 
+                                            label = h3("Select application site type"), 
+                                            choices = c("Nursery", "Almond Tree Orchard", "Squash Farm"), 
                                             selected = 1) # end selectInput
                              ), # end sidebarPanel widgets - Welcome tab
                              

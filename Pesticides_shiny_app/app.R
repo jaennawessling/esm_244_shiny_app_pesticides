@@ -25,7 +25,7 @@ pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>%
 
 my_theme <- bs_theme(
   bootswatch = "minty") 
-
+ 
 
 # Define UI ---- 
 ui <- fluidPage(theme = my_theme,

@@ -46,32 +46,35 @@ ui <- fluidPage(theme = my_theme,
                            
                            # Adding text beneath photo for credits
                            p(em("Photo of Crissy Field, San Francisco. (Photo by Will Elder, 
-                             courtesy of the National Park Service)"), style="text-align: center; font-size:12px",
-                             ),
+                             courtesy of the National Park Service)"), style="text-align: center; font-size:12px"
+                             ), # end photo text
                            
                            hr(), # horizontal line break
-                           
-                           # Adding an image to the side bar
-                           sidebarLayout(
-                             sidebarPanel( # Adding an image to the front page
-                               imageOutput("watershed"),
-                               
-                               # Adding text beneath photo for credits
-                               p(em("Photo of the Bay Delta Watershed. Each of the colors represents the main areas of the watershed. 
-                                    (Photo courtesy of the United State Environmental Protection Agency)"), style="text-align: center; font-size:12px",
-                               ),
-                             ), # end sidebarPanel widgets - Welcome tab
-                           
                              
-                             # Adding text and output to the main panel
-                             mainPanel(
-                               h3(strong("Purpose"), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
-                               p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
+                           
+                           # Creating a fluid row to can create multiple columns to have information and a small photo
+                           fluidRow(
+                             column(
+                               br(),
+                               tags$img(src="watershed.jpg",width="200px",height="260px", align = "justify"),
+                               br(),
+                               p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
+                                 Photo courtesy of the United States Environmental Protection Agency.",
+                                 br(),
+                                style="text-align:justify;color:black, font-size:12px"),
+                                width=2),
+                            
+                                      br(),
+                           column(width=8,
+                                  
+                                  h4(strong("Purpose"), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
+                                  p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
                      based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
                      and aquatic vascular plants in the Bay Delta Watershed."), # End paragraph 1 
-                               br(), # Line break
-                               h3(strong("Background"), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
-                               p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
+                     br(), # Line break    
+                                  
+                     h3(strong("Background"), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
+                     p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
                      concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
                      by growers in CA). Pesticide concentrations are predicted using mechanistic models that
@@ -86,9 +89,18 @@ ui <- fluidPage(theme = my_theme,
                      2) Who is responsible? 
                      3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?"), # end paragraph 2
-                                hr(),
-                     
-                     
+                                      
+                                      ) # end column 1 
+                           ), # end fluidrow  
+                           
+                           #### End fluidrow copied
+                           
+                                    
+                             # Adding text and output to the main panel
+                             mainPanel(
+                              
+                               hr(),
+                               
                     # Data sourcing 
                     h3(strong("Data Source"), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
                     p("Data sourced from Nicol Parker, PhD Candidate University of California, 
@@ -162,8 +174,6 @@ server <- function(input, output) {
   
   # Tab 1 - Welcome output - Jaenna ----
   
-  
-  
   # Top of the page - Image output
   output$crissy_field <- renderImage({
     
@@ -172,18 +182,6 @@ server <- function(input, output) {
          height = 400)
     
   }, deleteFile = F) # end renderImage
-  
-  
-  # Sidebar Image output
-  output$watershed <- renderImage({
-    
-    list(src = "www/watershed.jpg",
-         width = "100%",
-         height = 400)
-    
-  }, deleteFile = F) # end renderImage
-  
-  
   
   # Tab 2 - Application Site Type - Jaenna ----
   # Just using sample output from the widget gallery website for now 

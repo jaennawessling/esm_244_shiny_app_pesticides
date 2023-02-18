@@ -28,7 +28,7 @@ my_theme <- bs_theme(
  
 
 # Define UI ---- 
-ui <- fluidPage(theme = my_theme,
+ui <- fluidPage(theme = my_theme, 
                 
                 # Application title
                 titlePanel("The Pesticide Management Prioritization Module (PMPM)"),
@@ -38,6 +38,16 @@ ui <- fluidPage(theme = my_theme,
                   
                   # Welcome Tab - Jaenna ----
                   tabPanel("Welcome",
+                           
+                           # Adding an image to the front page
+                           imageOutput("crissy_field"),
+                           
+                           # Adding text beneath photo for credits
+                           p(style="text-align: justify; font-size = 9px",
+                             "Photo of Crissy Field, San Francisco. (Photo by Will Elder, 
+                             courtesy of the National Park Service)"),
+                           
+                           hr(), # horizontal line break
                            
                            # Creating sidebar widget first 
                            sidebarLayout(
@@ -51,12 +61,12 @@ ui <- fluidPage(theme = my_theme,
                              
                              # Adding text and ouput to the main panel
                              mainPanel(
-                               strong("Purpose"),
+                               h4(strong("Purpose")),
                                p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
                      based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
                      and aquatic vascular plants in the Bay Delta Watershed. "), # End paragraph 1 
                      br(), # Line break
-                     strong("Background"),
+                     h4(strong("Background")),
                      p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
                      concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
@@ -72,6 +82,8 @@ ui <- fluidPage(theme = my_theme,
                      2) Who is responsible? 
                      3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?"), # end paragraph 2
+                     hr(), # horizontal line break
+                     
                      # Adding the output from our server (temporary - need to add in the real function later)
                      strong("OUTPUT"), # Subheader
                      "output$value1" # Temporary function
@@ -163,6 +175,16 @@ ui <- fluidPage(theme = my_theme,
 server <- function(input, output) {
   
   # Tab 1 - Welcome output - Jaenna ----
+  
+  # Image output
+  output$crissy_field <- renderImage({
+    
+    list(src = "www/crissy_field_3.jpg",
+         width = "100%",
+         height = 400)
+    
+  }, deleteFile = F) # end renderImage
+  
   # Just using sample output from the widget gallery website for now 
   output$value1 <- renderPrint({ input$select })
   

@@ -36,18 +36,104 @@ ui <- fluidPage(theme = my_theme,
                 # Adding our tabs panel
                 tabsetPanel(
                   
-                  # Welcome Tab - Jaenna ----
-                  tabPanel("Welcome",
+                  # Tab 1 - Welcome Tab - Jaenna ----
+                  tabPanel(icon("home"),
                            
                            # Adding an image to the front page
                            imageOutput("crissy_field"),
                            
                            # Adding text beneath photo for credits
-                           p(style="text-align: justify; font-size = 9px",
-                             "Photo of Crissy Field, San Francisco. (Photo by Will Elder, 
-                             courtesy of the National Park Service)"),
+                           p("Photo of Crissy Field: San Francisco, California.", 
+                             em("(Photo by Will Elder, 
+                             courtesy of the National Park Service)"), style="text-align: center; font-size:14px"
+                           ), # end photo text
                            
                            hr(), # horizontal line break
+                           
+                           
+                           # Creating a fluid row to can create multiple columns to have information and a small photo
+                           fluidRow(
+                             column(
+                               br(),
+                               tags$img(src="watershed.jpg",width="200px",height="260px", align = "center"),
+                               br(),
+                               p("The main regions of the (San Francisco) Bay Delta Watershed.", 
+                                 em("(Photo courtesy of the United States Environmental Protection Agency.)")),
+                                 br(),
+                                 style="text-align:center;color:black; font-size: 14px; nowrap = FALSE",
+                               width=3),
+                             
+                             br(),
+                             column(width=8,
+                                    
+                                    h4(strong("Purpose"), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
+                                    p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
+                     based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
+                     and aquatic vascular plants in the (San Francisco) Bay Delta Watershed."), # End paragraph 1 
+                     br(), # Line break    
+                     
+                     h3(strong("Background"), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
+                     strong("What does the PMPM do?"),
+                     p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
+                     concentrations of pesticides from agricultural use in soil, water, and sediment. The use
+                     data is compiled from pesticide use reports with data at the daily time-step (required
+                     by growers in CA). Pesticide concentrations are predicted using mechanistic models that
+                     consider climate, hydrology, irrigation practices, and pesticide properties in the 226 
+                     watersheds within ~100 km of the Bay Delta Watershed (22,000 km2)."),
+                     
+                     br(),
+                     strong("Why is this analysis needed?"),
+                     p("13% of California’s 
+                     waterways are designated as impaired by pesticides of those assessed for non-point 
+                     source pollution under the Clean Water Act. 56% are present within the Bay Delta 
+                     Watershed (BDW), home to over 90 threatened and endangered species."),
+                     
+                     br(),
+                     strong("What are the PMPM goals?"),
+                     p("As humans move
+                     toward pesticides that are lower in toxicity for mammals, but are orders of magnitude
+                     more toxic to invertebrates and aquatic organisms, the PMPM aims to identify:"),
+                     p("1) Which activities are imposing the greatest pesticide loads?"),
+                     p("2) Who is responsible?"),
+                     p("3) How can tradeoffs between the benefits of chemical use be managed to restore
+                     and preserve ecosystem health?") # end of background section 
+                     
+                             ) # end column 1 
+                           ), # end fluidrow  
+                     
+                     #### End fluidrow copied
+                     
+                     
+                     # Adding text and output to the main panel
+                     mainPanel(
+                       
+                       hr(),
+                       
+                       # Data sourcing 
+                       h3(strong("Data Source"), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
+                       p("Data sourced from Nicol Parker, PhD Candidate University of California, 
+                      Santa Barbara, Bren School of Environmental Science & Management. With support from the 
+                      Bay Delta Science Fellowship, and initiative of the California Sea Grant."), 
+                      
+                      br(),
+                      
+                      
+                      tags$p(HTML("To download the data and userguide, click 
+                                <a href=\"https://datadryad.org/stash/share/7a-F-jEXmlvWi3-xeRx_X4osZqXrr8Nh97tnx2bBOSk/\">here.</a>")), 
+                      
+                      hr(), 
+                      # End data source 
+                      
+                      # Adding development credits 
+                      p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:lightgreen;padding:15px;border-radius:10px")
+                     ) # End mainPanel - Welcome page
+                  ), # End tabPanel - Welcome Page
+                  
+                  
+                  
+                  
+                  # Tab 2 - Creating another tab for application site type - Jaenna ----
+                  tabPanel("Application Site Type",
                            
                            # Creating sidebar widget first 
                            sidebarLayout(
@@ -57,41 +143,19 @@ ui <- fluidPage(theme = my_theme,
                                             label = h3("Select application site type"), 
                                             choices = c("Nursery", "Almond Tree Orchard", "Squash Farm"), 
                                             selected = 1) # end selectInput
-                             ), # end sidebarPanel widgets - Welcome tab
+                             ), # end sidebarPanel widgets - Application site tab
                              
                              # Adding text and ouput to the main panel
                              mainPanel(
-                               h4(strong("Purpose")),
-                               p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
-                     based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
-                     and aquatic vascular plants in the Bay Delta Watershed. "), # End paragraph 1 
-                     br(), # Line break
-                     h4(strong("Background")),
-                     p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
-                     concentrations of pesticides from agricultural use in soil, water, and sediment. The use
-                     data is compiled from pesticide use reports with data at the daily time-step (required
-                     by growers in CA). Pesticide concentrations are predicted using mechanistic models that
-                     consider climate, hydrology, irrigation practices, and pesticide properties in the 226 
-                     watersheds within ~100 km of the Bay Delta Watershed (22,000 km2). 13% of California’s 
-                     waterways are designated as impaired by pesticides of those assessed for non-point 
-                     source pollution under the Clean Water Act. 56% are present within the Bay Delta 
-                     Watershed (BDW), home to over 90 threatened and endangered species. As humans move
-                     toward pesticides that are lower in toxicity for mammals, but are orders of magnitude
-                     more toxic to invertebrates and aquatic organisms, the PMPM aims to identify 
-                     1) Which activities are imposing the greatest pesticide loads? 
-                     2) Who is responsible? 
-                     3) How can tradeoffs between the benefits of chemical use be managed to restore
-                     and preserve ecosystem health?"), # end paragraph 2
-                     hr(), # horizontal line break
-                     
-                     # Adding the output from our server (temporary - need to add in the real function later)
-                     strong("OUTPUT"), # Subheader
-                     "output$value1" # Temporary function
-                             ) # End mainPanel - Welcome page
-                           ) # end sidebarLayout - Welcome tab 
-                  ), # End tabPanel - Welcome Page
+                               
+                               # Adding the output from our server (temporary - need to add in the real function later)
+                               h3(strong("OUTPUT")), # Subheader
+                               "output$value1" # Temporary function
+                             ) # End mainPanel - application site tab
+                           ) # end sidebarLayout - application site tab 
+                  ), # End tabPanel - application site tab
                   
-                  # Map tab - Kira ----
+                  # Tab 3 - Map tab - Kira ----
                   tabPanel("Map of Pesticide Risk", 
                            sidebarLayout(position = "right",
                                          
@@ -126,7 +190,7 @@ ui <- fluidPage(theme = my_theme,
                            
                   ), # END tabPanel - map
                   
-                  # Temporal trends by pesticide tab - Sadie ----
+                  # Tab 4 - Temporal trends by pesticide tab - Sadie ----
                   tabPanel("Temporal Trends by Crop",
                            sidebarLayout(
                              #dropdown menus
@@ -150,7 +214,7 @@ ui <- fluidPage(theme = my_theme,
                   ), #end tabPanel - temporal trends by crop
                   
   
-                  # Animals tab - Jaenna ----
+                  # Tab 5 - Animals tab - Jaenna ----
                   tabPanel("Pesticide Impact on Animals",
                            sidebarLayout(
                              sidebarPanel("WIDGET",

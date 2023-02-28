@@ -1,0 +1,37 @@
+---
+title: "jaenna_data_exploration"
+author: "Jaenna Wessling"
+date: "2023-02-28"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = FALSE, include=FALSE, warning = FALSE, message = FALSE)
+
+library(here)
+library(tidyverse)
+library(ggplot2)
+library(ggpubr)
+library(patchwork)
+```
+
+
+### Loading in the pesticides data to explore it 
+
+
+#### Loading in watershed site pesticide and species RI 
+```{r}
+watershed_site_pesticide_species_ri <- read_csv(here("model_output_data", "BDW_NearHUC12_2015_2019_Watershed_Site_Pesticide_RI.csv"))
+```
+
+
+### Data exploration
+```{r}
+summary(watershed_site_pesticide_species_ri)
+
+# 18 variables 
+# 3 are characters 
+# The rest are numeric classes
+# I don't see any NA values 
+```
+

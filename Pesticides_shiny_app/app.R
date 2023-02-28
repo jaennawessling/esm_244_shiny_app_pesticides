@@ -16,6 +16,7 @@ library(leaflet)
 library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
+### TEMPORARY  DATA -- need to change instances where this is called later on to the relevant dataset that are now read in below
 # Reading in our example data (just temporary to practice until we get the real data set)
 pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
   clean_names() %>% 
@@ -23,11 +24,48 @@ pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>%
 # View(pesticides) # can uncomment this if you want to view the temporary data 
 # Should I try to remove the numbers and letters before each pesticide name, or is it part of the name? 
 
+
+
+### Model Output Data
+
+# full model output data set broken down by watershed, application site type, and pesticide
+watershed_site_pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Watershed_Site_Pesticide_RI.csv')) %>% 
+  clean_names() %>% 
+  mutate(across(where(is.character), tolower))
+
+# model output broken down by application site type and pesticide
+site_pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Site_Pesticide_RI.csv')) %>% 
+  clean_names() %>% 
+  mutate(across(where(is.character), tolower))
+
+# model output summarized by pesticide
+pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Pesticide_RI.csv')) %>% 
+  clean_names() %>% 
+  mutate(across(where(is.character), tolower))
+
+# model output summarized by application site type
+site_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Site_RI.csv')) %>% 
+  clean_names() %>% 
+  mutate(across(where(is.character), tolower))
+
+# model output summarized by watershed
+watershed_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Watershed_RI.csv')) %>% 
+  clean_names() %>% 
+  mutate(across(where(is.character), tolower))
+
+
+
+### Spatial Data
+
+
+
+
+### Theme
 my_theme <- bs_theme(
   bootswatch = "minty") 
  
 
-# Define UI ---- 
+### Define UI ---- 
 ui <- fluidPage(theme = my_theme, 
                 
                 # Application title
@@ -235,10 +273,12 @@ ui <- fluidPage(theme = my_theme,
                 ) # End tabsetPanel
 ) # end fluidPage 
 
-# Define server ----
+
+
+### Define server ----
 server <- function(input, output) {
   
-  # Tab 1 - Welcome output - Jaenna ----
+  ## Tab 1 - Welcome output - Jaenna ----
   
   # Image output
   output$crissy_field <- renderImage({
@@ -252,10 +292,10 @@ server <- function(input, output) {
   # Just using sample output from the widget gallery website for now 
   output$value1 <- renderPrint({ input$select })
   
-  # Tab 2 - Map output - Kira ----
+  ## Tab 2 - Map output (pesticide risk by watershed) - Kira ----
   output$range <- renderPrint({ input$tox_yr_slider }) #PLACEHOLDER - will change with graph 
   
-  # Tab 3 - Temporal trends for pesticide output - Sadie ----
+  ## Tab 3 - Pesticide risk by application site type - Sadie ----
   #reactive data frame to select pesticide and watershed
   pesticide_watershed_df <- reactive ({
     pesticides %>% 
@@ -265,14 +305,14 @@ server <- function(input, output) {
      # summarize()
   })
   
-  #render plot of pesticide for a watershed
+  #render plot of pesticide for a watershed (this should probably be a plot of pesticides for a selected application site type?)
   output$pesticide_plot <- renderPlot({
     ggplot(data = pesticides_watershed_df(),
            aes(x = year, y = pesticide_concentration)) +
       geom_col() 
   })
   
-  # Tab 4 - Animals output - Jaenna ----
+  ## Tab 4 - Pesticide risk to animals output - Jaenna ----
   # Just using sample output from the widget gallery website for now 
   output$value2 <- renderPrint({ input$select })
   
@@ -280,6 +320,6 @@ server <- function(input, output) {
 
 
 
-# Run the application ----
+### Run the application ----
 shinyApp(ui = ui, server = server)
 

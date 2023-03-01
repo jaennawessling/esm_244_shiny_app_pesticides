@@ -167,32 +167,7 @@ ui <- fluidPage(theme = my_theme,
                      ) # End mainPanel - Welcome page
                   ), # End tabPanel - Welcome Page
                   
-                  
-                  
-                  
-                  # Tab 2 - Creating another tab for application site type - Jaenna ----
-                  tabPanel("Application Site Type",
-                           
-                           # Creating sidebar widget first 
-                           sidebarLayout(
-                             sidebarPanel("WIDGET",
-                                          selectInput(
-                                            "select", 
-                                            label = h3("Select application site type"), 
-                                            choices = c("Nursery", "Almond Tree Orchard", "Squash Farm"), 
-                                            selected = 1) # end selectInput
-                             ), # end sidebarPanel widgets - Application site tab
-                             
-                             # Adding text and ouput to the main panel
-                             mainPanel(
-                               
-                               # Adding the output from our server (temporary - need to add in the real function later)
-                               h3(strong("OUTPUT")), # Subheader
-                               "output$value1" # Temporary function
-                             ) # End mainPanel - application site tab
-                           ) # end sidebarLayout - application site tab 
-                  ), # End tabPanel - application site tab
-                  
+                
                   # Tab 3 - Map tab - Kira ----
                   tabPanel("Map of Pesticide Risk", 
                            sidebarLayout(position = "right",
@@ -227,6 +202,32 @@ ui <- fluidPage(theme = my_theme,
                            ) # END sidebarLayout - map tab
                            
                   ), # END tabPanel - map
+                  
+                  
+                  # Tab 3 - Application site type - Sadie ----
+                  tabPanel("Application Site Type",
+                           
+                           # Creating sidebar widget first 
+                           sidebarLayout(
+                             sidebarPanel("WIDGET",
+                                          selectInput(
+                                            "select", 
+                                            label = h3("Select application site type"), 
+                                            choices = c("Nursery", "Almond Tree Orchard", "Squash Farm"), 
+                                            selected = 1) # end selectInput
+                             ), # end sidebarPanel widgets - Application site tab
+                             
+                             # Adding text and ouput to the main panel
+                             mainPanel(
+                               
+                               # Adding the output from our server (temporary - need to add in the real function later)
+                               h3(strong("OUTPUT")), # Subheader
+                               "output$value1" # Temporary function
+                             ) # End mainPanel - application site tab
+                           ) # end sidebarLayout - application site tab 
+                  ), # End tabPanel - application site tab
+                  
+                  
                   
                   # Tab 4 - Temporal trends by pesticide tab - Sadie ----
                   tabPanel("Temporal Trends by Crop",

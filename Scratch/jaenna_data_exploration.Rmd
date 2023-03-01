@@ -13,6 +13,8 @@ library(tidyverse)
 library(ggplot2)
 library(ggpubr)
 library(patchwork)
+library(kableExtra)
+library(dplyr)
 ```
 
 
@@ -33,5 +35,152 @@ summary(watershed_site_pesticide_species_ri)
 # 3 are characters 
 # The rest are numeric classes
 # I don't see any NA values 
+```
+
+### Data wrangling: Creating subsets of data for closer analysis 
+```{r}
+## For my tab I am only interested in watershed site, pesticide type, and all of the species columns 
+
+
+subset_pesticide_species <- watershed_site_pesticide_species_ri %>% 
+  select(huc, pesticide, RI_max_fish:RI_max_net)
+
+## Visualizing the data 
+# ggplot(data = pesticide_species_subset, aes(x = huc, y = RI_max_fish, color = pesticide)) + 
+#   geom_point(size = 2) +
+#   theme_minimal()
+
+## Visualizing the data
+# ggplot(data = pesticide_species_subset, aes(x = huc, y = RI_max_fish)) +
+#   geom_point(size = 2) +
+#   theme_minimal()
+# # Data subset too large to plot need to make subset smaller
+# 
+# ggplot(data = pesticide_species_subset, aes(x = pesticide, y = RI_max_fish)) +
+#   geom_point(size = 2) +
+#   labs(x = "pesticide", y = "RI_max_fish") +
+#   theme_minimal()
+# # Data subset too large to plot need to make subset smaller
+## Data subset too large to plot need to make subset smaller 
+
+
+# # Using groupby and summarise to separate to simplify dataset 
+#  fish_risk_simplify <- pesticide_species_subset %>%
+#    group_by(huc, pesticide) %>%
+#    summarise(mean_RI_fish = mean(RI_max_fish))
+ 
+## Visualizing the data 
+ # ggplot(data = pesticide_species_subset, aes(x = huc, y = RI_max_fish)) +
+ #  geom_point(size = 2) +
+ #  theme_minimal()
+## Data still too large 
+ 
+ 
+## Need to break up by location and by species and maybe just the highest pesticide risks? 
+
+```
+
+### Breaking data up by species 
+```{r, message=FALSE}
+## Fish species 
+fish_RI <- subset_pesticide_species %>% 
+  select(huc, pesticide, RI_max_fish) 
+
+# ## Just want to see the highest RIs 
+fish_RI_simplify <- fish_RI %>%
+  group_by(huc, pesticide) %>%
+  summarise(mean_RI = mean(RI_max_fish)) 
+
+## Visualizing data 
+# ggplot(data = fish_RI, aes(x = pesticide, y = RI_max_fish)) +
+#   geom_col() + 
+#   theme_minimal()
+
+
+## Sorting by huc 180201110101 only 
+fish_RI_huc_180201110101 <- fish_RI_simplify %>% 
+  select(huc, pesticide, mean_RI) %>% 
+  filter(huc == "HUC180201110101") %>% 
+ slice_max(mean_RI, n = 5) 
+
+	
+
+## Sorting by HUC180201110102 only 
+fish_RI_huc_180201110102 <- fish_RI_simplify %>% 
+  select(huc, pesticide, mean_RI) %>% 
+  filter(huc == "HUC180201110102") %>% 
+ slice_max(mean_RI, n = 5) 
+
+
+## Sorting by HUC180201110103 only 
+fish_RI_huc_180201110103 <- fish_RI_simplify %>% 
+  select(huc, pesticide, mean_RI) %>% 
+  filter(huc == "HUC180201110103") %>% 
+ slice_max(mean_RI, n = 5) 
+
+
+
+## Sorting by HUC180201110104 only 
+fish_RI_huc_180201110103 <- fish_RI_simplify %>% 
+  select(huc, pesticide, mean_RI) %>% 
+  filter(huc == "HUC180201110104") %>% 
+ slice_max(mean_RI, n = 5)
+```
+
+
+```{r, message=FALSE}
+# ## Separating each huc into a different data frame
+# ## Creating a vector for all of the unique huc ids 
+hucs <- unique(fish_RI_simplify$huc)
+
+## Turning the unique names output into a list
+huc_id <- list()
+
+
+# Looping through each of the unique huc values in the list and creating corresponding named data frames
+for(i in hucs){
+     fish_RI_hucs <- paste0(i)
+     huc_id[[fish_RI_hucs]] <- fish_RI_simplify[fish_RI_simplify$huc == i,]
+     
+     
+huc_id
+```
+
+
+```{r, message=FALSE}
+## Trying to lapply the slice max fcn to each subset...and failing
+# for(i in huc_id){
+# 
+#      lapply
+# function (huc_id, FUN, ...) 
+# {
+#     FUN <- slice_max(huc_id$mean_RI, n = 5)
+#     .Internal(lapply(huc_id, FUN))
+# }
+# }
+```
+
+```{r}
+## Invert water species 
+invert_water_RI <- subset_pesticide_species %>% 
+  select(huc, pesticide, RI_max_invertebrate_water)
+```
+
+```{r}
+## Plant non-vascular
+non_vasc_plant_RI <- subset_pesticide_species %>% 
+  select(huc, pesticide, RI_max_plant_nonvascular)
+```
+
+```{r}
+## Vascular plant
+vasc_plant_RI <- subset_pesticide_species %>% 
+  select(huc, pesticide, RI_max_plant_vascular)
+```
+
+```{r}
+## Invert benthic sediment 
+sed_invert_RI <- subset_pesticide_species %>% 
+  select(huc, pesticide, RI_max_invertebrate_sed)
 ```
 

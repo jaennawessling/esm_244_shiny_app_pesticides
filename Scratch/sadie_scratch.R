@@ -31,7 +31,7 @@ crop_monthly_mod <- crop_monthly %>%
                                month == "Oct" ~ "10",
                                month == "Nov" ~ "11",
                                month == "Dec" ~ "12")) %>% 
-  mutate(date = paste(month_num, year, sep = "-")) %>% 
+  mutate(date = paste(month_num, year, sep = "-"))  
 
 #lubridate the date column
 crop_monthly_mod$date <- my(crop_monthly_mod$date)

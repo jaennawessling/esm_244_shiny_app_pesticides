@@ -34,16 +34,50 @@ library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # Tab 1 annual data: annual watershed risk summary
 watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
 
+
+#######################################################################################
 # Tab 2 annual data: annual crop risk summary
-crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv"))
+crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>% 
+  pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value")
+
 
 # Tab 2 monthly data: monthly crop risk summary
-crop_monthly <- read_csv(here("Tab2_Crop_RiskSummary_Monthly.csv"))
+crop_monthly <- read_csv(here("Tab2_Crop_RiskSummary_Monthly.csv"))%>% 
+  separate(col = monthyear, into = c("month", "year"), sep = "-") 
 
+crop_monthly_mod <- crop_monthly %>% 
+  mutate(month_num = case_when(month == "Jan" ~ "01",
+                               month == "Feb" ~ "02",
+                               month == "Mar" ~ "03",
+                               month == "Apr" ~ "04",
+                               month == "May" ~ "05",
+                               month == "Jun" ~ "06",
+                               month == "Jul" ~ "07",
+                               month == "Aug" ~ "08",
+                               month == "Sep" ~ "09",
+                               month == "Oct" ~ "10",
+                               month == "Nov" ~ "11",
+                               month == "Dec" ~ "12")) %>% 
+  mutate(date = paste(month_num, year, sep = "-"))
+  
+#lubridate the date column
+crop_monthly_mod$date <- my(crop_monthly_mod$date)
+
+#pivot longer -- THIS IS THE FINAL DF TO USE FOR MONTHLY APPLICATION SITE TYPE
+crop_monthly_final <- crop_monthly_mod %>% 
+  select(-year, -month, -month_num) %>% 
+  pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
+  mutate(year = year(date)) %>% 
+  mutate(month = month(date))
+
+
+
+#######################################################################################
 # Tab 3 data: days exceeding health benchmarks
 exceed_health <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 
 
+#######################################################################################
 ### Spatial Data
 
 # watershed outline shapefile
@@ -64,7 +98,7 @@ ui <- fluidPage(theme = my_theme,
                 
                 # Adding our tabs panel
                 tabsetPanel(
-                  
+                  #######################################################################################
                   # Welcome Tab - Jaenna ----
                   tabPanel(icon("home"),
                            
@@ -156,7 +190,7 @@ ui <- fluidPage(theme = my_theme,
                      ) # End mainPanel - Welcome page
                   ), # End tabPanel - Welcome Page
                   
-                
+                  #######################################################################################
                   # Tab 1 - Map tab - Kira ----
                   tabPanel("Map of Pesticide Risk", 
                            sidebarLayout(position = "right",
@@ -168,7 +202,7 @@ ui <- fluidPage(theme = my_theme,
                                                        max = 2020, value = c(2012, 2019), # NEED TO confirm year range when we get data
                                                        sep = ""), 
                                            
-                                           "PLACEHOLDER: Graph shoing total tox levels over time, that changes with slider"
+                                           "PLACEHOLDER: Graph showing total tox levels over time, that changes with slider"
                                         
                                          ), # END sidebar panel - Map tab
                                          
@@ -193,31 +227,45 @@ ui <- fluidPage(theme = my_theme,
                   ), # END tabPanel - map
                 
                   
-                  
+                  #######################################################################################
                   # Tab 2 - Application site type (crop) data - Sadie ----
                   tabPanel("Temporal Trends by Application Site Type", 
                            sidebarLayout(
                              #dropdown menus
-                             sidebarPanel("Pesticides",
-                                          #dropdown  menu for pesticide type
-                                          selectInput("pesticide_dropdown",
-                                                      label = "Select pesticide",
-                                                      choices = unique(pesticides$pesticide)), #end pesticide dropdown
+                             sidebarPanel("Application Site Type",
+                                          #dropdown menu for application site type
+                                          selectInput("hru_dropdown",
+                                                      label = "Select an application site type (crop type)",
+                                                      choices = unique(crop_monthly_final$hru)), #end pesticide dropdown
                                           
                                           #dropdown menu for watershed 
                                           "Watersheds",
                                           selectInput("watershed_dropdown",
-                                                      label = "Select watershed",
-                                                      choices = unique(pesticides$watershed)) #end watershed dropdown
+                                                      label = "Select watershed(s)",
+                                                      choices = unique(crop_monthly_final$huc)), #end watershed dropdown
+                                          
+                                          #dropdown menu for year 
+                                          "Year",
+                                          selectInput("year_dropdown",
+                                                      label = "Select year(s)",
+                                                      choices = unique(crop_monthly_final$year)), #end year dropdown
+                                          
+                                          #dropdown menu for risk index -- CHANGE TO RADIOBUTTONS?
+                                          "Risk Index Type",
+                                          selectInput("index_type_dropdown",
+                                                      label = "Select risk index type(s)",
+                                                      choices = unique(crop_monthly_final$index_type)) #end risk index dropdown
                                           ), #end sidebarPanel
+                             
                              #display  the graph of temporal trends for the selected pesticide and watershed
-                             mainPanel("Graph  of temporal trends by pesticide and watershed",
-                                       plotOutput(outputId = 'pesticide_plot') #tell the app where to put the graph
+                             mainPanel("Graph of temporal trends by application site type",
+                                       plotOutput(outputId = 'hru_plot') #tell the app where to put the graph
+                                       
                              ) #end mainPanel
                            ) #end sidebarLayout        
-                  ), #end tabPanel - temporal trends by crop
+                  ), #end tabPanel - temporal trends by application site type
                   
-  
+                  #######################################################################################
                   # Tab 3 - Animals tab - Jaenna ----
                   tabPanel("Pesticide Impact on Animals",
                            sidebarLayout(
@@ -243,7 +291,7 @@ ui <- fluidPage(theme = my_theme,
 
 ### Define server ----
 server <- function(input, output) {
-  
+  #######################################################################################
   ## Welcome tab output - Jaenna ----
   
   # Image output
@@ -258,26 +306,33 @@ server <- function(input, output) {
   # Just using sample output from the widget gallery website for now 
   output$value1 <- renderPrint({ input$select })
   
+  #######################################################################################
   ## Tab 1 - Map output (pesticide risk by watershed) - Kira ----
   output$range <- renderPrint({ input$tox_yr_slider }) #PLACEHOLDER - will change with graph 
   
+  #######################################################################################
   ## Tab 2 - Application site type - Sadie ----
   #reactive data frame to select pesticide and watershed
-  pesticide_watershed_df <- reactive ({
-    pesticides %>% 
-      filter(pesticide == input$pesticide_dropdown) %>% 
-      filter(watershed == input$watershed_dropdown)
-     # group_by() %>% 
-     # summarize()
+  hru_df <- reactive ({
+    crop_monthly_final %>% 
+      filter(hru == input$hru_dropdown) %>% 
+      filter(huc == input$watershed_dropdown) %>% 
+      filter(year == input$year_dropdown) %>% 
+      filter(index_type == input$index_type_dropdown) #%>% 
+      # group_by(year == input$year_dropdown) %>% 
+      # summarize()
   })
   
   #render plot of pesticide for a watershed (this should probably be a plot of pesticides for a selected application site type?)
-  output$pesticide_plot <- renderPlot({
-    ggplot(data = pesticides_watershed_df(),
-           aes(x = year, y = pesticide_concentration)) +
-      geom_col() 
+  output$hru_plot <- renderPlot({
+    ggplot(data = hru_df(),
+           aes(x = date, y = risk_index_value, fill = index_type)) +
+      geom_col() +
+      labs(x = "Date", y = "Risk Index", fill = "Risk Index Type") +
+      theme_minimal()
   })
   
+  #######################################################################################
   ## Tab 3 - Pesticide risk to animals output - Jaenna ----
   # Just using sample output from the widget gallery website for now 
   output$value2 <- renderPrint({ input$select })

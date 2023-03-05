@@ -12,10 +12,13 @@ library(tidyverse)
 library(readxl)
 library(here)
 library(janitor)
+library(sf)
 library(leaflet)
 library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
+
+#### DELETE THIS #####
 ### TEMPORARY  DATA -- need to change instances where this is called later on to the relevant dataset that are now read in below
 # Reading in our example data (just temporary to practice until we get the real data set)
 pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
@@ -28,35 +31,23 @@ pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>%
 
 ### Model Output Data
 
-# full model output data set broken down by watershed, application site type, and pesticide
-watershed_site_pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Watershed_Site_Pesticide_RI.csv')) %>% 
-  clean_names() %>% 
-  mutate(across(where(is.character), tolower))
+# Tab 1 annual data: annual watershed risk summary
+watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
 
-# model output broken down by application site type and pesticide
-site_pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Site_Pesticide_RI.csv')) %>% 
-  clean_names() %>% 
-  mutate(across(where(is.character), tolower))
+# Tab 2 annual data: annual crop risk summary
+crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv"))
 
-# model output summarized by pesticide
-pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Pesticide_RI.csv')) %>% 
-  clean_names() %>% 
-  mutate(across(where(is.character), tolower))
+# Tab 2 monthly data: monthly crop risk summary
+crop_monthly <- read_csv(here("Tab2_Crop_RiskSummary_Monthly.csv"))
 
-# model output summarized by application site type
-site_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Site_RI.csv')) %>% 
-  clean_names() %>% 
-  mutate(across(where(is.character), tolower))
-
-# model output summarized by watershed
-watershed_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Watershed_RI.csv')) %>% 
-  clean_names() %>% 
-  mutate(across(where(is.character), tolower))
-
+# Tab 3 data: days exceeding health benchmarks
+exceed_health <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 
 
 ### Spatial Data
 
+# watershed outline shapefile
+watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.shp"))
 
 
 

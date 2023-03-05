@@ -99,9 +99,7 @@ ui <- fluidPage(theme = my_theme,
                            imageOutput("sf_news"),
                            
                            # Adding text beneath photo for credits
-                           p("Photo of Crissy Field: San Francisco, California.", 
-                             em("(Photo by Will Elder, 
-                             courtesy of the National Park Service)"), style="text-align: center; font-size:14px"
+                           p(em("Egret in the San Francisco Bay Delta Watershed. (Photo courtesy of SF News.)"), style="text-align: center; font-size:12px"
                            ), # end photo text
                            
                            hr(), # horizontal line break
@@ -111,12 +109,12 @@ ui <- fluidPage(theme = my_theme,
                            fluidRow(
                              column(
                                br(),
-                               tags$img(src="watershed.jpg",width="200px",height="260px", align = "center"),
+                               tags$img(src="sf_news.jpeg",width="200px",height="260px", align = "justify"),
                                br(),
-                               p("The main regions of the (San Francisco) Bay Delta Watershed.", 
-                                 em("(Photo courtesy of the United States Environmental Protection Agency.)")),
+                               p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
+                                 Photo courtesy of the United States Environmental Protection Agency.",
                                  br(),
-                                 style="text-align:center;color:black; font-size: 14px; nowrap = FALSE",
+                                 style="text-align:justify;color:black, font-size:12px"),
                                width=3),
                              
                              br(),

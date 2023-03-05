@@ -26,6 +26,11 @@ library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # Tab 1 annual data: annual watershed risk summary
 watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
 
+watersheds_sf <- read_sf(here::here("spatial_data/BDW_Watersheds/BDW_Near_HUC12.shp")) %>% 
+  st_transform('+proj=longlat +datum=WGS84')
+
+rmapshaper::ms_simplify(watersheds_sf)
+
 
 #######################################################################################
 # Tab 2 annual data: annual crop risk summary
@@ -109,7 +114,7 @@ ui <- fluidPage(theme = my_theme,
                            fluidRow(
                              column(
                                br(),
-                               tags$img(src="sf_news.jpeg",width="200px",height="260px", align = "justify"),
+                               tags$img(src="watershed.jpg",width="200px",height="260px", align = "justify"),
                                br(),
                                p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
                                  Photo courtesy of the United States Environmental Protection Agency.",
@@ -189,9 +194,9 @@ ui <- fluidPage(theme = my_theme,
                            sidebarLayout(position = "right",
                                          
                                          sidebarPanel(
-                                           tags$strong("Pesticide Toxicity Over Time"), 
+                                           tags$strong("Overall Pesticide Toxicity Risk Over Time"), 
                                            
-                                           sliderInput("tox_yr_slider", label = h3("Year(s)"), min = 2010, 
+                                           sliderInput("tox_yr_slider", label = h3("Select Year Range:"), min = 2010, 
                                                        max = 2020, value = c(2012, 2019), # NEED TO confirm year range when we get data
                                                        sep = ""), 
                                            
@@ -208,10 +213,24 @@ ui <- fluidPage(theme = my_theme,
                                            
                                            #Leaflet map - NEED TO INCORPORATE REACTIVITY 
                                            
-                                           leaflet() %>% 
-                                             addProviderTiles("Esri.WorldTopoMap") %>% 
-                                             setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>% 
-                                             addMiniMap(toggleDisplay = TRUE, minimized = TRUE)
+                                           leaflet() %>%
+                                             leaflet::addPolygons(data = watersheds_sf) %>%
+                                             addProviderTiles("Esri.WorldTopoMap") %>%
+                                             setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
+                                             addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
+                                             addPolygons(data = watersheds_sf,
+                                                         color = "Black", weight = 1, smoothFactor = 0.5,
+                                                         opacity = 1.0, fillOpacity = 0.5,
+                                                         fillColor = "Pink",
+                                                         highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                                                             bringToFront = TRUE), 
+                                                         popup = paste0("Watershed: </b>", 
+                                                                        "</b>",
+                                                                        "Pesticide Risk to Aquatic Ecosystems: </b>",
+                                                                        "</b>",
+                                                                        "Pesticide Risk to Terrestrial Ecosystems: </b>",
+                                                                        "</b>",
+                                                                        "Net Pesticide Toxicity Risk: </b>")) 
                                            
                                          ), #END main panel - map tab
                                          

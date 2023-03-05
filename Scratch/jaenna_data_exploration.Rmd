@@ -32,6 +32,13 @@ summary(days_exceed)
 
 ### Days any species = max 381 (going to be from days invert sed
 unique(days_exceed$huc)
+
+
+
+#### Creating a pivot longer df instead 
+exceed_longer <- days_exceed %>% 
+  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
+
 ```
 
 
@@ -43,115 +50,114 @@ unique(days_exceed$huc)
 
 #### Fish
 ```{r}
-fish <- days_exceed %>% 
-  select(huc, days_fish, pesticide) %>% 
-  slice_max(days_fish, n = 10) %>% # keeping the largest values of the counts by lake 
-  arrange(-days_fish) # arranges selected choices from greatest to least 
+fish <- exceed_longer %>% 
+  select(huc, species, pesticide, days) %>% 
+  filter(species == "days_fish") %>% 
+  slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake 
+  arrange(-days) # arranges selected choices from greatest to least 
+  
 
 ## Plot it 
-ggplot(data = fish, aes(y = days_fish, x = huc, fill = pesticide)) +  
-  scale_x_discrete(limits = fish$huc) + 
+ggplot(data = fish, aes(y = days, x = huc, fill = pesticide)) +
+  scale_x_discrete(limits = fish$huc) +
   geom_col() +
   labs(y = 'Days of Exceedance', x = "Watershed",
-       title = "Greatest Days of Exceedance for Fish Species") + 
+       title = "Greatest Days of Exceedance for Fish Species") +
   theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
 
 #### Inverts water
 ```{r}
-invert_water <- days_exceed %>% 
-  select(days_invertebrate_water, pesticide, huc) %>% 
-  slice_max(days_invertebrate_water, n = 10) %>% # keeping the largest values of the counts by lake 
-  arrange(-days_invertebrate_water) # arranges selected choices from greatest to least 
+invert_water <- exceed_longer %>% 
+  select(species, pesticide, huc, days) %>% 
+  filter(species == "days_invertebrate_water") %>% 
+  slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+  arrange(-days) # arranges selected choices from greatest to least
 
 
 ## Plot it 
-ggplot(data = invert_water, aes(y = days_invertebrate_water, x = huc, fill = pesticide)) +  
-  scale_x_discrete(limits = invert_water$huc) + 
+ggplot(data = invert_water, aes(y = days, x = huc, fill = pesticide)) +
+  scale_x_discrete(limits = invert_water$huc) +
   geom_col() +
   labs(y = 'Days of Exceedance', x = "Watershed",
-       title = "Greatest Days of Exceedance for Aquatic Invertabrate Species") + 
+       title = "Greatest Days of Exceedance for Aquatic Invertabrate Species") +
   theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
 
 #### Inverts sediment
 ```{r}
-invert_sed <- days_exceed %>% 
-  select(days_invertebrate_sed, pesticide, huc) %>% 
-  slice_max(days_invertebrate_sed, n = 10) %>% # keeping the largest values of the counts by lake 
-  arrange(-days_invertebrate_sed) # arranges selected choices from greatest to least 
+invert_sed <- exceed_longer %>% 
+  select(species, pesticide, huc, days) %>% 
+  filter(species == "days_invertebrate_sed") %>% 
+  slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+  arrange(-days) # arranges selected choices from greatest to least
 
 
 ## Plot it 
-ggplot(data = invert_sed, aes(y = days_invertebrate_sed, x = huc, fill = pesticide)) + 
-  scale_x_discrete(limits = invert_sed$huc) + 
+ggplot(data = invert_sed, aes(y = days, x = huc, fill = pesticide)) +
+  scale_x_discrete(limits = invert_sed$huc) +
   geom_col() +
   labs(y = 'Days of Exceedance', x = "Watershed",
-       title = "Greatest Days of Exceedance for Sediment Invertabrate Species") + 
+       title = "Greatest Days of Exceedance for Sediment Invertabrate Species") +
   theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
 
 #### Non-vascular plants 
 ```{r}
-non_vasc_plant <- days_exceed %>% 
-  select(days_plant_nonvascular, pesticide, huc) %>% 
-  slice_max(days_plant_nonvascular, n = 10) %>% # keeping the largest values of the counts by lake 
-  arrange(-days_plant_nonvascular) # arranges selected choices from greatest to least 
+non_vasc_plant <- exceed_longer %>% 
+  select(species, pesticide, huc, days) %>% 
+  filter(species == "days_plant_nonvascular") %>% 
+  slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+  arrange(-days) # arranges selected choices from greatest to least
+
 
 ## Plot it 
-ggplot(data = non_vasc_plant, aes(y = days_plant_nonvascular, 
-                                  x = huc, 
-                                  fill = pesticide,
-                                  )) +  
-  scale_x_discrete(limits = non_vasc_plant$huc) + 
+ggplot(data = non_vasc_plant, aes(y = days, x = huc, fill = pesticide)) +
+  scale_x_discrete(limits = non_vasc_plant$huc) +
   geom_col() +
   labs(y = 'Days of Exceedance', x = "Watershed",
-       title = "Greatest Days of Exceedance for Non-Vascular Plant Species") + 
+       title = "Greatest Days of Exceedance for Non-Vascular Plant Species") +
   theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
 #### Vascular plants 
 ```{r}
-vasc_plant <- days_exceed %>% 
-  select(days_plant_vascular, pesticide,  huc) %>% 
-  slice_max(days_plant_vascular, n = 8) %>% # keeping the largest values of the counts by lake 
-  arrange(-days_plant_vascular) # arranges selected choices from greatest to least 
+vasc_plant <- exceed_longer %>% 
+  select(species, pesticide, huc, days) %>% 
+  filter(species == "days_plant_vascular") %>% 
+  slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+  arrange(-days) # arranges selected choices from greatest to least
 
 
 ## Plot it 
-ggplot(data = vasc_plant, aes(y = days_plant_vascular, 
-                                  x = huc, 
-                                  fill = pesticide,
-                                  )) +  
-  scale_x_discrete(limits = vasc_plant$huc) + 
+ggplot(data = vasc_plant, aes(y = days, x = huc, fill = pesticide)) +
+  scale_x_discrete(limits = vasc_plant$huc) +
   geom_col() +
   labs(y = 'Days of Exceedance', x = "Watershed",
-       title = "Greatest Days of Exceedance for Vascular Plant Species") + 
+       title = "Greatest Days of Exceedance for Vascular Plant Species") +
   theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
 
 #### All species
 ```{r}
-all_species <- days_exceed %>% 
-  select(days_any_species, pesticide, huc) %>% 
-  slice_max(days_any_species, n = 10) %>% # keeping the largest values of the counts by lake 
-  arrange(-days_any_species) # arranges selected choices from greatest to least 
+all_species <- exceed_longer %>% 
+  select(species, pesticide, huc, days) %>% 
+  filter(species == "days_any_species") %>% 
+  slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+  arrange(-days) # arranges selected choices from greatest to least
 
 
 ## Plot it 
-ggplot(data = all_species, aes(y = days_any_species, 
-                                  x = huc, 
-                                  fill = pesticide,
-                                  )) +  
-  scale_x_discrete(limits = all_species$huc) + 
+ggplot(data = all_species, aes(y = days, x = huc, fill = pesticide)) +
+  scale_x_discrete(limits = all_species$huc) +
   geom_col() +
   labs(y = 'Days of Exceedance', x = "Watershed",
-       title = "Greatest Days of Exceedance for All Species") + 
-  theme(axis.text.x = element_text(angle = 75, hjust = 1))
+       title = "Greatest Days of Exceedance for All Species") +
+  theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
 

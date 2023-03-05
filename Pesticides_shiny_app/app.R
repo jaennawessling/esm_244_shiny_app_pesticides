@@ -68,7 +68,11 @@ crop_monthly <- read_csv(here("Tab2_Crop_RiskSummary_Monthly.csv"))
 >>>>>>> cc6dfd993fe546d34649ff95371d9d4c3bdad0c3
 
 # Tab 3 data: days exceeding health benchmarks
-exceed_health <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
+days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
+
+exceed_longer <- days_exceed %>% 
+  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
+
 
 
 ### Spatial Data

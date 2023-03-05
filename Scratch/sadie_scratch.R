@@ -80,7 +80,7 @@ monthly_crop_subset <- crop_monthly_pivot %>%
 
 # output figure for a single application site
 monthly_single_crop_fig <- monthly_crop_subset %>% 
-  ggplot(aes(x = date, y = risk_index_value)) +
+  ggplot(aes(x = date, y = risk_index_value, color = year)) +
   geom_line(color = "orchid", size = 1) +
   labs(x = "Date", y = "Net Risk Index", title = "Risk Index for Almonds in All Watersheds in 2015")+
   theme_minimal()

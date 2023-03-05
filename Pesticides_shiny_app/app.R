@@ -14,22 +14,14 @@ library(here)
 library(janitor)
 library(sf)
 library(leaflet)
+library(lubridate)
 library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
 
-#### DELETE THIS #####
-### TEMPORARY  DATA -- need to change instances where this is called later on to the relevant dataset that are now read in below
-# Reading in our example data (just temporary to practice until we get the real data set)
-# pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
-#   clean_names() %>% 
-#   mutate(across(where(is.character), tolower)) # changing the characters to lower case 
-# View(pesticides) # can uncomment this if you want to view the temporary data 
-# Should I try to remove the numbers and letters before each pesticide name, or is it part of the name? 
-
-
-
+#######################################################################################
 ### Model Output Data
+#######################################################################################
 
 # Tab 1 annual data: annual watershed risk summary
 watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
@@ -79,6 +71,7 @@ exceed_health <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 
 #######################################################################################
 ### Spatial Data
+#######################################################################################
 
 # watershed outline shapefile
 watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.shp"))
@@ -250,18 +243,27 @@ ui <- fluidPage(theme = my_theme,
                                                       label = "Select year(s)",
                                                       choices = unique(crop_monthly_final$year)), #end year dropdown
                                           
-                                          #dropdown menu for risk index -- CHANGE TO RADIOBUTTONS?
+                                          #checkboxes for risk index 
                                           "Risk Index Type",
-                                          selectInput("index_type_dropdown",
+                                          checkboxGroupInput("index_type_checkboxes",
                                                       label = "Select risk index type(s)",
-                                                      choices = unique(crop_monthly_final$index_type)) #end risk index dropdown
+                                                      choices = unique(crop_monthly_final$index_type),
+                                                      selected = "RI_net") #end risk index checkboxes
                                           ), #end sidebarPanel
                              
                              #display  the graph of temporal trends for the selected pesticide and watershed
-                             mainPanel("Graph of temporal trends by application site type",
-                                       plotOutput(outputId = 'hru_plot') #tell the app where to put the graph
+                             mainPanel("Temporal trends by Application Site Type in Selected Year",
+                                       plotOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
+                                       
+                                       br(), 
+                                       
+                                       "Temporal trends by Application Site Type for All Years",
+                                       plotOutput(outputId = 'hru_annual_plot')
+
                                        
                              ) #end mainPanel
+                             
+                             
                            ) #end sidebarLayout        
                   ), #end tabPanel - temporal trends by application site type
                   
@@ -313,24 +315,42 @@ server <- function(input, output) {
   #######################################################################################
   ## Tab 2 - Application site type - Sadie ----
   #reactive data frame to select pesticide and watershed
-  hru_df <- reactive ({
+  hru_monthly_df <- reactive ({
     crop_monthly_final %>% 
       filter(hru == input$hru_dropdown) %>% 
       filter(huc == input$watershed_dropdown) %>% 
       filter(year == input$year_dropdown) %>% 
-      filter(index_type == input$index_type_dropdown) #%>% 
+      filter(index_type == input$index_type_checkboxes) #%>% 
       # group_by(year == input$year_dropdown) %>% 
       # summarize()
   })
   
-  #render plot of pesticide for a watershed (this should probably be a plot of pesticides for a selected application site type?)
-  output$hru_plot <- renderPlot({
-    ggplot(data = hru_df(),
-           aes(x = date, y = risk_index_value, fill = index_type)) +
-      geom_col() +
+  #plot of monthly  data for one selected year
+  output$hru_monthly_plot <- renderPlot({
+    ggplot(data = hru_monthly_df(),
+           aes(x = date, y = risk_index_value, color = index_type)) +
+      geom_line(size = 1) +
       labs(x = "Date", y = "Risk Index", fill = "Risk Index Type") +
       theme_minimal()
   })
+  
+  #filter data frame for annual data (all years)
+  hru_annual_df <- reactive ({
+    crop_annual %>% 
+      filter(hru == input$hru_dropdown) %>% 
+      filter(huc == input$watershed_dropdown) %>% 
+      filter(index_type == input$index_type_checkboxes) 
+  })
+  
+  #plot of all years
+  output$hru_annual_plot <- renderPlot({
+    ggplot(data = hru_annual_df(),
+           aes(x = year, y = risk_index_value, color = index_type)) +
+      geom_line(size = 1) +
+      labs(x = "Date", y = "Risk Index", fill = "Risk Index Type") +
+      theme_minimal()
+  })
+  
   
   #######################################################################################
   ## Tab 3 - Pesticide risk to animals output - Jaenna ----

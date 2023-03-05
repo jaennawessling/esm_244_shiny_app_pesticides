@@ -77,7 +77,6 @@ exceed_longer <- days_exceed %>%
   pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
 
 
-
 #######################################################################################
 ### Spatial Data
 #######################################################################################

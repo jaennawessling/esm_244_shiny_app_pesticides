@@ -21,9 +21,9 @@ library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 #### DELETE THIS #####
 ### TEMPORARY  DATA -- need to change instances where this is called later on to the relevant dataset that are now read in below
 # Reading in our example data (just temporary to practice until we get the real data set)
-pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
-  clean_names() %>% 
-  mutate(across(where(is.character), tolower)) # changing the characters to lower case 
+# pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
+#   clean_names() %>% 
+#   mutate(across(where(is.character), tolower)) # changing the characters to lower case 
 # View(pesticides) # can uncomment this if you want to view the temporary data 
 # Should I try to remove the numbers and letters before each pesticide name, or is it part of the name? 
 
@@ -31,6 +31,32 @@ pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>%
 
 ### Model Output Data
 
+<<<<<<< HEAD
+# # full model output data set broken down by watershed, application site type, and pesticide
+# watershed_site_pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Watershed_Site_Pesticide_RI.csv')) %>% 
+#   clean_names() %>% 
+#   mutate(across(where(is.character), tolower))
+# 
+# # model output broken down by application site type and pesticide
+# site_pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Site_Pesticide_RI.csv')) %>% 
+#   clean_names() %>% 
+#   mutate(across(where(is.character), tolower))
+# 
+# # model output summarized by pesticide
+# pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Pesticide_RI.csv')) %>% 
+#   clean_names() %>% 
+#   mutate(across(where(is.character), tolower))
+# 
+# # model output summarized by application site type
+# site_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Site_RI.csv')) %>% 
+#   clean_names() %>% 
+#   mutate(across(where(is.character), tolower))
+# 
+# # model output summarized by watershed
+# watershed_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Watershed_RI.csv')) %>% 
+#   clean_names() %>% 
+#   mutate(across(where(is.character), tolower))
+=======
 # Tab 1 annual data: annual watershed risk summary
 watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
 
@@ -39,6 +65,7 @@ crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv"))
 
 # Tab 2 monthly data: monthly crop risk summary
 crop_monthly <- read_csv(here("Tab2_Crop_RiskSummary_Monthly.csv"))
+>>>>>>> cc6dfd993fe546d34649ff95371d9d4c3bdad0c3
 
 # Tab 3 data: days exceeding health benchmarks
 exceed_health <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
@@ -69,7 +96,7 @@ ui <- fluidPage(theme = my_theme,
                   tabPanel(icon("home"),
                            
                            # Adding an image to the front page
-                           imageOutput("crissy_field"),
+                           imageOutput("sf_news"),
                            
                            # Adding text beneath photo for credits
                            p("Photo of Crissy Field: San Francisco, California.", 
@@ -249,9 +276,9 @@ server <- function(input, output) {
   ## Welcome tab output - Jaenna ----
   
   # Image output
-  output$crissy_field <- renderImage({
+  output$sf_news <- renderImage({
     
-    list(src = "www/crissy_field_3.jpg",
+    list(src = "www/sf_news.jpeg",
          width = "100%",
          height = 400)
     

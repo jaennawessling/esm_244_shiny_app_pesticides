@@ -17,13 +17,22 @@ library(kableExtra)
 library(dplyr)
 ```
 
+### Load in the new data
+
+```{r}
+days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
+```
+
+
+
+-------------------------------
+### Old data set 
 
 ### Loading in the pesticides data to explore it 
 
-
-#### Loading in watershed site pesticide and species RI 
+#### Loading in watershed site pesticide and species RI
 ```{r}
-watershed_site_pesticide_species_ri <- read_csv(here("model_output_data", "BDW_NearHUC12_2015_2019_Watershed_Site_Pesticide_RI.csv"))
+# watershed_site_pesticide_species_ri <- read_csv(here("model_output_data", "BDW_NearHUC12_2015_2019_Watershed_Site_Pesticide_RI.csv"))
 ```
 
 
@@ -31,55 +40,55 @@ watershed_site_pesticide_species_ri <- read_csv(here("model_output_data", "BDW_N
 ```{r}
 # summary(watershed_site_pesticide_species_ri)
 
-# 18 variables 
-# 3 are characters 
+# 18 variables
+# 3 are characters
 # The rest are numeric classes
-# I don't see any NA values 
+# I don't see any NA values
 ```
 
-### Data wrangling: Creating subsets of data for closer analysis 
+### Data wrangling: Creating subsets of data for closer analysis
 ```{r}
-## For my tab I am only interested in watershed site, pesticide type, and all of the species columns 
+## For my tab I am only interested in watershed site, pesticide type, and all of the species columns
 
 
-subset_pesticide_species <- watershed_site_pesticide_species_ri %>% 
-  select(huc, pesticide, RI_max_fish:RI_max_net)
+# subset_pesticide_species <- watershed_site_pesticide_species_ri %>%
+#   select(huc, pesticide, RI_max_fish:RI_max_net)
 ```
 
-### Breaking data up by species 
+### Breaking data up by species
 ```{r, message=FALSE}
-## Fish species 
-fish_RI <- subset_pesticide_species %>% 
-  select(huc, pesticide, RI_max_fish) 
-
-# ## Just want to see the highest RIs 
-fish_RI_simplify <- fish_RI %>%
-  group_by(huc, pesticide) %>%
-  summarise(mean_RI = mean(RI_max_fish))
+## Fish species
+# fish_RI <- subset_pesticide_species %>%
+#   select(huc, pesticide, RI_max_fish)
+# 
+# # ## Just want to see the highest RIs
+# fish_RI_simplify <- fish_RI %>%
+#   group_by(huc, pesticide) %>%
+#   summarise(mean_RI = mean(RI_max_fish))
 ```
 
 
-## Splitting up the huc sites for fish species 
+## Splitting up the huc sites for fish species
 ```{r, message=FALSE}
-## Trying out group split in dplyr 
-# huc_fish_split <- group_split(fish_RI_simplify, huc) 
+## Trying out group split in dplyr
+# huc_fish_split <- group_split(fish_RI_simplify, huc)
 ## Doesn't properly name the new dfs though
 
 
-## Using a for loop to further split up huc data 
+## Using a for loop to further split up huc data
 ## Separating each huc into a different data frame
-## Creating a vector for all of the unique huc ids 
-hucs_fish <- unique(fish_RI_simplify$huc)
-
-## Turning the unique names output into a list
-huc_fish_id <- list()
-
-
-## Looping through each of the unique huc values in the list and creating corresponding named data frames
-for(i in hucs_fish){
-     fish_RI_hucs <- paste0(i)
-     huc_fish_id[[fish_RI_hucs]] <- fish_RI_simplify[fish_RI_simplify$huc == i,]
-}
+## Creating a vector for all of the unique huc ids
+# hucs_fish <- unique(fish_RI_simplify$huc)
+# 
+# ## Turning the unique names output into a list
+# huc_fish_id <- list()
+# 
+# 
+# ## Looping through each of the unique huc values in the list and creating corresponding named data frames
+# for(i in hucs_fish){
+#      fish_RI_hucs <- paste0(i)
+#      huc_fish_id[[fish_RI_hucs]] <- fish_RI_simplify[fish_RI_simplify$huc == i,]
+# }
 ```
 
 
@@ -87,9 +96,9 @@ for(i in hucs_fish){
 ```{r, message=FALSE}
 ## Trying to lapply the slice max fcn to each subset...and failing
 # for(i in huc_id){
-# 
+#
 #      lapply
-# function (huc_id, FUN, ...) 
+# function (huc_id, FUN, ...)
 # {
 #     FUN <- slice_max(huc_id$mean_RI, n = 5)
 #     .Internal(lapply(huc_id, FUN))
@@ -99,85 +108,85 @@ for(i in hucs_fish){
 
 
 
-### Do the same process for each of these species 
+### Do the same process for each of these species
 ```{r}
-## Invert water species 
-invert_water_RI <- subset_pesticide_species %>% 
-  select(huc, pesticide, RI_max_invertebrate_water)
-
-
-## Separating by huc id / site 
-## Creating a vector for all of the unique huc ids 
-hucs_inv_wtr <- unique(invert_water_RI$huc)
-
-## Turning the unique names output into a list
-huc_inv_wtr_id <- list()
-
-
-## Looping through each of the unique huc values in the list and creating corresponding named data frames
-for(i in hucs_inv_wtr){
-     wtr_inv_hucs <- paste0(i)
-     huc_inv_wtr_id[[wtr_inv_hucs]] <- invert_water_RI[invert_water_RI$huc == i,]
-}
+## Invert water species
+# invert_water_RI <- subset_pesticide_species %>%
+#   select(huc, pesticide, RI_max_invertebrate_water)
+# 
+# 
+# ## Separating by huc id / site
+# ## Creating a vector for all of the unique huc ids
+# hucs_inv_wtr <- unique(invert_water_RI$huc)
+# 
+# ## Turning the unique names output into a list
+# huc_inv_wtr_id <- list()
+# 
+# 
+# ## Looping through each of the unique huc values in the list and creating corresponding named data frames
+# for(i in hucs_inv_wtr){
+#      wtr_inv_hucs <- paste0(i)
+#      huc_inv_wtr_id[[wtr_inv_hucs]] <- invert_water_RI[invert_water_RI$huc == i,]
+# }
 ```
 
 ```{r}
 ## Plant non-vascular
-non_vasc_plant_RI <- subset_pesticide_species %>% 
-  select(huc, pesticide, RI_max_plant_nonvascular)
-
-## Separating by huc id / site 
-## Creating a vector for all of the unique huc ids 
-hucs_non_vasc <- unique(non_vasc_plant_RI$huc)
-
-## Turning the unique names output into a list
-huc_non_vasc_id <- list()
-
-
-## Looping through each of the unique huc values in the list and creating corresponding named data frames
-for(i in hucs_non_vasc){
-     non_vasc_hucs <- paste0(i)
-     huc_non_vasc_id[[non_vasc_hucs]] <- non_vasc_plant_RI[non_vasc_plant_RI$huc == i,]
-}
+# non_vasc_plant_RI <- subset_pesticide_species %>%
+#   select(huc, pesticide, RI_max_plant_nonvascular)
+# 
+# ## Separating by huc id / site
+# ## Creating a vector for all of the unique huc ids
+# hucs_non_vasc <- unique(non_vasc_plant_RI$huc)
+# 
+# ## Turning the unique names output into a list
+# huc_non_vasc_id <- list()
+# 
+# 
+# ## Looping through each of the unique huc values in the list and creating corresponding named data frames
+# for(i in hucs_non_vasc){
+#      non_vasc_hucs <- paste0(i)
+#      huc_non_vasc_id[[non_vasc_hucs]] <- non_vasc_plant_RI[non_vasc_plant_RI$huc == i,]
+# }
 ```
 
 ```{r}
 ## Vascular plant
-vasc_plant_RI <- subset_pesticide_species %>% 
-  select(huc, pesticide, RI_max_plant_vascular)
-
-## Separating by huc id / site 
-## Creating a vector for all of the unique huc ids 
-hucs_vasc <- unique(vasc_plant_RI$huc)
-
-## Turning the unique names output into a list
-huc_vasc_id <- list()
-
-
-## Looping through each of the unique huc values in the list and creating corresponding named data frames
-for(i in hucs_vasc){
-     vasc_RI_hucs <- paste0(i)
-     huc_vasc_id[[vasc_RI_hucs]] <- vasc_plant_RI[vasc_plant_RI$huc == i,]
-}
+# vasc_plant_RI <- subset_pesticide_species %>%
+#   select(huc, pesticide, RI_max_plant_vascular)
+# 
+# ## Separating by huc id / site
+# ## Creating a vector for all of the unique huc ids
+# hucs_vasc <- unique(vasc_plant_RI$huc)
+# 
+# ## Turning the unique names output into a list
+# huc_vasc_id <- list()
+# 
+# 
+# ## Looping through each of the unique huc values in the list and creating corresponding named data frames
+# for(i in hucs_vasc){
+#      vasc_RI_hucs <- paste0(i)
+#      huc_vasc_id[[vasc_RI_hucs]] <- vasc_plant_RI[vasc_plant_RI$huc == i,]
+# }
 ```
 
 ```{r}
-## Invert benthic sediment 
-sed_invert_RI <- subset_pesticide_species %>% 
-  select(huc, pesticide, RI_max_invertebrate_sed)
-
-## Separating by huc id / site 
-## Creating a vector for all of the unique huc ids 
-hucs_sed_invert <- unique(sed_invert_RI$huc)
-
-## Turning the unique names output into a list
-sed_invert_huc <- list()
-
-
-## Looping through each of the unique huc values in the list and creating corresponding named data frames
-for(i in hucs_sed_invert){
-     sed_hucs <- paste0(i)
-     sed_invert_huc[[sed_hucs]] <- sed_invert_RI[sed_invert_RI$huc == i,]
-}
+## Invert benthic sediment
+# sed_invert_RI <- subset_pesticide_species %>%
+#   select(huc, pesticide, RI_max_invertebrate_sed)
+# 
+# ## Separating by huc id / site
+# ## Creating a vector for all of the unique huc ids
+# hucs_sed_invert <- unique(sed_invert_RI$huc)
+# 
+# ## Turning the unique names output into a list
+# sed_invert_huc <- list()
+# 
+# 
+# ## Looping through each of the unique huc values in the list and creating corresponding named data frames
+# for(i in hucs_sed_invert){
+#      sed_hucs <- paste0(i)
+#      sed_invert_huc[[sed_hucs]] <- sed_invert_RI[sed_invert_RI$huc == i,]
+# }
 ```
 

@@ -65,7 +65,7 @@ ui <- fluidPage(theme = my_theme,
                 # Adding our tabs panel
                 tabsetPanel(
                   
-                  # Tab 1 - Welcome Tab - Jaenna ----
+                  # Welcome Tab - Jaenna ----
                   tabPanel(icon("home"),
                            
                            # Adding an image to the front page
@@ -159,7 +159,7 @@ ui <- fluidPage(theme = my_theme,
                   ), # End tabPanel - Welcome Page
                   
                 
-                  # Tab 3 - Map tab - Kira ----
+                  # Tab 1 - Map tab - Kira ----
                   tabPanel("Map of Pesticide Risk", 
                            sidebarLayout(position = "right",
                                          
@@ -193,35 +193,11 @@ ui <- fluidPage(theme = my_theme,
                            ) # END sidebarLayout - map tab
                            
                   ), # END tabPanel - map
+                
                   
                   
-                  # Tab 3 - Application site type - Sadie ----
-                  tabPanel("Application Site Type",
-                           
-                           # Creating sidebar widget first 
-                           sidebarLayout(
-                             sidebarPanel("WIDGET",
-                                          selectInput(
-                                            "select", 
-                                            label = h3("Select application site type"), 
-                                            choices = c("Nursery", "Almond Tree Orchard", "Squash Farm"), 
-                                            selected = 1) # end selectInput
-                             ), # end sidebarPanel widgets - Application site tab
-                             
-                             # Adding text and ouput to the main panel
-                             mainPanel(
-                               
-                               # Adding the output from our server (temporary - need to add in the real function later)
-                               h3(strong("OUTPUT")), # Subheader
-                               "output$value1" # Temporary function
-                             ) # End mainPanel - application site tab
-                           ) # end sidebarLayout - application site tab 
-                  ), # End tabPanel - application site tab
-                  
-                  
-                  
-                  # Tab 4 - Temporal trends by pesticide tab - Sadie ----
-                  tabPanel("Temporal Trends by Crop",
+                  # Tab 2 - Application site type (crop) data - Sadie ----
+                  tabPanel("Temporal Trends by Application Site Type", 
                            sidebarLayout(
                              #dropdown menus
                              sidebarPanel("Pesticides",
@@ -244,7 +220,7 @@ ui <- fluidPage(theme = my_theme,
                   ), #end tabPanel - temporal trends by crop
                   
   
-                  # Tab 5 - Animals tab - Jaenna ----
+                  # Tab 3 - Animals tab - Jaenna ----
                   tabPanel("Pesticide Impact on Animals",
                            sidebarLayout(
                              sidebarPanel("WIDGET",
@@ -270,7 +246,7 @@ ui <- fluidPage(theme = my_theme,
 ### Define server ----
 server <- function(input, output) {
   
-  ## Tab 1 - Welcome output - Jaenna ----
+  ## Welcome tab output - Jaenna ----
   
   # Image output
   output$crissy_field <- renderImage({
@@ -284,10 +260,10 @@ server <- function(input, output) {
   # Just using sample output from the widget gallery website for now 
   output$value1 <- renderPrint({ input$select })
   
-  ## Tab 2 - Map output (pesticide risk by watershed) - Kira ----
+  ## Tab 1 - Map output (pesticide risk by watershed) - Kira ----
   output$range <- renderPrint({ input$tox_yr_slider }) #PLACEHOLDER - will change with graph 
   
-  ## Tab 3 - Pesticide risk by application site type - Sadie ----
+  ## Tab 2 - Application site type - Sadie ----
   #reactive data frame to select pesticide and watershed
   pesticide_watershed_df <- reactive ({
     pesticides %>% 
@@ -304,7 +280,7 @@ server <- function(input, output) {
       geom_col() 
   })
   
-  ## Tab 4 - Pesticide risk to animals output - Jaenna ----
+  ## Tab 3 - Pesticide risk to animals output - Jaenna ----
   # Just using sample output from the widget gallery website for now 
   output$value2 <- renderPrint({ input$select })
   

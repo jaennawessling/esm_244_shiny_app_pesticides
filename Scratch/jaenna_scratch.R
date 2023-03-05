@@ -17,9 +17,9 @@ library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
 # Reading in our example data (just temporary to practice until we get the real data set)
-pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
-  clean_names() %>% 
-  mutate(across(where(is.character), tolower)) # changing the characters to lower case 
+# pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
+#   clean_names() %>% 
+#   mutate(across(where(is.character), tolower)) # changing the characters to lower case 
 # View(pesticides) # can uncomment this if you want to view the temporary data 
 # Should I try to remove the numbers and letters before each pesticide name, or is it part of the name? 
 
@@ -42,7 +42,7 @@ ui <- fluidPage(theme = my_theme,
                   tabPanel(icon("home"),
                            
                            # Adding an image to the front page
-                           imageOutput("crissy_field"),
+                           imageOutput("sf_news"),
                            
                            # Adding text beneath photo for credits
                            p(em("Photo of Crissy Field, San Francisco. (Photo by Will Elder, 
@@ -175,9 +175,9 @@ server <- function(input, output) {
   # Tab 1 - Welcome output - Jaenna ----
   
   # Top of the page - Image output
-  output$crissy_field <- renderImage({
+  output$sf_news <- renderImage({
     
-    list(src = "www/crissy_field_3.jpg",
+    list(src = "www/sf_news.jpeg",
          width = "100%",
          height = 400)
     

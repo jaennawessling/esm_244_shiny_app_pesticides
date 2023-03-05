@@ -31,32 +31,6 @@ library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 
 ### Model Output Data
 
-<<<<<<< HEAD
-# # full model output data set broken down by watershed, application site type, and pesticide
-# watershed_site_pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Watershed_Site_Pesticide_RI.csv')) %>% 
-#   clean_names() %>% 
-#   mutate(across(where(is.character), tolower))
-# 
-# # model output broken down by application site type and pesticide
-# site_pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Site_Pesticide_RI.csv')) %>% 
-#   clean_names() %>% 
-#   mutate(across(where(is.character), tolower))
-# 
-# # model output summarized by pesticide
-# pesticide_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Pesticide_RI.csv')) %>% 
-#   clean_names() %>% 
-#   mutate(across(where(is.character), tolower))
-# 
-# # model output summarized by application site type
-# site_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Site_RI.csv')) %>% 
-#   clean_names() %>% 
-#   mutate(across(where(is.character), tolower))
-# 
-# # model output summarized by watershed
-# watershed_df <- read_csv(here('model_output_data', 'BDW_NearHUC12_2015_2019_Watershed_RI.csv')) %>% 
-#   clean_names() %>% 
-#   mutate(across(where(is.character), tolower))
-=======
 # Tab 1 annual data: annual watershed risk summary
 watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
 
@@ -65,7 +39,6 @@ crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv"))
 
 # Tab 2 monthly data: monthly crop risk summary
 crop_monthly <- read_csv(here("Tab2_Crop_RiskSummary_Monthly.csv"))
->>>>>>> cc6dfd993fe546d34649ff95371d9d4c3bdad0c3
 
 # Tab 3 data: days exceeding health benchmarks
 exceed_health <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))

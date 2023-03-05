@@ -5,7 +5,7 @@
 # Find out more about building applications with Shiny here:
 #
 #    http://shiny.rstudio.com/
-#
+
 
 library(shiny)
 library(tidyverse)
@@ -22,6 +22,7 @@ library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 #   mutate(across(where(is.character), tolower)) # changing the characters to lower case 
 # View(pesticides) # can uncomment this if you want to view the temporary data 
 # Should I try to remove the numbers and letters before each pesticide name, or is it part of the name? 
+
 
 my_theme <- bs_theme(
   bootswatch = "minty") 
@@ -45,8 +46,7 @@ ui <- fluidPage(theme = my_theme,
                            imageOutput("sf_news"),
                            
                            # Adding text beneath photo for credits
-                           p(em("Photo of Crissy Field, San Francisco. (Photo by Will Elder, 
-                             courtesy of the National Park Service)"), style="text-align: center; font-size:12px"
+                           p(em("Egret in the San Francisco Bay Delta Watershed. (Photo courtesy of SF News.)"), style="text-align: center; font-size:12px"
                              ), # end photo text
                            
                            hr(), # horizontal line break
@@ -56,7 +56,7 @@ ui <- fluidPage(theme = my_theme,
                            fluidRow(
                              column(
                                br(),
-                               tags$img(src="watershed.jpg",width="200px",height="260px", align = "justify"),
+                               tags$img(src="sf_news.jpeg",width="200px",height="260px", align = "justify"),
                                br(),
                                p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
                                  Photo courtesy of the United States Environmental Protection Agency.",

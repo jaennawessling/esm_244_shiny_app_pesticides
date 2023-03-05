@@ -21,172 +21,137 @@ library(dplyr)
 
 ```{r}
 days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
+
+summary(days_exceed)
+
+### By species 
+### Days invert sed = max 381
+### Days invertebrate water = max 250
+### Days plant non-vascular = max 190 
+
+
+### Days any species = max 381 (going to be from days invert sed
+unique(days_exceed$huc)
 ```
 
 
+### Plan of action
+## Drop down menu to see days of exceedance by species & pesticide type 
 
--------------------------------
-### Old data set 
 
-### Loading in the pesticides data to explore it 
+### Wrangle by species
 
-#### Loading in watershed site pesticide and species RI
+#### Fish
 ```{r}
-# watershed_site_pesticide_species_ri <- read_csv(here("model_output_data", "BDW_NearHUC12_2015_2019_Watershed_Site_Pesticide_RI.csv"))
+fish <- days_exceed %>% 
+  select(huc, days_fish, pesticide) %>% 
+  slice_max(days_fish, n = 10) %>% # keeping the largest values of the counts by lake 
+  arrange(-days_fish) # arranges selected choices from greatest to least 
+
+## Plot it 
+ggplot(data = fish, aes(y = days_fish, x = huc, fill = pesticide)) +  
+  scale_x_discrete(limits = fish$huc) + 
+  geom_col() +
+  labs(y = 'Days of Exceedance', x = "Watershed",
+       title = "Greatest Days of Exceedance for Fish Species") + 
+  theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
 
-### Data exploration
+#### Inverts water
 ```{r}
-# summary(watershed_site_pesticide_species_ri)
+invert_water <- days_exceed %>% 
+  select(days_invertebrate_water, pesticide, huc) %>% 
+  slice_max(days_invertebrate_water, n = 10) %>% # keeping the largest values of the counts by lake 
+  arrange(-days_invertebrate_water) # arranges selected choices from greatest to least 
 
-# 18 variables
-# 3 are characters
-# The rest are numeric classes
-# I don't see any NA values
+
+## Plot it 
+ggplot(data = invert_water, aes(y = days_invertebrate_water, x = huc, fill = pesticide)) +  
+  scale_x_discrete(limits = invert_water$huc) + 
+  geom_col() +
+  labs(y = 'Days of Exceedance', x = "Watershed",
+       title = "Greatest Days of Exceedance for Aquatic Invertabrate Species") + 
+  theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
-### Data wrangling: Creating subsets of data for closer analysis
+
+#### Inverts sediment
 ```{r}
-## For my tab I am only interested in watershed site, pesticide type, and all of the species columns
+invert_sed <- days_exceed %>% 
+  select(days_invertebrate_sed, pesticide, huc) %>% 
+  slice_max(days_invertebrate_sed, n = 10) %>% # keeping the largest values of the counts by lake 
+  arrange(-days_invertebrate_sed) # arranges selected choices from greatest to least 
 
 
-# subset_pesticide_species <- watershed_site_pesticide_species_ri %>%
-#   select(huc, pesticide, RI_max_fish:RI_max_net)
-```
-
-### Breaking data up by species
-```{r, message=FALSE}
-## Fish species
-# fish_RI <- subset_pesticide_species %>%
-#   select(huc, pesticide, RI_max_fish)
-# 
-# # ## Just want to see the highest RIs
-# fish_RI_simplify <- fish_RI %>%
-#   group_by(huc, pesticide) %>%
-#   summarise(mean_RI = mean(RI_max_fish))
+## Plot it 
+ggplot(data = invert_sed, aes(y = days_invertebrate_sed, x = huc, fill = pesticide)) + 
+  scale_x_discrete(limits = invert_sed$huc) + 
+  geom_col() +
+  labs(y = 'Days of Exceedance', x = "Watershed",
+       title = "Greatest Days of Exceedance for Sediment Invertabrate Species") + 
+  theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
 
-## Splitting up the huc sites for fish species
-```{r, message=FALSE}
-## Trying out group split in dplyr
-# huc_fish_split <- group_split(fish_RI_simplify, huc)
-## Doesn't properly name the new dfs though
-
-
-## Using a for loop to further split up huc data
-## Separating each huc into a different data frame
-## Creating a vector for all of the unique huc ids
-# hucs_fish <- unique(fish_RI_simplify$huc)
-# 
-# ## Turning the unique names output into a list
-# huc_fish_id <- list()
-# 
-# 
-# ## Looping through each of the unique huc values in the list and creating corresponding named data frames
-# for(i in hucs_fish){
-#      fish_RI_hucs <- paste0(i)
-#      huc_fish_id[[fish_RI_hucs]] <- fish_RI_simplify[fish_RI_simplify$huc == i,]
-# }
-```
-
-
-## Now that we have the data split, want to take the top 5 highest pesticide concentrations at each site
-```{r, message=FALSE}
-## Trying to lapply the slice max fcn to each subset...and failing
-# for(i in huc_id){
-#
-#      lapply
-# function (huc_id, FUN, ...)
-# {
-#     FUN <- slice_max(huc_id$mean_RI, n = 5)
-#     .Internal(lapply(huc_id, FUN))
-# }
-# }
-```
-
-
-
-### Do the same process for each of these species
+#### Non-vascular plants 
 ```{r}
-## Invert water species
-# invert_water_RI <- subset_pesticide_species %>%
-#   select(huc, pesticide, RI_max_invertebrate_water)
-# 
-# 
-# ## Separating by huc id / site
-# ## Creating a vector for all of the unique huc ids
-# hucs_inv_wtr <- unique(invert_water_RI$huc)
-# 
-# ## Turning the unique names output into a list
-# huc_inv_wtr_id <- list()
-# 
-# 
-# ## Looping through each of the unique huc values in the list and creating corresponding named data frames
-# for(i in hucs_inv_wtr){
-#      wtr_inv_hucs <- paste0(i)
-#      huc_inv_wtr_id[[wtr_inv_hucs]] <- invert_water_RI[invert_water_RI$huc == i,]
-# }
+non_vasc_plant <- days_exceed %>% 
+  select(days_plant_nonvascular, pesticide, huc) %>% 
+  slice_max(days_plant_nonvascular, n = 10) %>% # keeping the largest values of the counts by lake 
+  arrange(-days_plant_nonvascular) # arranges selected choices from greatest to least 
+
+## Plot it 
+ggplot(data = non_vasc_plant, aes(y = days_plant_nonvascular, 
+                                  x = huc, 
+                                  fill = pesticide,
+                                  )) +  
+  scale_x_discrete(limits = non_vasc_plant$huc) + 
+  geom_col() +
+  labs(y = 'Days of Exceedance', x = "Watershed",
+       title = "Greatest Days of Exceedance for Non-Vascular Plant Species") + 
+  theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
+#### Vascular plants 
 ```{r}
-## Plant non-vascular
-# non_vasc_plant_RI <- subset_pesticide_species %>%
-#   select(huc, pesticide, RI_max_plant_nonvascular)
-# 
-# ## Separating by huc id / site
-# ## Creating a vector for all of the unique huc ids
-# hucs_non_vasc <- unique(non_vasc_plant_RI$huc)
-# 
-# ## Turning the unique names output into a list
-# huc_non_vasc_id <- list()
-# 
-# 
-# ## Looping through each of the unique huc values in the list and creating corresponding named data frames
-# for(i in hucs_non_vasc){
-#      non_vasc_hucs <- paste0(i)
-#      huc_non_vasc_id[[non_vasc_hucs]] <- non_vasc_plant_RI[non_vasc_plant_RI$huc == i,]
-# }
+vasc_plant <- days_exceed %>% 
+  select(days_plant_vascular, pesticide,  huc) %>% 
+  slice_max(days_plant_vascular, n = 8) %>% # keeping the largest values of the counts by lake 
+  arrange(-days_plant_vascular) # arranges selected choices from greatest to least 
+
+
+## Plot it 
+ggplot(data = vasc_plant, aes(y = days_plant_vascular, 
+                                  x = huc, 
+                                  fill = pesticide,
+                                  )) +  
+  scale_x_discrete(limits = vasc_plant$huc) + 
+  geom_col() +
+  labs(y = 'Days of Exceedance', x = "Watershed",
+       title = "Greatest Days of Exceedance for Vascular Plant Species") + 
+  theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
+
+#### All species
 ```{r}
-## Vascular plant
-# vasc_plant_RI <- subset_pesticide_species %>%
-#   select(huc, pesticide, RI_max_plant_vascular)
-# 
-# ## Separating by huc id / site
-# ## Creating a vector for all of the unique huc ids
-# hucs_vasc <- unique(vasc_plant_RI$huc)
-# 
-# ## Turning the unique names output into a list
-# huc_vasc_id <- list()
-# 
-# 
-# ## Looping through each of the unique huc values in the list and creating corresponding named data frames
-# for(i in hucs_vasc){
-#      vasc_RI_hucs <- paste0(i)
-#      huc_vasc_id[[vasc_RI_hucs]] <- vasc_plant_RI[vasc_plant_RI$huc == i,]
-# }
+all_species <- days_exceed %>% 
+  select(days_any_species, pesticide, huc) %>% 
+  slice_max(days_any_species, n = 10) %>% # keeping the largest values of the counts by lake 
+  arrange(-days_any_species) # arranges selected choices from greatest to least 
+
+
+## Plot it 
+ggplot(data = all_species, aes(y = days_any_species, 
+                                  x = huc, 
+                                  fill = pesticide,
+                                  )) +  
+  scale_x_discrete(limits = all_species$huc) + 
+  geom_col() +
+  labs(y = 'Days of Exceedance', x = "Watershed",
+       title = "Greatest Days of Exceedance for All Species") + 
+  theme(axis.text.x = element_text(angle = 75, hjust = 1))
 ```
 
-```{r}
-## Invert benthic sediment
-# sed_invert_RI <- subset_pesticide_species %>%
-#   select(huc, pesticide, RI_max_invertebrate_sed)
-# 
-# ## Separating by huc id / site
-# ## Creating a vector for all of the unique huc ids
-# hucs_sed_invert <- unique(sed_invert_RI$huc)
-# 
-# ## Turning the unique names output into a list
-# sed_invert_huc <- list()
-# 
-# 
-# ## Looping through each of the unique huc values in the list and creating corresponding named data frames
-# for(i in hucs_sed_invert){
-#      sed_hucs <- paste0(i)
-#      sed_invert_huc[[sed_hucs]] <- sed_invert_RI[sed_invert_RI$huc == i,]
-# }
-```
 

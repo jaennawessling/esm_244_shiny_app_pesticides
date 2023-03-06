@@ -81,7 +81,7 @@ exceed_longer <- days_exceed %>%
   pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
 
 
-watershed_data <- exceed_longer %>% 
+watershed_species_risk <- exceed_longer %>% 
   select(species, pesticide, huc, days) %>% 
   filter(days > 0)
 
@@ -375,9 +375,9 @@ ui <- fluidPage(theme = my_theme,
                   ), #end tabPanel - temporal trends by application site type
                   
                   #######################################################################################
-                  # Tab 3 - Animals tab - Jaenna ----
+                  # Tab 3 - Species tab - Jaenna ----
                   
-                  # Animals tab - Jaenna ----
+                  # Species tab - Jaenna ----
                   tabPanel("Pesticide Impact on Species",
                            sidebarLayout(
                              sidebarPanel("Widget",
@@ -387,25 +387,23 @@ ui <- fluidPage(theme = my_theme,
                                             choices = unique(exceed_longer$species)),
                                           
                                           selectInput(
-                                            inputId = 'watershed_select',
+                                            inputId = 'watershed_species_select',
                                             label = 'Select watershed',
                                             choices = unique(watershed_data$huc))
                                           
-                                          
-                             ), # end sidebarPanel widgets - Animals tab
+                             ), # End sidebarpanel - Species tab 
                              
                              
                              mainPanel(strong("OUTPUT"), # Subheader
                                        # Adding the output from our server
                                        plotlyOutput(outputId = 'species_plot'),
                                        plotlyOutput(outputId = 'watershed_plot')
-                                       
-                                       
-                             ) # End main panel - Animals tab
-                           ) # End sidebarLayout - Animals tab
-                  ) # End tabPanel - Animals tab
+                             ) # End main panel - species tab
+                             
+                           ) # End sidebarLayout - species tab
+                  ) # End tabPanel - species tab
                   
-                  
+                  #######################################################################################
                   
                 ) # End tabsetPanel
 ) # end fluidPage 
@@ -512,9 +510,7 @@ server <- function(input, output) {
   
   #######################################################################################
   ## Tab 3 - Pesticide risk to animals output - Jaenna ----
-  # Just using sample output from the widget gallery website for now 
-  
-  
+ 
   ## Creating data set for reactive input for species selection
   species_select <- reactive({
     exceed_longer %>%
@@ -523,7 +519,6 @@ server <- function(input, output) {
       slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
       arrange(-days) # arranges selected choices from greatest to least
   }) # End species select reactive
-  
   
   # Creating a plot using our species data
   output$species_plot <- renderPlotly({
@@ -535,19 +530,18 @@ server <- function(input, output) {
       theme(axis.text.x = element_text(angle =75, hjust = 1))
   }) # End species reactive plot
   
-  
-  # Creating a species by watersheds plot
-  watershed_select <- reactive({
+  watershed_species_select <- reactive({
     watershed_data %>%
       select(species, pesticide, huc, days) %>%
-      dplyr::filter(huc == input$watershed_select) %>%
+      dplyr::filter(huc == input$watershed_species_select) %>%
       slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
       arrange(-days) # arranges selected choices from greatest to least
   }) # End species watershed reactive
   
+  
   # Creating a watershed plot using our species data
   output$watershed_plot <- renderPlotly({
-    ggplot(data = watershed_select(),
+    ggplot(data = watershed_species_select(),
            aes(y = days, x = reorder(species, -days), fill = pesticide)) +
       geom_col(position = "dodge") +
       labs(y = 'Days of Exceedance', x = "Watershed",
@@ -555,7 +549,6 @@ server <- function(input, output) {
       theme(axis.text.x = element_text(angle =75, hjust = 1))
   }) # End watershed reactive plot
   
-
   
   #######################################################################################
 } # end server function 

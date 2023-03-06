@@ -28,6 +28,11 @@ days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 exceed_longer <- days_exceed %>% 
   pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
 
+# Creating a watersheds plot
+watershed_data <- exceed_longer %>% 
+  select(species, pesticide, huc, days) %>% 
+  filter(days > 0)
+
 
   
 my_theme <- bs_theme(
@@ -129,8 +134,8 @@ ui <- fluidPage(theme = my_theme,
                     
                   
                      
-                  # Animals tab - Jaenna ----
-                  tabPanel("Pesticide Impact on Animals",
+                  # Species tab - Jaenna ----
+                  tabPanel("Pesticide Impact on Species",
                            sidebarLayout(
                              sidebarPanel("Widget",
                                           selectInput(
@@ -143,7 +148,7 @@ ui <- fluidPage(theme = my_theme,
                                             label = 'Select watershed',
                                             choices = unique(watershed_data$huc))
                                             
-                                          ), # End selectInput 
+                                          ), # End sidebarpanel - Species tab 
                                           
                                           
                                           # selectInput( 
@@ -160,9 +165,9 @@ ui <- fluidPage(theme = my_theme,
                                # plotlyOutput(outputId = 'pesticide_plot') 
                                
                                
-                              ) # End main panel - Animals tab
-                           ) # End sidebarLayout - Animals tab
-                  ) # End tabPanel - Animals tab
+                              ) # End main panel - species tab
+                           ) # End sidebarLayout - species tab
+                  ) # End tabPanel - species tab
                   
                   
                   
@@ -187,16 +192,14 @@ server <- function(input, output) {
   }, deleteFile = F) # end renderImage
   
 
-
 ## Creating data set for reactive input for species selection
   species_select <- reactive({
     exceed_longer %>%
       select(species, pesticide, huc, days) %>%
       dplyr::filter(species == input$species_select) %>%
-      slice_max(days, n = 10) %>% # keeping the largest values of the counts by lake
+      slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
      arrange(-days) # arranges selected choices from greatest to least
   }) # End species select reactive
-
 
   # Creating a plot using our species data
   output$species_plot <- renderPlotly({
@@ -208,22 +211,27 @@ server <- function(input, output) {
       theme(axis.text.x = element_text(angle =75, hjust = 1))
   }) # End species reactive plot
   
-  
-  # Creating a species by watersheds plot??
-  watershed_data <- exceed_longer %>% 
-    select(species, pesticide, huc, days) %>% 
-    filter(days > 0)
-  
-  watershed_select <- reactive({
+  watershed_species_select <- reactive({
     watershed_data %>%
       select(species, pesticide, huc, days) %>%
-      dplyr::filter(huc == input$watershed_select) %>%
+      dplyr::filter(huc == input$watershed_species_select) %>%
       slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
       arrange(-days) # arranges selected choices from greatest to least
   }) # End species watershed reactive
   
+
+  # Creating a watershed plot using our species data
+  output$watershed_plot <- renderPlotly({
+    ggplot(data = watershed_species_select(),
+           aes(y = days, x = reorder(species, -days), fill = pesticide)) +
+      geom_col(position = "dodge") +
+      labs(y = 'Days of Exceedance', x = "Watershed",
+           title = "Days of Species Pesticide Exposure Exceedance per Watershed") +
+      theme(axis.text.x = element_text(angle =75, hjust = 1))
+  }) # End watershed reactive plot
   
- ## Creating a species by pesticide plot?? 
+  
+  ## Creating a species by pesticide plot?? 
   # pesticide_select <- reactive({
   #   exceed_longer %>%
   #     select(species, pesticide, huc, days) %>%
@@ -231,17 +239,6 @@ server <- function(input, output) {
   #     slice_max(days, n = 10) %>% # keeping the largest values of the counts by day
   #     arrange(-days) # arranges selected choices from greatest to least
   # }) # End pesticide select reactive
-  
-
-  # Creating a watershed plot using our species data
-  output$watershed_plot <- renderPlotly({
-    ggplot(data = watershed_select(),
-           aes(y = days, x = reorder(species, -days), fill = pesticide)) +
-      geom_col(position = "dodge") +
-      labs(y = 'Days of Exceedance', x = "Watershed",
-           title = "Days of Species Pesticide Exposure Exceedance per Watershed") +
-      theme(axis.text.x = element_text(angle =75, hjust = 1))
-  }) # End watershed reactive plot
   
   
   # # Creating a plot using our species data

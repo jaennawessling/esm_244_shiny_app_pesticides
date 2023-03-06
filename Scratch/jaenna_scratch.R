@@ -15,6 +15,9 @@ library(janitor)
 library(leaflet)
 library(bslib) 
 library(vroom) 
+library(dplyr)
+library(plotly)
+
 # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
@@ -91,7 +94,7 @@ ui <- fluidPage(theme = my_theme,
                      1) Which activities are imposing the greatest pesticide loads? 
                      2) Who is responsible? 
                      3) How can tradeoffs between the benefits of chemical use be managed to restore
-                     and preserve ecosystem health?"), # end paragraph 2
+                     and preserve ecosystem health?") # end paragraph 2
                                       
                                       ) # end column 1 
                            ), # end fluidrow  
@@ -129,28 +132,26 @@ ui <- fluidPage(theme = my_theme,
                   # Animals tab - Jaenna ----
                   tabPanel("Pesticide Impact on Animals",
                            sidebarLayout(
-                             sidebarPanel("WIDGET",
+                             sidebarPanel("Widget",
                                           selectInput(
-                                            "select", 
                                             inputId = 'species_select',
-                                            label = h3("Select species"),
-                                            choices = c("days_fish", 
-                                                        "days_invertebrate_water",
-                                                        "days_invertebrate_sed", 
-                                                        "days_plant_nonvascular", 
-                                                        "days_plant_vascular", 
-                                                        "days_any_species"),
-                                            selected = 1
-                                            ) ## End selectInput
+                                                      label = 'Select species',
+                                                      choices = c('days_fish',
+                                                                  'days_invertebrate_water', 
+                                                                  'days_invertebrate_sed', 
+                                                                  'days_plant_nonvascular',
+                                                                  'days_plant_vascular', 
+                                                                  'days_any_species'))
                              ), # end sidebarPanel widgets - Animals tab
+                          
                              
-                             mainPanel(
+                             mainPanel(strong("OUTPUT"), # Subheader
                                # Adding the output from our server
-                               strong("OUTPUT"), # Subheader
-                               plotOutput(outputId = 'species_plot') 
+                               plotlyOutput(outputId = 'species_plot') 
                               ) # End main panel - Animals tab
                            ) # End sidebarLayout - Animals tab
                   ) # End tabPanel - Animals tab
+                  
                   
                   
                   
@@ -173,27 +174,30 @@ server <- function(input, output) {
     
   }, deleteFile = F) # end renderImage
   
-  
+
+
+## Creating data set for reactive input for species selection
   species_select <- reactive({
     exceed_longer %>%
-      select(species, pesticide, huc, days) %>% 
-      filter(species == input$species) %>% 
+      select(species, pesticide, huc, days) %>%
+      dplyr::filter(species == input$species_select) %>%
       slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
-      arrange(-days) # arranges selected choices from greatest to least
+     arrange(-days) # arranges selected choices from greatest to least
   }) # End species select reactive
 
-  
+
   # Creating a plot using our penguin data
-  output$species_plot <- renderPlot({
+  output$species_plot <- renderPlotly({
     ggplot(data = species_select(),
            aes(y = days, x = huc, fill = pesticide)) +
-      scale_x_discrete(limits = species_select$huc) +
+      # scale_x_discrete(limits = species_select$huc) +
       geom_col() +
       labs(y = 'Days of Exceedance', x = "Watershed",
-           title = "Greatest Days of Exceedance per Species") + 
+           title = "Greatest Days of Exceedance per Species") +
       theme(axis.text.x = element_text(angle =75, hjust = 1))
-  }) # End species reactive plot 
+  }) # End species reactive plot
   
+
 
   
 } # end server function 

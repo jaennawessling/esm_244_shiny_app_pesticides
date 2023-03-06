@@ -291,22 +291,31 @@ ui <- fluidPage(theme = my_theme,
                   
                   #######################################################################################
                   # Tab 3 - Animals tab - Jaenna ----
+                  
+                  # Animals tab - Jaenna ----
                   tabPanel("Pesticide Impact on Animals",
                            sidebarLayout(
-                             sidebarPanel("WIDGET",
+                             sidebarPanel("Widget",
                                           selectInput(
-                                            "select", 
-                                            label = h3("Select animal species"), 
-                                            choices = list("Animal 1" = 1, "Animal 2" = 2, "Animal 3" = 3, "Animal 4" = 4, "Animal 5" = 5), 
-                                            selected = 1)
+                                            inputId = 'species_select',
+                                            label = 'Select species',
+                                            choices = c('days_fish',
+                                                        'days_invertebrate_water', 
+                                                        'days_invertebrate_sed', 
+                                                        'days_plant_nonvascular',
+                                                        'days_plant_vascular', 
+                                                        'days_any_species'))
                              ), # end sidebarPanel widgets - Animals tab
                              
-                             mainPanel(
-                               # Adding the output from our server (temporary - need to add in the real function later)
-                               strong("OUTPUT"), # Subheader
-                               "output$value2") # Temporary function
+                             
+                             mainPanel(strong("OUTPUT"), # Subheader
+                                       # Adding the output from our server
+                                       plotlyOutput(outputId = 'species_plot') 
+                             ) # End main panel - Animals tab
                            ) # End sidebarLayout - Animals tab
                   ) # End tabPanel - Animals tab
+                  
+                  
                   
                 ) # End tabsetPanel
 ) # end fluidPage 
@@ -377,8 +386,32 @@ server <- function(input, output) {
   #######################################################################################
   ## Tab 3 - Pesticide risk to animals output - Jaenna ----
   # Just using sample output from the widget gallery website for now 
-  output$value2 <- renderPrint({ input$select })
   
+  
+  ## Creating data set for reactive input for species selection
+  species_select <- reactive({
+    exceed_longer %>%
+      select(species, pesticide, huc, days) %>%
+      dplyr::filter(species == input$species_select) %>%
+      slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+      arrange(-days) # arranges selected choices from greatest to least
+  }) # End species select reactive
+  
+  
+  # Creating a plot using our penguin data
+  output$species_plot <- renderPlotly({
+    ggplot(data = species_select(),
+           aes(y = days, x = huc, fill = pesticide)) +
+      # scale_x_discrete(limits = species_select$huc) +
+      geom_col() +
+      labs(y = 'Days of Exceedance', x = "Watershed",
+           title = "Greatest Days of Exceedance per Species") +
+      theme(axis.text.x = element_text(angle =75, hjust = 1))
+  }) # End species reactive plot
+  
+
+  
+  #######################################################################################
 } # end server function 
 
 

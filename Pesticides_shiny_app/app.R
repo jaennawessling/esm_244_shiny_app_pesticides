@@ -372,13 +372,23 @@ ui <- fluidPage(theme = my_theme,
                                                         'days_invertebrate_sed', 
                                                         'days_plant_nonvascular',
                                                         'days_plant_vascular', 
-                                                        'days_any_species'))
+                                                        'days_any_species')),
+                                          
+                                          selectInput(
+                                            inputId = 'watershed_select',
+                                            label = 'Select watershed',
+                                            choices = unique(watershed_data$huc))
+                                          
+                                          
                              ), # end sidebarPanel widgets - Animals tab
                              
                              
                              mainPanel(strong("OUTPUT"), # Subheader
                                        # Adding the output from our server
-                                       plotlyOutput(outputId = 'species_plot') 
+                                       plotlyOutput(outputId = 'species_plot'),
+                                       plotlyOutput(outputId = 'watershed_plot')
+                                       
+                                       
                              ) # End main panel - Animals tab
                            ) # End sidebarLayout - Animals tab
                   ) # End tabPanel - Animals tab
@@ -484,7 +494,7 @@ server <- function(input, output) {
   }) # End species select reactive
   
   
-  # Creating a plot using our penguin data
+  # Creating a plot using our species data
   output$species_plot <- renderPlotly({
     ggplot(data = species_select(),
            aes(y = days, x = reorder(huc, -days), fill = pesticide)) +
@@ -493,6 +503,31 @@ server <- function(input, output) {
            title = "Greatest Days of Exceedance per Species") +
       theme(axis.text.x = element_text(angle =75, hjust = 1))
   }) # End species reactive plot
+  
+  
+  # Creating a species by watersheds plot??
+  watershed_data <- exceed_longer %>% 
+    select(species, pesticide, huc, days) %>% 
+    filter(days > 0)
+  
+  watershed_select <- reactive({
+    watershed_data %>%
+      select(species, pesticide, huc, days) %>%
+      dplyr::filter(huc == input$watershed_select) %>%
+      slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
+      arrange(-days) # arranges selected choices from greatest to least
+  }) # End species watershed reactive
+  
+  
+  # Creating a watershed plot using the watershed data
+  output$watershed_plot <- renderPlotly({
+    ggplot(data = watershed_select(),
+           aes(y = days, x = reorder(species, -days), fill = pesticide)) +
+      geom_col(position = "dodge") +
+      labs(y = 'Days of Exceedance', x = "Watershed",
+           title = "Days of Species Pesticide Exposure Exceedance per Watershed") +
+      theme(axis.text.x = element_text(angle =75, hjust = 1))
+  }) # End watershed reactive plot
   
 
   

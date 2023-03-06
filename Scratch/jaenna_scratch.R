@@ -136,32 +136,30 @@ ui <- fluidPage(theme = my_theme,
                                           selectInput(
                                             inputId = 'species_select',
                                                       label = 'Select species',
-                                                      choices = c('days_fish',
-                                                                  'days_invertebrate_water', 
-                                                                  'days_invertebrate_sed', 
-                                                                  'days_plant_nonvascular',
-                                                                  'days_plant_vascular', 
-                                                                  'days_any_species')),
+                                                      choices = unique(exceed_longer$species)),
                                          
                                           selectInput(
                                             inputId = 'watershed_select',
                                             label = 'Select watershed',
                                             choices = unique(watershed_data$huc))
+                                            
+                                          ), # End selectInput 
                                           
-                                          # 
+                                          
                                           # selectInput( 
                                           # inputId = 'pesticide_select',
                                           # label = 'Select pesticide',
                                           # choices = unique(exceed_longer$pesticide))
                                           
-                             ), # end sidebarPanel widgets - Animals tab
-                          
                              
+                          
                              mainPanel(strong("OUTPUT"), # Subheader
                                # Adding the output from our server
                                plotlyOutput(outputId = 'species_plot'),
                                plotlyOutput(outputId = 'watershed_plot')
                                # plotlyOutput(outputId = 'pesticide_plot') 
+                               
+                               
                               ) # End main panel - Animals tab
                            ) # End sidebarLayout - Animals tab
                   ) # End tabPanel - Animals tab
@@ -195,7 +193,7 @@ server <- function(input, output) {
     exceed_longer %>%
       select(species, pesticide, huc, days) %>%
       dplyr::filter(species == input$species_select) %>%
-      slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+      slice_max(days, n = 10) %>% # keeping the largest values of the counts by lake
      arrange(-days) # arranges selected choices from greatest to least
   }) # End species select reactive
 

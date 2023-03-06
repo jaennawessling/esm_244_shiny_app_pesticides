@@ -293,7 +293,7 @@ ui <- fluidPage(theme = my_theme,
                   # Tab 3 - Animals tab - Jaenna ----
                   
                   # Animals tab - Jaenna ----
-                  tabPanel("Pesticide Impact on Animals",
+                  tabPanel("Pesticide Impact on Species",
                            sidebarLayout(
                              sidebarPanel("Widget",
                                           selectInput(
@@ -393,7 +393,7 @@ server <- function(input, output) {
     exceed_longer %>%
       select(species, pesticide, huc, days) %>%
       dplyr::filter(species == input$species_select) %>%
-      slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+      slice_max(days, n = 10) %>% # keeping the largest values of the counts by lake
       arrange(-days) # arranges selected choices from greatest to least
   }) # End species select reactive
   

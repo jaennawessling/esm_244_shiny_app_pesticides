@@ -463,8 +463,7 @@ server <- function(input, output) {
   # Creating a plot using our penguin data
   output$species_plot <- renderPlotly({
     ggplot(data = species_select(),
-           aes(y = days, x = huc, fill = pesticide)) +
-      # scale_x_discrete(limits = species_select$huc) +
+           aes(y = days, x = reorder(huc, -days), fill = pesticide)) +
       geom_col() +
       labs(y = 'Days of Exceedance', x = "Watershed",
            title = "Greatest Days of Exceedance per Species") +

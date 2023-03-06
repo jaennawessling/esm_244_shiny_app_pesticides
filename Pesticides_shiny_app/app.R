@@ -81,6 +81,11 @@ exceed_longer <- days_exceed %>%
   pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
 
 
+watershed_data <- exceed_longer %>% 
+  select(species, pesticide, huc, days) %>% 
+  filter(days > 0)
+
+
 #######################################################################################
 ### Spatial Data
 #######################################################################################
@@ -515,7 +520,7 @@ server <- function(input, output) {
     exceed_longer %>%
       select(species, pesticide, huc, days) %>%
       dplyr::filter(species == input$species_select) %>%
-      slice_max(days, n = 10) %>% # keeping the largest values of the counts by lake
+      slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
       arrange(-days) # arranges selected choices from greatest to least
   }) # End species select reactive
   
@@ -531,11 +536,7 @@ server <- function(input, output) {
   }) # End species reactive plot
   
   
-  # Creating a species by watersheds plot??
-  watershed_data <- exceed_longer %>% 
-    select(species, pesticide, huc, days) %>% 
-    filter(days > 0)
-  
+  # Creating a species by watersheds plot
   watershed_select <- reactive({
     watershed_data %>%
       select(species, pesticide, huc, days) %>%
@@ -544,8 +545,7 @@ server <- function(input, output) {
       arrange(-days) # arranges selected choices from greatest to least
   }) # End species watershed reactive
   
-  
-  # Creating a watershed plot using the watershed data
+  # Creating a watershed plot using our species data
   output$watershed_plot <- renderPlotly({
     ggplot(data = watershed_select(),
            aes(y = days, x = reorder(species, -days), fill = pesticide)) +

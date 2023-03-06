@@ -3,6 +3,8 @@ library(tidyverse)
 library(here)
 library(lubridate)
 library(dplyr)
+library(kableExtra)
+library(forcats)
 
 ### data frames for crop tab ###
 
@@ -99,3 +101,42 @@ monthly_animals_fig
 
 
 
+### figure of net risk index with top ten most "risky" application site types?
+top_crops <- crop_monthly_pivot %>% 
+  filter(huc == "All Watersheds") %>% 
+  filter(index_type == "RI_net") %>% 
+  group_by(hru, date) %>% 
+  summarize(mean_ri_net = mean(risk_index_value, na.rm = TRUE))
+
+top_crop_fig <- top_crops %>% 
+  group_by(hru, date) %>% 
+  slice_max(mean_ri_net, n = 10) %>% 
+  ggplot(aes(x = date, y = mean_ri_net, color = hru)) +
+  geom_line(size = 1, alpha = 0.8) +
+  theme_minimal()
+  
+
+
+top_crop_guess <- crop_monthly_pivot %>% 
+  filter(huc == "All Watersheds") %>% 
+  filter(index_type == "RI_net") %>% 
+  group_by(hru) %>% 
+  summarize(mean_ri_net = mean(risk_index_value, rm.na = TRUE)) %>% 
+  slice_max(mean_ri_net, n = 10)
+
+
+#top ten crops for each index, they select an index with a drop down menu
+top_crops_trial <- crop_monthly_pivot %>% 
+  filter(huc == "All Watersheds") %>%  #this is already done in the top for the datasets
+  filter(index_type == "RI_net") %>% # filter(index_type == input$index_type_checkboxes)
+  group_by(hru) %>% 
+  summarize(mean_ri = mean(risk_index_value, na.rm = TRUE)) %>% 
+  slice_max(mean_ri, n = 10) %>% 
+  # kable(title = "Top Ten Application Site Types for Each Risk Index") %>% 
+  # kable_classic()
+  ggplot(aes(x = fct_reorder(hru, mean_ri), y = mean_ri)) +
+  geom_col(fill = "lightgreen") +
+  coord_flip() +
+ # scale_x_discrete(guide = guide_axis(n.dodge = 2)) 
+  labs(x = "Average risk index across all years", y = "Application site type", title = "10 Application Site Types with Highest Average Risk Index Across All Years")+
+  theme_minimal() 

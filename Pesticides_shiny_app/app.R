@@ -15,6 +15,8 @@ library(janitor)
 library(sf)
 library(leaflet)
 library(lubridate)
+library(forcats)
+library(plotly)
 library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
@@ -257,6 +259,10 @@ ui <- fluidPage(theme = my_theme,
                                           
                                           br(),
                                           
+                                          br(),
+                                          
+                                          br(),
+                                          
                                           #dropdown menu for watershed 
                                           # "Watersheds",
                                           # selectInput("watershed_dropdown",
@@ -268,6 +274,10 @@ ui <- fluidPage(theme = my_theme,
                                           selectInput("year_dropdown",
                                                       label = "Select year",
                                                       choices = unique(crop_monthly_final$year)), #end year dropdown
+                                          
+                                          br(),
+                                          
+                                          br(),
                                           
                                           br(),
                                           
@@ -290,11 +300,29 @@ ui <- fluidPage(theme = my_theme,
                                           
                                           br(),
                                           
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
                                           # new index dropdown for top ten crop figures
                                           strong("Top Ten Crops with Highest Risk Index"),
                                           selectInput("index_top_ten_dropdown",
                                                       label = "Pick a risk index type",
-                                                      choices = unique(crop_annual$index_type))
+                                                      choices = unique(crop_annual$index_type)) #end risk dropdown
                                           
                                           
                                           ), #end sidebarPanel
@@ -302,14 +330,12 @@ ui <- fluidPage(theme = my_theme,
                       
                              #display  the graph of temporal trends for the selected pesticide and watershed
                              mainPanel(strong("Temporal trends by Application Site Type in Selected Year"),
-                                       plotOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
+                                       plotlyOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
                                        
                                        br(), 
                                        
                                        strong("Temporal trends by Application Site Type for All Years"),
-                                       plotOutput(outputId = 'hru_annual_plot'),
-                                       
-                                       br(),
+                                       plotlyOutput(outputId = 'hru_annual_plot'),
                                        
                                        br(),
                                        
@@ -322,7 +348,7 @@ ui <- fluidPage(theme = my_theme,
                                        br(),
                                        
                                        strong("Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
-                                       plotOutput(outputId = 'top_ten_crops')
+                                       plotlyOutput(outputId = 'top_ten_crops')
 
                                        
                              ) #end mainPanel
@@ -399,11 +425,11 @@ server <- function(input, output) {
   })
   
   #plot of monthly data for one selected year
-  output$hru_monthly_plot <- renderPlot({
+  output$hru_monthly_plot <- renderPlotly({
     ggplot(data = hru_monthly_df(),
            aes(x = date, y = risk_index_value, color = index_type)) +
-      geom_line(size = 2) +
-      labs(x = "Date", y = "Risk Index", fill = "Risk Index Type") +
+      geom_line(size = 1) +
+      labs(x = "Date", y = "Risk Index", color = "Risk Index Type") +
       theme_minimal()
   })
   
@@ -416,11 +442,11 @@ server <- function(input, output) {
   })
   
   #plot of all years
-  output$hru_annual_plot <- renderPlot({
+  output$hru_annual_plot <- renderPlotly({
     ggplot(data = hru_annual_df(),
            aes(x = year, y = risk_index_value, color = index_type)) +
-      geom_line(size = 2) +
-      labs(x = "Year", y = "Risk Index", fill = "Risk Index Type") +
+      geom_line(size = 1) +
+      labs(x = "Year", y = "Risk Index", color = "Risk Index Type") +
       theme_minimal()
   })
   
@@ -432,10 +458,10 @@ server <- function(input, output) {
       slice_max(mean_ri, n = 10)
   })
   
-  output$top_ten_crops <- renderPlot({
+  output$top_ten_crops <- renderPlotly({
     ggplot(data = top_ten_crops_df(),
            aes(x = fct_reorder(hru, mean_ri), y = mean_ri)) +
-      geom_col(fill = "lightgreen") +
+      geom_col(fill = "turquoise") +
       coord_flip() +
       labs(x = "Average risk index across all years", y = "Application site type") +
       theme_minimal()

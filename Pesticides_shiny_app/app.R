@@ -379,12 +379,7 @@ ui <- fluidPage(theme = my_theme,
                                           selectInput(
                                             inputId = 'species_select',
                                             label = 'Select species',
-                                            choices = c('days_fish',
-                                                        'days_invertebrate_water', 
-                                                        'days_invertebrate_sed', 
-                                                        'days_plant_nonvascular',
-                                                        'days_plant_vascular', 
-                                                        'days_any_species')),
+                                            choices = unique(exceed_longer$species)),
                                           
                                           selectInput(
                                             inputId = 'watershed_select',

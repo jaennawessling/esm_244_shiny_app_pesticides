@@ -30,7 +30,8 @@ watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
 #######################################################################################
 # Tab 2 annual data: annual crop risk summary
 crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>% 
-  pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value")
+  pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
+  filter(huc == "All Watersheds")
 
 
 # Tab 2 monthly data: monthly crop risk summary
@@ -57,6 +58,7 @@ crop_monthly_mod$date <- my(crop_monthly_mod$date)
 
 #pivot longer -- THIS IS THE FINAL DF TO USE FOR MONTHLY APPLICATION SITE TYPE
 crop_monthly_final <- crop_monthly_mod %>% 
+  filter(huc == "All Watersheds") %>% 
   select(-year, -month, -month_num) %>% 
   pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
   mutate(year = year(date)) %>% 
@@ -225,40 +227,80 @@ ui <- fluidPage(theme = my_theme,
                   tabPanel("Temporal Trends by Application Site Type", 
                            sidebarLayout(
                              #dropdown menus
-                             sidebarPanel("Application Site Type",
+                             sidebarPanel(strong("Application Site Type"),
                                           #dropdown menu for application site type
                                           selectInput("hru_dropdown",
                                                       label = "Select an application site type (crop type)",
                                                       choices = unique(crop_monthly_final$hru)), #end pesticide dropdown
                                           
+                                          br(),
+                                          
                                           #dropdown menu for watershed 
-                                          "Watersheds",
-                                          selectInput("watershed_dropdown",
-                                                      label = "Select watershed(s)",
-                                                      choices = unique(crop_monthly_final$huc)), #end watershed dropdown
+                                          # "Watersheds",
+                                          # selectInput("watershed_dropdown",
+                                          #             label = "Select watershed",
+                                          #             choices = unique(crop_monthly_final$huc)), #end watershed dropdown
                                           
                                           #dropdown menu for year 
-                                          "Year",
+                                          strong("Year"),
                                           selectInput("year_dropdown",
-                                                      label = "Select year(s)",
+                                                      label = "Select year",
                                                       choices = unique(crop_monthly_final$year)), #end year dropdown
                                           
+                                          br(),
+                                          
                                           #checkboxes for risk index 
-                                          "Risk Index Type",
+                                          strong("Risk Index Type"),
                                           checkboxGroupInput("index_type_checkboxes",
                                                       label = "Select risk index type(s)",
                                                       choices = unique(crop_monthly_final$index_type),
-                                                      selected = "RI_net") #end risk index checkboxes
+                                                      selected = "RI_net"), #end risk index checkboxes
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          br(),
+                                          
+                                          # new index dropdown for top ten crop figures
+                                          strong("Top Ten Crops with Highest Risk Index"),
+                                          selectInput("index_top_ten_dropdown",
+                                                      label = "Pick a risk index type",
+                                                      choices = unique(crop_annual$index_type))
+                                          
+                                          
                                           ), #end sidebarPanel
                              
+                      
                              #display  the graph of temporal trends for the selected pesticide and watershed
-                             mainPanel("Temporal trends by Application Site Type in Selected Year",
+                             mainPanel(strong("Temporal trends by Application Site Type in Selected Year"),
                                        plotOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
                                        
                                        br(), 
                                        
-                                       "Temporal trends by Application Site Type for All Years",
-                                       plotOutput(outputId = 'hru_annual_plot')
+                                       strong("Temporal trends by Application Site Type for All Years"),
+                                       plotOutput(outputId = 'hru_annual_plot'),
+                                       
+                                       br(),
+                                       
+                                       br(),
+                                       
+                                       br(),
+                                       
+                                       br(),
+                                       
+                                       br(),
+                                       
+                                       br(),
+                                       
+                                       strong("Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
+                                       plotOutput(outputId = 'top_ten_crops')
 
                                        
                              ) #end mainPanel
@@ -314,22 +356,22 @@ server <- function(input, output) {
   
   #######################################################################################
   ## Tab 2 - Application site type - Sadie ----
-  #reactive data frame to select pesticide and watershed
+  #reactive data frame to select application site type
   hru_monthly_df <- reactive ({
     crop_monthly_final %>% 
       filter(hru == input$hru_dropdown) %>% 
-      filter(huc == input$watershed_dropdown) %>% 
+      #filter(huc == input$watershed_dropdown) %>% 
       filter(year == input$year_dropdown) %>% 
       filter(index_type == input$index_type_checkboxes) #%>% 
       # group_by(year == input$year_dropdown) %>% 
       # summarize()
   })
   
-  #plot of monthly  data for one selected year
+  #plot of monthly data for one selected year
   output$hru_monthly_plot <- renderPlot({
     ggplot(data = hru_monthly_df(),
            aes(x = date, y = risk_index_value, color = index_type)) +
-      geom_line(size = 1) +
+      geom_line(size = 2) +
       labs(x = "Date", y = "Risk Index", fill = "Risk Index Type") +
       theme_minimal()
   })
@@ -338,7 +380,7 @@ server <- function(input, output) {
   hru_annual_df <- reactive ({
     crop_annual %>% 
       filter(hru == input$hru_dropdown) %>% 
-      filter(huc == input$watershed_dropdown) %>% 
+      #filter(huc == input$watershed_dropdown) %>% 
       filter(index_type == input$index_type_checkboxes) 
   })
   
@@ -346,11 +388,29 @@ server <- function(input, output) {
   output$hru_annual_plot <- renderPlot({
     ggplot(data = hru_annual_df(),
            aes(x = year, y = risk_index_value, color = index_type)) +
-      geom_line(size = 1) +
-      labs(x = "Date", y = "Risk Index", fill = "Risk Index Type") +
+      geom_line(size = 2) +
+      labs(x = "Year", y = "Risk Index", fill = "Risk Index Type") +
       theme_minimal()
   })
   
+  top_ten_crops_df <- reactive ({
+    crop_annual %>% 
+      filter(index_type == input$index_top_ten_dropdown) %>% 
+      group_by(hru) %>% 
+      summarize(mean_ri = mean(risk_index_value, na.rm = TRUE)) %>% 
+      slice_max(mean_ri, n = 10)
+  })
+  
+  output$top_ten_crops <- renderPlot({
+    ggplot(data = top_ten_crops_df(),
+           aes(x = fct_reorder(hru, mean_ri), y = mean_ri)) +
+      geom_col(fill = "lightgreen") +
+      coord_flip() +
+      labs(x = "Average risk index across all years", y = "Application site type") +
+      theme_minimal()
+  })
+  
+
   
   #######################################################################################
   ## Tab 3 - Pesticide risk to animals output - Jaenna ----

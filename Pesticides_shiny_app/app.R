@@ -203,12 +203,18 @@ ui <- fluidPage(theme = my_theme,
                                          sidebarPanel(
                                            tags$strong("Overall Pesticide Toxicity Risk Over Time"), 
                                            
-                                           sliderInput("tox_yr_slider", label = h3("Select Year Range:"), min = 2010, 
-                                                       max = 2020, value = c(2012, 2019), # NEED TO confirm year range when we get data
-                                                       sep = ""), 
+                                           selectInput('watershed_select', 
+                                                       label = 'Select Watershed(s):', 
+                                                       choices = unique(watershed_annual$huc),
+                                                       "Antelope Creek", 
+                                                       multiple = TRUE), #END Watershed dropdown
                                            
-                                           "PLACEHOLDER: Graph showing total tox levels over time, that changes with slider"
-                                        
+                                           sliderInput("tox_yr_slider", 
+                                                       label = h3("Select Year Range:"), 
+                                                       min = 2015, 
+                                                       max = 2019, value = c(2016, 2018), 
+                                                       sep = "") #END year slider 
+                                           
                                          ), # END sidebar panel - Map tab
                                          
                                          
@@ -237,14 +243,20 @@ ui <- fluidPage(theme = my_theme,
                                                                         "</b>",
                                                                         "Pesticide Risk to Terrestrial Ecosystems: </b>",
                                                                         "</b>",
-                                                                        "Net Pesticide Toxicity Risk: </b>")) 
+                                                                        "Net Pesticide Toxicity Risk: </b>")), 
+                                           
+                                           tags$strong("Overall Pesticide Toxicity Risk by Watershed"),
+                                           
+                                           plotlyOutput(outputId = 'watershed_yr_plot')
                                            
                                          ), #END main panel - map tab
                                          
                            ) # END sidebarLayout - map tab
                            
                   ), # END tabPanel - map
-                
+                  
+                 
+          
                   
                   #######################################################################################
                   # Tab 2 - Application site type (crop) data - Sadie ----
@@ -419,7 +431,26 @@ server <- function(input, output) {
   
   #######################################################################################
   ## Tab 1 - Map output (pesticide risk by watershed) - Kira ----
-  output$range <- renderPrint({ input$tox_yr_slider }) #PLACEHOLDER - will change with graph 
+  # output$range <- renderPrint({ input$tox_yr_slider }) 
+  
+  ### Reactive df for watershed 
+  watershed_by_yr <- reactive({
+    watershed_annual %>% 
+      filter(year %in% (input$tox_yr_slider[1]:input$tox_yr_slider[2])) %>% 
+      filter(huc %in% c(input$watershed_select)) %>% 
+      group_by(year, huc) %>% 
+      summarize(totals = sum(RI_net))
+    
+  })
+  
+  ### Plot of selected watershed by year 
+  output$watershed_yr_plot <- renderPlotly({ggplot(data = watershed_by_yr(),
+                                                   aes(x = year, y = totals, color = huc)) +
+      geom_line(size = 1) +
+      labs(x = "Date", y = "Overall Risk", color = "Watershed") +
+      theme_minimal()
+  }) 
+  
   
   #######################################################################################
   ## Tab 2 - Application site type - Sadie ----

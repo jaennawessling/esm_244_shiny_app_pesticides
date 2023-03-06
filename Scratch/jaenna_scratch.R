@@ -13,17 +13,23 @@ library(readxl)
 library(here)
 library(janitor)
 library(leaflet)
-library(bslib) # Bootstrapping library to make the Shiny App look even cooler
+library(bslib) 
+library(vroom) 
+library(dplyr)
+library(plotly)
+
+# Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
-# Reading in our example data (just temporary to practice until we get the real data set)
-# pesticides <- read_excel(here('Example_Output_DataTable.xlsx')) %>% 
-#   clean_names() %>% 
-#   mutate(across(where(is.character), tolower)) # changing the characters to lower case 
-# View(pesticides) # can uncomment this if you want to view the temporary data 
-# Should I try to remove the numbers and letters before each pesticide name, or is it part of the name? 
+
+days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 
 
+exceed_longer <- days_exceed %>% 
+  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
+
+
+  
 my_theme <- bs_theme(
   bootswatch = "minty") 
 
@@ -88,7 +94,7 @@ ui <- fluidPage(theme = my_theme,
                      1) Which activities are imposing the greatest pesticide loads? 
                      2) Who is responsible? 
                      3) How can tradeoffs between the benefits of chemical use be managed to restore
-                     and preserve ecosystem health?"), # end paragraph 2
+                     and preserve ecosystem health?") # end paragraph 2
                                       
                                       ) # end column 1 
                            ), # end fluidrow  
@@ -120,54 +126,39 @@ ui <- fluidPage(theme = my_theme,
                      p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:lightgreen;padding:15px;border-radius:10px")
                              ) # End mainPanel - Welcome page
                              ), # End tabPanel - Welcome Page
-                     
                     
-                
-                
-                    # Tab 2 - Creating another tab for application site type - Jaenna ----
-                     tabPanel("Application Site Type",
-                     
-                              # Creating sidebar widget first 
-                              sidebarLayout(
-                                sidebarPanel("WIDGET",
-                                             selectInput(
-                                               "select", 
-                                               label = h3("Select application site type"), 
-                                               choices = c("Nursery", "Almond Tree Orchard", "Squash Farm"), 
-                                               selected = 1) # end selectInput
-                                ), # end sidebarPanel widgets - Application site tab
-                                
-                                # Adding text and ouput to the main panel
-                                mainPanel(
-                              
-                     # Adding the output from our server (temporary - need to add in the real function later)
-                     h3(strong("OUTPUT")), # Subheader
-                     "output$value1" # Temporary function
-                                ) # End mainPanel - application site tab
-                              ) # end sidebarLayout - application site tab 
-                     ), # End tabPanel - application site tab
                   
                      
                   # Animals tab - Jaenna ----
                   tabPanel("Pesticide Impact on Animals",
                            sidebarLayout(
-                             sidebarPanel("WIDGET",
+                             sidebarPanel("Widget",
                                           selectInput(
-                                            "select", 
-                                            label = h3("Select animal species"), 
-                                            choices = list("Animal 1" = 1, "Animal 2" = 2, "Animal 3" = 3, "Animal 4" = 4, "Animal 5" = 5), 
-                                            selected = 1)
+                                            inputId = 'species_select',
+                                                      label = 'Select species',
+                                                      choices = c('days_fish',
+                                                                  'days_invertebrate_water', 
+                                                                  'days_invertebrate_sed', 
+                                                                  'days_plant_nonvascular',
+                                                                  'days_plant_vascular', 
+                                                                  'days_any_species'))
                              ), # end sidebarPanel widgets - Animals tab
+                          
                              
-                             mainPanel(
-                               # Adding the output from our server (temporary - need to add in the real function later)
-                               strong("OUTPUT"), # Subheader
-                               "output$value2") # Temporary function
+                             mainPanel(strong("OUTPUT"), # Subheader
+                               # Adding the output from our server
+                               plotlyOutput(outputId = 'species_plot') 
+                              ) # End main panel - Animals tab
                            ) # End sidebarLayout - Animals tab
                   ) # End tabPanel - Animals tab
                   
+                  
+                  
+                  
               ) # End tabsetPanel
 ) # end fluidPage 
+
+
 
 # Define server ----
 server <- function(input, output) {
@@ -183,14 +174,31 @@ server <- function(input, output) {
     
   }, deleteFile = F) # end renderImage
   
-  # Tab 2 - Application Site Type - Jaenna ----
-  # Just using sample output from the widget gallery website for now 
-  output$value1 <- renderPrint({ input$select })
+
+
+## Creating data set for reactive input for species selection
+  species_select <- reactive({
+    exceed_longer %>%
+      select(species, pesticide, huc, days) %>%
+      dplyr::filter(species == input$species_select) %>%
+      slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+     arrange(-days) # arranges selected choices from greatest to least
+  }) # End species select reactive
+
+
+  # Creating a plot using our penguin data
+  output$species_plot <- renderPlotly({
+    ggplot(data = species_select(),
+           aes(y = days, x = huc, fill = pesticide)) +
+      # scale_x_discrete(limits = species_select$huc) +
+      geom_col() +
+      labs(y = 'Days of Exceedance', x = "Watershed",
+           title = "Greatest Days of Exceedance per Species") +
+      theme(axis.text.x = element_text(angle =75, hjust = 1))
+  }) # End species reactive plot
   
-  
-  # Tab 4 - Animals output - Jaenna ----
-  # Just using sample output from the widget gallery website for now 
-  output$value2 <- renderPrint({ input$select })
+
+
   
 } # end server function 
 

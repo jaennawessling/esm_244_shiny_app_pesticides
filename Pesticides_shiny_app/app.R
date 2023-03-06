@@ -26,6 +26,11 @@ library(bslib) # Bootstrapping library to make the Shiny App look even cooler
 # Tab 1 annual data: annual watershed risk summary
 watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
 
+watersheds_sf <- read_sf(here::here("spatial_data/BDW_Watersheds/BDW_Near_HUC12.shp")) %>% 
+  st_transform('+proj=longlat +datum=WGS84')
+
+rmapshaper::ms_simplify(watersheds_sf)
+
 
 #######################################################################################
 # Tab 2 annual data: annual crop risk summary
@@ -68,7 +73,10 @@ crop_monthly_final <- crop_monthly_mod %>%
 
 #######################################################################################
 # Tab 3 data: days exceeding health benchmarks
-exceed_health <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
+days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
+
+exceed_longer <- days_exceed %>% 
+  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
 
 
 #######################################################################################
@@ -111,7 +119,7 @@ ui <- fluidPage(theme = my_theme,
                            fluidRow(
                              column(
                                br(),
-                               tags$img(src="sf_news.jpeg",width="200px",height="260px", align = "justify"),
+                               tags$img(src="watershed.jpg",width="200px",height="260px", align = "justify"),
                                br(),
                                p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
                                  Photo courtesy of the United States Environmental Protection Agency.",
@@ -191,9 +199,9 @@ ui <- fluidPage(theme = my_theme,
                            sidebarLayout(position = "right",
                                          
                                          sidebarPanel(
-                                           tags$strong("Pesticide Toxicity Over Time"), 
+                                           tags$strong("Overall Pesticide Toxicity Risk Over Time"), 
                                            
-                                           sliderInput("tox_yr_slider", label = h3("Year(s)"), min = 2010, 
+                                           sliderInput("tox_yr_slider", label = h3("Select Year Range:"), min = 2010, 
                                                        max = 2020, value = c(2012, 2019), # NEED TO confirm year range when we get data
                                                        sep = ""), 
                                            
@@ -210,10 +218,24 @@ ui <- fluidPage(theme = my_theme,
                                            
                                            #Leaflet map - NEED TO INCORPORATE REACTIVITY 
                                            
-                                           leaflet() %>% 
-                                             addProviderTiles("Esri.WorldTopoMap") %>% 
-                                             setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>% 
-                                             addMiniMap(toggleDisplay = TRUE, minimized = TRUE)
+                                           leaflet() %>%
+                                             leaflet::addPolygons(data = watersheds_sf) %>%
+                                             addProviderTiles("Esri.WorldTopoMap") %>%
+                                             setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
+                                             addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
+                                             addPolygons(data = watersheds_sf,
+                                                         color = "Black", weight = 1, smoothFactor = 0.5,
+                                                         opacity = 1.0, fillOpacity = 0.5,
+                                                         fillColor = "Pink",
+                                                         highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                                                             bringToFront = TRUE), 
+                                                         popup = paste0("Watershed: </b>", 
+                                                                        "</b>",
+                                                                        "Pesticide Risk to Aquatic Ecosystems: </b>",
+                                                                        "</b>",
+                                                                        "Pesticide Risk to Terrestrial Ecosystems: </b>",
+                                                                        "</b>",
+                                                                        "Net Pesticide Toxicity Risk: </b>")) 
                                            
                                          ), #END main panel - map tab
                                          
@@ -311,22 +333,31 @@ ui <- fluidPage(theme = my_theme,
                   
                   #######################################################################################
                   # Tab 3 - Animals tab - Jaenna ----
-                  tabPanel("Pesticide Impact on Animals",
+                  
+                  # Animals tab - Jaenna ----
+                  tabPanel("Pesticide Impact on Species",
                            sidebarLayout(
-                             sidebarPanel("WIDGET",
+                             sidebarPanel("Widget",
                                           selectInput(
-                                            "select", 
-                                            label = h3("Select animal species"), 
-                                            choices = list("Animal 1" = 1, "Animal 2" = 2, "Animal 3" = 3, "Animal 4" = 4, "Animal 5" = 5), 
-                                            selected = 1)
+                                            inputId = 'species_select',
+                                            label = 'Select species',
+                                            choices = c('days_fish',
+                                                        'days_invertebrate_water', 
+                                                        'days_invertebrate_sed', 
+                                                        'days_plant_nonvascular',
+                                                        'days_plant_vascular', 
+                                                        'days_any_species'))
                              ), # end sidebarPanel widgets - Animals tab
                              
-                             mainPanel(
-                               # Adding the output from our server (temporary - need to add in the real function later)
-                               strong("OUTPUT"), # Subheader
-                               "output$value2") # Temporary function
+                             
+                             mainPanel(strong("OUTPUT"), # Subheader
+                                       # Adding the output from our server
+                                       plotlyOutput(outputId = 'species_plot') 
+                             ) # End main panel - Animals tab
                            ) # End sidebarLayout - Animals tab
                   ) # End tabPanel - Animals tab
+                  
+                  
                   
                 ) # End tabsetPanel
 ) # end fluidPage 
@@ -415,8 +446,32 @@ server <- function(input, output) {
   #######################################################################################
   ## Tab 3 - Pesticide risk to animals output - Jaenna ----
   # Just using sample output from the widget gallery website for now 
-  output$value2 <- renderPrint({ input$select })
   
+  
+  ## Creating data set for reactive input for species selection
+  species_select <- reactive({
+    exceed_longer %>%
+      select(species, pesticide, huc, days) %>%
+      dplyr::filter(species == input$species_select) %>%
+      slice_max(days, n = 10) %>% # keeping the largest values of the counts by lake
+      arrange(-days) # arranges selected choices from greatest to least
+  }) # End species select reactive
+  
+  
+  # Creating a plot using our penguin data
+  output$species_plot <- renderPlotly({
+    ggplot(data = species_select(),
+           aes(y = days, x = huc, fill = pesticide)) +
+      # scale_x_discrete(limits = species_select$huc) +
+      geom_col() +
+      labs(y = 'Days of Exceedance', x = "Watershed",
+           title = "Greatest Days of Exceedance per Species") +
+      theme(axis.text.x = element_text(angle =75, hjust = 1))
+  }) # End species reactive plot
+  
+
+  
+  #######################################################################################
 } # end server function 
 
 

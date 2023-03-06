@@ -34,7 +34,6 @@ summary(days_exceed)
 unique(days_exceed$huc)
 
 
-
 #### Creating a pivot longer df instead 
 exceed_longer <- days_exceed %>% 
   pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
@@ -152,12 +151,22 @@ all_species <- exceed_longer %>%
 
 
 ## Plot it 
-ggplot(data = all_species, aes(y = days, x = huc, fill = pesticide)) +
-  scale_x_discrete(limits = all_species$huc) +
+ggplot(data = all_species, aes(y = days, x = huc, fill = species)) +
   geom_col() +
   labs(y = 'Days of Exceedance', x = "Watershed",
        title = "Greatest Days of Exceedance for All Species") +
   theme(axis.text.x = element_text(angle =75, hjust = 1))
 ```
 
+
+### By watershed???? 
+```{r}
+## Create a new dataframe where we can pull data from 
+## Only want data that contains info from all species & has greater values than 0 
+
+
+watershed_data <- exceed_longer %>% 
+      select(species, pesticide, huc, days) %>% 
+  filter(days > 0)
+```
 

@@ -389,7 +389,7 @@ ui <- fluidPage(theme = my_theme,
                                           selectInput(
                                             inputId = 'watershed_species_select',
                                             label = 'Select watershed',
-                                            choices = unique(watershed_data$huc))
+                                            choices = unique(watershed_species_risk$huc))
                                           
                              ), # End sidebarpanel - Species tab 
                              
@@ -531,7 +531,7 @@ server <- function(input, output) {
   }) # End species reactive plot
   
   watershed_species_select <- reactive({
-    watershed_data %>%
+    watershed_species_risk %>%
       select(species, pesticide, huc, days) %>%
       dplyr::filter(huc == input$watershed_species_select) %>%
       slice_max(days, n = 15) %>% # keeping the largest values of the counts by day

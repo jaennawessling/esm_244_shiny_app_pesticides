@@ -167,6 +167,6 @@ ggplot(data = all_species, aes(y = days, x = huc, fill = species)) +
 
 watershed_data <- exceed_longer %>% 
       select(species, pesticide, huc, days) %>% 
-  filter(days > 0)
+  filter(days > 0, species != "days_any_species")
 ```
 

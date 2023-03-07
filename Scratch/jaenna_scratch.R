@@ -22,17 +22,20 @@ library(plotly)
 # ?bs_theme() put in console to see what we can do 
 
 
-days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
+days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) %>% 
+  clean_names()
 
 # Making days exceed longer so I can use the filter feature in the server output for graphs 
 exceed_longer <- days_exceed %>% 
-  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
+  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") %>% 
+  clean_names()
 
 
 # Filtering only the days where exceedance is greater than 0 (so there are no blank spots on the graph)
 watershed_species_risk <- exceed_longer %>% 
   select(species, pesticide, huc, days) %>% 
-  filter(days > 0, species != "days_any_species")
+  filter(days > 0, species != "days_any_species") %>% 
+  clean_names()
 
 
 
@@ -200,13 +203,13 @@ server <- function(input, output) {
   
   # Creating a plot using our species data
   output$species_plot <- renderPlotly({
-    ggplot(data = species_select(),
-           aes(y = days, x = reorder(huc, -days), fill = pesticide)) +
+    ggplotly(ggplot(data = species_select(),
+           aes(y = days, x = reorder(huc, -days), fill = pesticide, text = paste("species:", species))) +
       geom_col() +
       labs(y = 'Days of Exceedance', x = "Watershed",
            title = "Greatest Days of Exceedance per Species") +
       coord_flip() +
-      theme_minimal()
+      theme_minimal())
   }) # End species reactive plot
   
   
@@ -221,13 +224,13 @@ server <- function(input, output) {
   
   # Creating a watershed plot using our species data
   output$watershed_species_plot <- renderPlotly({
-    ggplot(data = watershed_species_select(),
-           aes(y = days, x = reorder(species, -days), fill = pesticide)) +
+    ggplotly(ggplot(data = watershed_species_select(),
+           aes(y = days, x = reorder(species, -days), fill = pesticide, text = paste("species:", species))) +
       geom_col(position = "dodge") +
       labs(y = 'Days of Exceedance', x = "Watershed",
            title = "Days of Species Pesticide Exposure Exceedance per Watershed") +
       coord_flip() +
-      theme_minimal()
+      theme_minimal())
   }) # End watershed reactive plot
 
   

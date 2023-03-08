@@ -140,3 +140,123 @@ top_crops_trial <- crop_monthly_pivot %>%
  # scale_x_discrete(guide = guide_axis(n.dodge = 2)) 
   labs(x = "Average risk index across all years", y = "Application site type", title = "10 Application Site Types with Highest Average Risk Index Across All Years")+
   theme_minimal() 
+
+
+
+
+
+
+# background info
+fluidRow(
+  column(width=8,
+         
+         h4(strong("The Pesticide Exposure Risk to Plants and Invertebrates Associated with Different Application Site (Crop) Types "), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
+         p("The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (exposure through water and sediment), vascular plants, and
+                                        nonvascular plants. The overall net risk index can also be displayed. Select with application site type (crop type) to display the risk indices for, and select which risk indices to display.
+                                        Figure 1 shows "
+           
+         ) #end column
+  ), #end fluidRow
+  #dropdown menus
+  
+  
+### Old sidebar panel layout before switching to wellPanel
+
+# sidebarLayout(
+#  
+#   sidebarPanel(strong("Application Site Type"),
+#                #dropdown menu for application site type
+#                selectInput("hru_dropdown",
+#                            label = "Select an application site type (crop type)",
+#                            choices = unique(crop_monthly_final$hru)), #end pesticide dropdown
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                #dropdown menu for watershed 
+#                # "Watersheds",
+#                # selectInput("watershed_dropdown",
+#                #             label = "Select watershed",
+#                #             choices = unique(crop_monthly_final$huc)), #end watershed dropdown
+#                
+#                #dropdown menu for year 
+#                strong("Year"),
+#                selectInput("year_dropdown",
+#                            label = "Select year",
+#                            choices = unique(crop_monthly_final$year)), #end year dropdown
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                #checkboxes for risk index 
+#                strong("Risk Index Type"),
+#                checkboxGroupInput("index_type_checkboxes",
+#                            label = "Select risk index type(s)",
+#                            choices = unique(crop_monthly_final$index_type),
+#                            selected = "RI_net"), #end risk index checkboxes
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                br(),
+#                
+#                # new index dropdown for top ten crop figures
+#                strong("Top Ten Crops with Highest Risk Index"),
+#                selectInput("index_top_ten_dropdown",
+#                            label = "Pick a risk index type",
+#                            choices = unique(crop_annual$index_type)) #end risk dropdown
+#                
+#                
+#                ), #end sidebarPanel 
+
+
+
+  
+# QUESTIONS
+## how to add text?
+## can you split up the side bar panel with the widgets into smaller chunks and have them line
+# up with the figure that they apply to?
+## how to make the colors stay the same for each index?
+
+#make a color df at the top
+color_df <- data.frame(variable = c("RI_net"), color = c("blue"))
+
+#reactive thing in the server
+color_react(reactive{
+  color_df %>% 
+    filter(var %in% inputselected)
+})
+
+#in the ggplot
+scale_color_manual(breaks = color_react()$var, color = color_react$color)

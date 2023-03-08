@@ -266,92 +266,77 @@ ui <- fluidPage(theme = my_theme,
                   #######################################################################################
                   # Tab 2 - Application site type (crop) data - Sadie ----
                   tabPanel("Temporal Trends by Application Site Type", 
-                           sidebarLayout(
-                             #dropdown menus
-                             sidebarPanel(strong("Application Site Type"),
-                                          #dropdown menu for application site type
+                           fluidRow(
+                             
+                             br(),
+                             
+                             h5("The Pesticide Exposure Risk Index for Plants and Invertebrates Depending on Application Site Types ", style="text-align:center;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
+                             p("Application site types describe the different types of crops associated with pesticide use in the Bay Delta Watershed. The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (exposure through water or sediment), vascular plants, and
+                                        nonvascular plants. The overall net risk index can also be displayed. 
+                                        
+                                        br()
+                                        
+                                        Select which application site type (crop type) to display the risk indices for, and select which risk indices to display.
+                                        Figure 1 shows .... la la la."),
+                             
+                             br(),
+                             
+                             column(3,
+                                    #dropdown menu for application site type 
+                                    wellPanel(
+                                      strong("Application Site Type"),
                                           selectInput("hru_dropdown",
                                                       label = "Select an application site type (crop type)",
-                                                      choices = unique(crop_monthly_final$hru)), #end pesticide dropdown
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          #dropdown menu for watershed 
-                                          # "Watersheds",
-                                          # selectInput("watershed_dropdown",
-                                          #             label = "Select watershed",
-                                          #             choices = unique(crop_monthly_final$huc)), #end watershed dropdown
-                                          
-                                          #dropdown menu for year 
-                                          strong("Year"),
-                                          selectInput("year_dropdown",
-                                                      label = "Select year",
-                                                      choices = unique(crop_monthly_final$year)), #end year dropdown
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          #checkboxes for risk index 
-                                          strong("Risk Index Type"),
-                                          checkboxGroupInput("index_type_checkboxes",
-                                                      label = "Select risk index type(s)",
-                                                      choices = unique(crop_monthly_final$index_type),
-                                                      selected = "RI_net"), #end risk index checkboxes
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          br(),
-                                          
-                                          # new index dropdown for top ten crop figures
-                                          strong("Top Ten Crops with Highest Risk Index"),
-                                          selectInput("index_top_ten_dropdown",
-                                                      label = "Pick a risk index type",
-                                                      choices = unique(crop_annual$index_type)) #end risk dropdown
-                                          
-                                          
-                                          ), #end sidebarPanel
-                             
-                      
-                             #display  the graph of temporal trends for the selected pesticide and watershed
-                             mainPanel(strong("Temporal trends by Application Site Type in Selected Year"),
+                                                      choices = unique(crop_monthly_final$hru)) #end pesticide dropdown
+                                    ), # end wellPanel
+                                    
+                                    br(),
+                                    
+                                    #dropdown menu to select year
+                                    wellPanel( 
+                                      strong("Year"),
+                                      selectInput("year_dropdown",
+                                                  label = "Select year",
+                                                  choices = unique(crop_monthly_final$year)) #end year dropdown
+                                
+                                    ), # end wellPanel
+                                    
+                                    br(),
+                                    
+                                    #checkboxes for risk index 
+                                    wellPanel(
+                                      strong("Risk Index Type"),
+                                      checkboxGroupInput("index_type_checkboxes",
+                                                         label = "Select risk index type(s)",
+                                                         choices = unique(crop_monthly_final$index_type),
+                                                         selected = "RI_net") #end risk index checkboxes
+                                    ), #end wellPanel
+                                    
+                                    br(),
+                                    
+                                    # risk index dropdown for top ten crop figures (does not impact line graphs)
+                                    wellPanel(
+                                      strong("Top Ten Crops with Highest Risk Index"),
+                                      selectInput("index_top_ten_dropdown",
+                                                  label = "Pick a risk index type",
+                                                  choices = unique(crop_annual$index_type)) #end risk dropdown
+                                    ) # end wellPanel
+                            
+                                  ), #end column
+                           
+                           
+                             #display  the graphs of temporal trends for the selected application site type
+                             mainPanel(
+                               column(12, 
+                                      
+                                      # Figure 1
+                                       strong("Figure 1: Temporal Trends by Application Site Type in Selected Year"),
                                        plotlyOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
                                        
                                        br(), 
                                        
-                                       strong("Temporal trends by Application Site Type for All Years"),
+                                      # Figure 2
+                                       strong("Figure 2: Temporal Trends by Application Site Type for All Years"),
                                        plotlyOutput(outputId = 'hru_annual_plot'),
                                        
                                        br(),
@@ -364,14 +349,15 @@ ui <- fluidPage(theme = my_theme,
                                        
                                        br(),
                                        
-                                       strong("Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
-                                       plotlyOutput(outputId = 'top_ten_crops')
-
-                                       
+                                      # Figure 3
+                                       strong("Figure 3: Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
+                                       plotlyOutput(outputId = 'top_ten_crops'),
+                                      
+                                      br()
+                                      
+                               ) #end column        
                              ) #end mainPanel
-                             
-                             
-                           ) #end sidebarLayout        
+                           ) #end fluidRow        
                   ), #end tabPanel - temporal trends by application site type
                   
                   #######################################################################################
@@ -455,10 +441,10 @@ server <- function(input, output) {
   #reactive data frame to select application site type
   hru_monthly_df <- reactive ({
     crop_monthly_final %>% 
-      filter(hru == input$hru_dropdown) %>% 
+      filter(hru %in% input$hru_dropdown) %>% 
       #filter(huc == input$watershed_dropdown) %>% 
-      filter(year == input$year_dropdown) %>% 
-      filter(index_type == input$index_type_checkboxes) #%>% 
+      filter(year %in% input$year_dropdown) %>% 
+      filter(index_type %in% input$index_type_checkboxes) #%>% 
       # group_by(year == input$year_dropdown) %>% 
       # summarize()
   })
@@ -475,9 +461,9 @@ server <- function(input, output) {
   #filter data frame for annual data (all years)
   hru_annual_df <- reactive ({
     crop_annual %>% 
-      filter(hru == input$hru_dropdown) %>% 
+      filter(hru %in% input$hru_dropdown) %>% 
       #filter(huc == input$watershed_dropdown) %>% 
-      filter(index_type == input$index_type_checkboxes) 
+      filter(index_type %in% input$index_type_checkboxes) 
   })
   
   #plot of all years
@@ -485,13 +471,14 @@ server <- function(input, output) {
     ggplot(data = hru_annual_df(),
            aes(x = year, y = risk_index_value, color = index_type)) +
       geom_line(size = 1) +
+     # scale_color_manual(values = c())
       labs(x = "Year", y = "Risk Index", color = "Risk Index Type") +
       theme_minimal()
   })
   
   top_ten_crops_df <- reactive ({
     crop_annual %>% 
-      filter(index_type == input$index_top_ten_dropdown) %>% 
+      filter(index_type %in% input$index_top_ten_dropdown) %>% 
       group_by(hru) %>% 
       summarize(mean_ri = mean(risk_index_value, na.rm = TRUE)) %>% 
       slice_max(mean_ri, n = 10)

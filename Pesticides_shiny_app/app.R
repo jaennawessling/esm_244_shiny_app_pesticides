@@ -17,8 +17,8 @@ library(leaflet)
 library(lubridate)
 library(forcats)
 library(plotly)
-library(bslib) # Bootstrapping library to make the Shiny App look even cooler
-# ?bs_theme() put in console to see what we can do 
+library(bslib) 
+library(shinythemes)
 
 
 #######################################################################################
@@ -103,10 +103,10 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 
 
 
-### Theme
+## Theme
 my_theme <- bs_theme(
-  bootswatch = "minty") 
- 
+  bootswatch = "minty")
+
 
 ### Define UI ---- 
 ui <- fluidPage(theme = my_theme, 
@@ -121,21 +121,22 @@ ui <- fluidPage(theme = my_theme,
                   tabPanel(icon("home"),
                            
                            # Adding an image to the front page
-                           imageOutput("sf_news"),
+                           imageOutput("crissy_field"),
                            
                            # Adding text beneath photo for credits
-                           p(em("Egret in the San Francisco Bay Delta Watershed. (Photo courtesy of SF News.)"), style="text-align: center; font-size:12px"
+                           p(em("Photo of Crissy Field, San Francisco. (Photo by Will Elder, 
+                              courtesy of the National Park Service)"), style="text-align: center; font-size:12px"
                            ), # end photo text
-                           
                            hr(), # horizontal line break
-                           
+        
                            
                            # Creating a fluid row to can create multiple columns to have information and a small photo
                            fluidRow(
                              column(
                                br(),
-                               tags$img(src="watershed.jpg",width="200px",height="260px", align = "justify"),
+                               tags$img(src="watershed.jpg",width="380px",height="460px", align = "justify"),
                                br(),
+                               br(), 
                                p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
                                  Photo courtesy of the United States Environmental Protection Agency.",
                                  br(),
@@ -186,7 +187,7 @@ ui <- fluidPage(theme = my_theme,
                      # Adding text and output to the main panel
                      mainPanel(
                        
-                       hr(),
+                       hr(), 
                        
                        # Data sourcing 
                        h3(strong("Data Source"), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
@@ -413,9 +414,9 @@ server <- function(input, output) {
   ## Welcome tab output - Jaenna ----
   
   # Image output
-  output$sf_news <- renderImage({
+  output$crissy_field <- renderImage({
     
-    list(src = "www/sf_news.jpeg",
+    list(src = "www/crissy_field_3.jpg",
          width = "100%",
          height = 400)
     
@@ -472,7 +473,7 @@ server <- function(input, output) {
       scale_color_manual(breaks = color_react_df()$variable, values = color_react_df()$color) +
       theme_minimal()
   })
-  
+
   #filter data frame for annual data (all years)
   hru_annual_df <- reactive ({
     crop_annual %>% 

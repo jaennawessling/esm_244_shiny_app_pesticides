@@ -17,9 +17,11 @@ library(bslib)
 library(vroom) 
 library(dplyr)
 library(plotly)
+library(shinythemes)
 
 # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
+
 
 
 days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) 
@@ -73,7 +75,7 @@ ui <- fluidPage(theme = my_theme,
                            fluidRow(
                              column(
                                br(),
-                               tags$img(src="sf_news.jpeg",width="200px",height="260px", align = "justify"),
+                               tags$img(src="sf_news.jpeg",width="250px",height="310px", align = "justify"),
                                br(),
                                p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
                                  Photo courtesy of the United States Environmental Protection Agency.",

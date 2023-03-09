@@ -253,7 +253,7 @@ top_crops_trial <- crop_monthly_pivot %>%
 color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
                        color = c("red", "orange", "yellow", "green", "blue", "purple"))
 
-#reactive thing in the server
+#reactive colors in the server for line graph color matching
 color_react(reactive{
   color_df %>% 
     filter(variable %in% input$index_type_checkboxes)

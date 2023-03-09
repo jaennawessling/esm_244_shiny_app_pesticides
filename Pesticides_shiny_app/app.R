@@ -35,13 +35,13 @@ rmapshaper::ms_simplify(watersheds_sf)
 
 
 #######################################################################################
-# Tab 2 annual data: annual crop risk summary
+#### Tab 2 annual data: annual crop risk summary
 crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>% 
   pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
   filter(huc == "All Watersheds")
 
 
-# Tab 2 monthly data: monthly crop risk summary
+#### Tab 2 monthly data: monthly crop risk summary
 crop_monthly <- read_csv(here("Tab2_Crop_RiskSummary_Monthly.csv"))%>% 
   separate(col = monthyear, into = c("month", "year"), sep = "-") 
 
@@ -70,6 +70,10 @@ crop_monthly_final <- crop_monthly_mod %>%
   pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
   mutate(year = year(date)) %>% 
   mutate(month = month(date))
+
+#### Tab 2 reactive color data frame
+color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
+                       color = c("red", "orange", "yellow", "green", "blue", "purple"))
 
 
 
@@ -447,12 +451,19 @@ server <- function(input, output) {
       filter(index_type %in% input$index_type_checkboxes) 
   })
   
+  #reactive colors in the server for line graph color matching
+  color_react_df <- reactive ({
+    color_df %>% 
+      filter(variable %in% input$index_type_checkboxes)
+  })
+  
   #plot of monthly data for one selected year
   output$hru_monthly_plot <- renderPlotly({
     ggplot(data = hru_monthly_df(),
            aes(x = date, y = risk_index_value, color = index_type)) +
       geom_line(size = 1) +
       labs(x = "Date", y = "Risk Index", color = "Risk Index Type") +
+      scale_color_manual(breaks = color_react_df()$variable, values = color_react_df()$color) +
       theme_minimal()
   })
   
@@ -468,11 +479,12 @@ server <- function(input, output) {
     ggplot(data = hru_annual_df(),
            aes(x = year, y = risk_index_value, color = index_type)) +
       geom_line(size = 1) +
-     # scale_color_manual(values = c())
+      scale_color_manual(breaks = color_react_df()$variable, values = color_react_df()$color) +
       labs(x = "Year", y = "Risk Index", color = "Risk Index Type") +
       theme_minimal()
   })
   
+  #reactive data frame to find top ten crops contributing to risk index for a selected risk index
   top_ten_crops_df <- reactive ({
     crop_annual %>% 
       filter(index_type %in% input$index_top_ten_dropdown) %>% 
@@ -481,6 +493,7 @@ server <- function(input, output) {
       slice_max(mean_ri, n = 10)
   })
   
+  #top ten crops plot
   output$top_ten_crops <- renderPlotly({
     ggplot(data = top_ten_crops_df(),
            aes(x = fct_reorder(hru, mean_ri), y = mean_ri)) +

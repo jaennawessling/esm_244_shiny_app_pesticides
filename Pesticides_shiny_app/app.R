@@ -339,13 +339,15 @@ ui <- fluidPage(theme = my_theme,
                                column(12, 
                                       
                                       # Figure 1
-                                       strong("Figure 1: Temporal Trends by Application Site Type in Selected Year"),
+                                       strong("Figure 1: "),
                                        plotlyOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
                                        
                                        br(), 
                                        
+                                       br(),
+                                       
                                       # Figure 2
-                                       strong("Figure 2: Temporal Trends by Application Site Type for All Years"),
+                                       strong("Figure 2: "),
                                        plotlyOutput(outputId = 'hru_annual_plot'),
                                        
                                        br(),
@@ -359,7 +361,7 @@ ui <- fluidPage(theme = my_theme,
                                        br(),
                                        
                                       # Figure 3
-                                       strong("Figure 3: Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
+                                       strong("Figure 3: "),
                                        plotlyOutput(outputId = 'top_ten_crops'),
                                       
                                       br()
@@ -469,6 +471,10 @@ server <- function(input, output) {
            aes(x = date, y = risk_index_value, color = index_type)) +
       geom_line(size = 1) +
       labs(x = "Date", y = "Risk Index", color = "Risk Index Type") +
+      ggtitle(paste("Risk Indexes for", 
+                    input$hru_dropdown,
+                    "in",
+                    input$year_dropdown)) +
       scale_color_manual(breaks = color_react_df()$variable, values = color_react_df()$color) +
       theme_minimal()
   })
@@ -487,6 +493,9 @@ server <- function(input, output) {
       geom_line(size = 1) +
       scale_color_manual(breaks = color_react_df()$variable, values = color_react_df()$color) +
       labs(x = "Year", y = "Risk Index", color = "Risk Index Type") +
+      ggtitle(paste("Risk Indexes for", 
+                    input$hru_dropdown,
+                    "across all years")) +
       theme_minimal()
   })
   
@@ -506,6 +515,8 @@ server <- function(input, output) {
       geom_col(fill = "turquoise") +
       coord_flip() +
       labs(x = "Average risk index across all years", y = "Application site type") +
+      ggtitle(paste("Top Ten Application Site Types for", 
+                    input$index_top_ten_dropdown)) +
       theme_minimal()
   })
   

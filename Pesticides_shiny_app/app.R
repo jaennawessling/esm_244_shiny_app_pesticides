@@ -17,8 +17,10 @@ library(leaflet)
 library(lubridate)
 library(forcats)
 library(plotly)
-library(bslib) # Bootstrapping library to make the Shiny App look even cooler
-# ?bs_theme() put in console to see what we can do 
+library(bslib) 
+library(shinythemes)
+library(grDevices)
+
 
 
 #######################################################################################
@@ -81,13 +83,17 @@ color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water"
 # Tab 3 data: days exceeding health benchmarks
 days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 
+# Making a longer data frame to work with 
 exceed_longer <- days_exceed %>% 
-  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
+  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") %>% 
+  clean_names() %>% 
+  rename(application_site = huc)
 
 
-watershed_species_risk <- exceed_longer %>% 
-  select(species, pesticide, huc, days) %>% 
-  filter(days > 0)
+# Filtering only the days of exceedance for each individual species - but not "any" species)
+app_site_species_risk <- exceed_longer %>% 
+  select(species, pesticide, application_site, days) %>% 
+  filter(species != "days_any_species")
 
 
 #######################################################################################
@@ -99,10 +105,10 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 
 
 
-### Theme
+## Theme
 my_theme <- bs_theme(
-  bootswatch = "minty") 
- 
+  bootswatch = "minty")
+
 
 ### Define UI ---- 
 ui <- fluidPage(theme = my_theme, 
@@ -117,21 +123,22 @@ ui <- fluidPage(theme = my_theme,
                   tabPanel(icon("home"),
                            
                            # Adding an image to the front page
-                           imageOutput("sf_news"),
+                           imageOutput("crissy_field"),
                            
                            # Adding text beneath photo for credits
-                           p(em("Egret in the San Francisco Bay Delta Watershed. (Photo courtesy of SF News.)"), style="text-align: center; font-size:12px"
+                           p(em("Photo of Crissy Field, San Francisco. (Photo by Will Elder, 
+                              courtesy of the National Park Service)"), style="text-align: center; font-size:12px"
                            ), # end photo text
-                           
                            hr(), # horizontal line break
-                           
+        
                            
                            # Creating a fluid row to can create multiple columns to have information and a small photo
                            fluidRow(
                              column(
                                br(),
-                               tags$img(src="watershed.jpg",width="200px",height="260px", align = "justify"),
+                               tags$img(src="watershed.jpg",width="380px",height="460px", align = "justify"),
                                br(),
+                               br(), 
                                p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
                                  Photo courtesy of the United States Environmental Protection Agency.",
                                  br(),
@@ -182,7 +189,7 @@ ui <- fluidPage(theme = my_theme,
                      # Adding text and output to the main panel
                      mainPanel(
                        
-                       hr(),
+                       hr(), 
                        
                        # Data sourcing 
                        h3(strong("Data Source"), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
@@ -279,7 +286,7 @@ ui <- fluidPage(theme = my_theme,
                                         nonvascular plants. The overall net risk index can also be displayed."),
                              br(),
                              
-                             p("  Select which application site type (crop type) to display the risk indices for, and select which risk indices to display.
+                             p("NEED TO EXPLAIN THE FIGURES. Select which application site type (crop type) to display the risk indices for the different categories of plants and animals, and select which risk indices to display.
                                         Figure 1 shows .... la la la."),
                                         
                                       
@@ -287,6 +294,9 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              
                              column(3,
+                                    
+                                    br(), 
+                                    
                                     #dropdown menu for application site type 
                                     wellPanel(
                                       strong("Application Site Type"),
@@ -320,12 +330,12 @@ ui <- fluidPage(theme = my_theme,
                                     br(),
                                     
                                     # risk index dropdown for top ten crop figures (does not impact line graphs)
-                                    wellPanel(
-                                      strong("Top Ten Crops with Highest Risk Index"),
-                                      selectInput("index_top_ten_dropdown",
-                                                  label = "Pick a risk index type",
-                                                  choices = unique(crop_annual$index_type)) #end risk dropdown
-                                    ) # end wellPanel
+                                    # wellPanel(
+                                    #   strong("Top Ten Crops with Highest Risk Index"),
+                                    #   selectInput("index_top_ten_dropdown",
+                                    #               label = "Pick a risk index type",
+                                    #               choices = unique(crop_annual$index_type)) #end risk dropdown
+                                    # ) # end wellPanel
                             
                                   ), #end column
                            
@@ -334,14 +344,20 @@ ui <- fluidPage(theme = my_theme,
                              mainPanel(
                                column(12, 
                                       
+                                      br(),
+                                      
                                       # Figure 1
-                                       strong("Figure 1: Temporal Trends by Application Site Type in Selected Year"),
+                                       #strong("Figure 1: Temporal Trends by Application Site Type in Selected Year"),
                                        plotlyOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
                                        
                                        br(), 
                                        
+                                       br(),
+                                      
+                                       br(),
+                                       
                                       # Figure 2
-                                       strong("Figure 2: Temporal Trends by Application Site Type for All Years"),
+                                       #strong("Figure 2: Temporal Trends by Application Site Type for All Years"),
                                        plotlyOutput(outputId = 'hru_annual_plot'),
                                        
                                        br(),
@@ -355,14 +371,34 @@ ui <- fluidPage(theme = my_theme,
                                        br(),
                                        
                                       # Figure 3
-                                       strong("Figure 3: Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
-                                       plotlyOutput(outputId = 'top_ten_crops'),
+                                       #strong("Figure 3: Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
+                                      #plotlyOutput(outputId = 'top_ten_crops'),
                                       
                                       br()
                                       
                                ) #end column        
                              ) #end mainPanel
-                           ) #end fluidRow        
+                           ), #end fluidRow 
+                           
+                           fluidRow(
+                             column(3,
+                                    # risk index dropdown for top ten crop figures (does not impact line graphs)
+                                    wellPanel(
+                                      strong("Risk Index Type"),
+                                      selectInput("index_top_ten_dropdown",
+                                                  label = "Pick a risk index type",
+                                                  choices = unique(crop_annual$index_type)) #end risk dropdown
+                                    ) # end wellPanel
+                              ), #end column
+                             
+                             mainPanel(
+                                    column(12,
+                                           plotlyOutput(outputId = 'top_ten_crops')  
+                                      
+                                    ) # end column
+                             ) #end mainPanel
+                            
+                           ) # end fluidRow
                   ), #end tabPanel - temporal trends by application site type
                   
                   #######################################################################################
@@ -370,6 +406,7 @@ ui <- fluidPage(theme = my_theme,
                   
                   # Species tab - Jaenna ----
                   tabPanel("Pesticide Impact on Species",
+                           
                            sidebarLayout(
                              sidebarPanel("Widget",
                                           selectInput(
@@ -378,17 +415,18 @@ ui <- fluidPage(theme = my_theme,
                                             choices = unique(exceed_longer$species)),
                                           
                                           selectInput(
-                                            inputId = 'watershed_species_select',
-                                            label = 'Select watershed',
-                                            choices = unique(watershed_species_risk$huc))
+                                            inputId = 'app_site_species_select',
+                                            label = 'Select application site',
+                                            choices = unique(app_site_species_risk$application_site))
+                                          
                                           
                              ), # End sidebarpanel - Species tab 
                              
                              
-                             mainPanel(strong("OUTPUT"), # Subheader
-                                       # Adding the output from our server
-                                       plotlyOutput(outputId = 'species_plot'),
-                                       plotlyOutput(outputId = 'watershed_plot')
+                             mainPanel(
+                               # Adding the output from our server
+                               plotlyOutput(outputId = 'species_plot'),
+                               plotlyOutput(outputId = 'app_site_species_plot')
                              ) # End main panel - species tab
                              
                            ) # End sidebarLayout - species tab
@@ -407,9 +445,9 @@ server <- function(input, output) {
   ## Welcome tab output - Jaenna ----
   
   # Image output
-  output$sf_news <- renderImage({
+  output$crissy_field <- renderImage({
     
-    list(src = "www/sf_news.jpeg",
+    list(src = "www/crissy_field_3.jpg",
          width = "100%",
          height = 400)
     
@@ -463,10 +501,14 @@ server <- function(input, output) {
            aes(x = date, y = risk_index_value, color = index_type)) +
       geom_line(size = 1) +
       labs(x = "Date", y = "Risk Index", color = "Risk Index Type") +
+      ggtitle(paste("Risk Indexes for", 
+                    input$hru_dropdown,
+                    "in",
+                    input$year_dropdown)) +
       scale_color_manual(breaks = color_react_df()$variable, values = color_react_df()$color) +
       theme_minimal()
   })
-  
+
   #filter data frame for annual data (all years)
   hru_annual_df <- reactive ({
     crop_annual %>% 
@@ -481,6 +523,9 @@ server <- function(input, output) {
       geom_line(size = 1) +
       scale_color_manual(breaks = color_react_df()$variable, values = color_react_df()$color) +
       labs(x = "Year", y = "Risk Index", color = "Risk Index Type") +
+      ggtitle(paste("Risk Indexes for", 
+                    input$hru_dropdown,
+                    "across all years")) +
       theme_minimal()
   })
   
@@ -500,6 +545,8 @@ server <- function(input, output) {
       geom_col(fill = "turquoise") +
       coord_flip() +
       labs(x = "Average risk index across all years", y = "Application site type") +
+      ggtitle(paste("Top Ten Application Site Types for", 
+                    input$index_top_ten_dropdown)) +
       theme_minimal()
   })
   
@@ -511,39 +558,45 @@ server <- function(input, output) {
   ## Creating data set for reactive input for species selection
   species_select <- reactive({
     exceed_longer %>%
-      select(species, pesticide, huc, days) %>%
+      select(species, pesticide, application_site, days) %>%
       dplyr::filter(species == input$species_select) %>%
       slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
-      arrange(-days) # arranges selected choices from greatest to least
+      mutate(application_site = fct_reorder(application_site, -days)) # arranges selected choices from greatest to least
   }) # End species select reactive
   
   # Creating a plot using our species data
   output$species_plot <- renderPlotly({
     ggplot(data = species_select(),
-           aes(y = days, x = reorder(huc, -days), fill = pesticide)) +
+           aes(y = days, x = application_site, fill = pesticide)) +
       geom_col() +
-      labs(y = 'Days of Exceedance', x = "Watershed",
-           title = "Greatest Days of Exceedance per Species") +
-      theme(axis.text.x = element_text(angle =75, hjust = 1))
+      labs(y = 'Days of Exceedance', x = "Application site") +
+      ggtitle(paste("Greatest days of exceedance for", 
+                    input$species_select)) +
+      coord_flip() +
+      theme_minimal()
   }) # End species reactive plot
   
-  watershed_species_select <- reactive({
-    watershed_species_risk %>%
-      select(species, pesticide, huc, days) %>%
-      dplyr::filter(huc == input$watershed_species_select) %>%
-      slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
-      arrange(-days) # arranges selected choices from greatest to least
+  
+  # Creating reactive data input for the days of exceedance for every species per application site
+  app_site_species_select <- reactive({
+    app_site_species_risk %>%
+      select(species, pesticide, application_site, days) %>%
+      dplyr::filter(application_site == input$app_site_species_select) %>%
+      slice_max(days, n = 20) %>% # keeping the largest values of the counts by day
+      mutate(species = fct_reorder(species, -days))
   }) # End species watershed reactive
   
   
-  # Creating a watershed plot using our species data
-  output$watershed_plot <- renderPlotly({
-    ggplot(data = watershed_species_select(),
-           aes(y = days, x = reorder(species, -days), fill = pesticide)) +
+  # Creating bar charts of the days of exceedance for every species per application site type
+  output$app_site_species_plot <- renderPlotly({
+    ggplot(data = app_site_species_select(),
+           aes(y = days, x = species, fill = pesticide)) +
       geom_col(position = "dodge") +
-      labs(y = 'Days of Exceedance', x = "Watershed",
-           title = "Days of Species Pesticide Exposure Exceedance per Watershed") +
-      theme(axis.text.x = element_text(angle =75, hjust = 1))
+      labs(y = 'Days of Exceedance', x = "Species") + 
+      ggtitle(paste("Days of species exceedance within", 
+                    input$app_site_species_select)) +
+      coord_flip() +
+      theme_minimal()
   }) # End watershed reactive plot
   
   

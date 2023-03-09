@@ -242,12 +242,7 @@ top_crops_trial <- crop_monthly_pivot %>%
 
 
 
-  
-# QUESTIONS
-## can you split up the side bar panel with the widgets into smaller chunks and have them line
-# up with the figure that they apply to? -- wellPanel
-## how to make the colors stay the same for each index? 
-## how to get the wellPanel tied to the graph
+
 
 #color df for line graphs on tab 2 
 color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
@@ -261,3 +256,29 @@ color_react(reactive{
 
 #in the ggplot
 scale_color_manual(breaks = color_react$variable, color = color_react$color)
+
+
+
+# QUESTIONS
+## can you split up the side bar panel with the widgets into smaller chunks and have them line
+# up with the figure that they apply to? -- wellPanel, fixed
+## how to make the colors stay the same for each index?  - fixed
+
+## how to get the wellPanel tied to the graph
+
+
+### To DO:
+# tie wellPanel to graphs
+# color scheme
+# write intro stuff and info
+# maybe delete the figure 1 figure 2 etc. from my graphs
+
+
+
+
+
+
+
+
+
+

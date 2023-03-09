@@ -15,14 +15,15 @@ library(ggpubr)
 library(patchwork)
 library(kableExtra)
 library(dplyr)
+library(stringr)
 ```
 
 ### Load in the new data
 
-```{r}
+```{r, message = FALSE}
 days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 
-summary(days_exceed)
+# summary(days_exceed)
 
 ### By species 
 ### Days invert sed = max 381
@@ -31,13 +32,13 @@ summary(days_exceed)
 
 
 ### Days any species = max 381 (going to be from days invert sed
-unique(days_exceed$huc)
+# unique(days_exceed$huc)
 
 
 #### Creating a pivot longer df instead 
 exceed_longer <- days_exceed %>% 
-  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
-
+  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") %>% 
+  rename(application_sites = huc) 
 ```
 
 

@@ -271,3 +271,6 @@ scale_color_manual(breaks = color_react$variable, color = color_react$color)
 # tie wellPanel to graphs
 # color scheme
 # write intro stuff and info
+# maybe delete the figure 1 figure 2 etc. from my graphs
+
+

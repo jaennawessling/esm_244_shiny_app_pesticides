@@ -291,6 +291,9 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              
                              column(3,
+                                    
+                                    br(), 
+                                    
                                     #dropdown menu for application site type 
                                     wellPanel(
                                       strong("Application Site Type"),
@@ -324,12 +327,12 @@ ui <- fluidPage(theme = my_theme,
                                     br(),
                                     
                                     # risk index dropdown for top ten crop figures (does not impact line graphs)
-                                    wellPanel(
-                                      strong("Top Ten Crops with Highest Risk Index"),
-                                      selectInput("index_top_ten_dropdown",
-                                                  label = "Pick a risk index type",
-                                                  choices = unique(crop_annual$index_type)) #end risk dropdown
-                                    ) # end wellPanel
+                                    # wellPanel(
+                                    #   strong("Top Ten Crops with Highest Risk Index"),
+                                    #   selectInput("index_top_ten_dropdown",
+                                    #               label = "Pick a risk index type",
+                                    #               choices = unique(crop_annual$index_type)) #end risk dropdown
+                                    # ) # end wellPanel
                             
                                   ), #end column
                            
@@ -338,16 +341,20 @@ ui <- fluidPage(theme = my_theme,
                              mainPanel(
                                column(12, 
                                       
+                                      br(),
+                                      
                                       # Figure 1
-                                       strong("Figure 1: "),
+                                       #strong("Figure 1: Temporal Trends by Application Site Type in Selected Year"),
                                        plotlyOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
                                        
                                        br(), 
                                        
                                        br(),
+                                      
+                                       br(),
                                        
                                       # Figure 2
-                                       strong("Figure 2: "),
+                                       #strong("Figure 2: Temporal Trends by Application Site Type for All Years"),
                                        plotlyOutput(outputId = 'hru_annual_plot'),
                                        
                                        br(),
@@ -361,14 +368,34 @@ ui <- fluidPage(theme = my_theme,
                                        br(),
                                        
                                       # Figure 3
-                                       strong("Figure 3: "),
-                                       plotlyOutput(outputId = 'top_ten_crops'),
+                                       #strong("Figure 3: Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
+                                      #plotlyOutput(outputId = 'top_ten_crops'),
                                       
                                       br()
                                       
                                ) #end column        
                              ) #end mainPanel
-                           ) #end fluidRow        
+                           ), #end fluidRow 
+                           
+                           fluidRow(
+                             column(3,
+                                    # risk index dropdown for top ten crop figures (does not impact line graphs)
+                                    wellPanel(
+                                      strong("Risk Index Type"),
+                                      selectInput("index_top_ten_dropdown",
+                                                  label = "Pick a risk index type",
+                                                  choices = unique(crop_annual$index_type)) #end risk dropdown
+                                    ) # end wellPanel
+                              ), #end column
+                             
+                             mainPanel(
+                                    column(12,
+                                           plotlyOutput(outputId = 'top_ten_crops')  
+                                      
+                                    ) # end column
+                             ) #end mainPanel
+                            
+                           ) # end fluidRow
                   ), #end tabPanel - temporal trends by application site type
                   
                   #######################################################################################

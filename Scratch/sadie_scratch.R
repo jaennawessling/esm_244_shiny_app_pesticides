@@ -147,17 +147,17 @@ top_crops_trial <- crop_monthly_pivot %>%
 
 
 # background info
-fluidRow(
-  column(width=8,
-         
-         h4(strong("The Pesticide Exposure Risk to Plants and Invertebrates Associated with Different Application Site (Crop) Types "), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
-         p("The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (exposure through water and sediment), vascular plants, and
-                                        nonvascular plants. The overall net risk index can also be displayed. Select with application site type (crop type) to display the risk indices for, and select which risk indices to display.
-                                        Figure 1 shows "
-           
-         ) #end column
-  ), #end fluidRow
-  #dropdown menus
+# fluidRow(
+#   column(width=8,
+#          
+#          h4(strong("The Pesticide Exposure Risk to Plants and Invertebrates Associated with Different Application Site (Crop) Types "), style="text-align:justify;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
+#          p("The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (exposure through water and sediment), vascular plants, and
+#                                         nonvascular plants. The overall net risk index can also be displayed. Select with application site type (crop type) to display the risk indices for, and select which risk indices to display.
+#                                         Figure 1 shows "
+#            
+#          ) #end column
+#   ), #end fluidRow
+#   #dropdown menus
   
   
 ### Old sidebar panel layout before switching to wellPanel
@@ -249,15 +249,15 @@ fluidRow(
 ## how to make the colors stay the same for each index? 
 ## how to get the wellPanel tied to the graph
 
-#make a color df at the top
+#color df for line graphs on tab 2 
 color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
-                       color = c("red", "orange", "yellow", "green", "blue", "purple")))
+                       color = c("red", "orange", "yellow", "green", "blue", "purple"))
 
 #reactive thing in the server
 color_react(reactive{
   color_df %>% 
-    filter(var %in% inputselected)
+    filter(variable %in% input$index_type_checkboxes)
 })
 
 #in the ggplot
-scale_color_manual(breaks = color_react()$var, color = color_react$color)
+scale_color_manual(breaks = color_react$variable, color = color_react$color)

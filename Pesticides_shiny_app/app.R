@@ -443,11 +443,8 @@ server <- function(input, output) {
   hru_monthly_df <- reactive ({
     crop_monthly_final %>% 
       filter(hru %in% input$hru_dropdown) %>% 
-      #filter(huc == input$watershed_dropdown) %>% 
       filter(year %in% input$year_dropdown) %>% 
-      filter(index_type %in% input$index_type_checkboxes) #%>% 
-      # group_by(year == input$year_dropdown) %>% 
-      # summarize()
+      filter(index_type %in% input$index_type_checkboxes) 
   })
   
   #plot of monthly data for one selected year
@@ -463,7 +460,6 @@ server <- function(input, output) {
   hru_annual_df <- reactive ({
     crop_annual %>% 
       filter(hru %in% input$hru_dropdown) %>% 
-      #filter(huc == input$watershed_dropdown) %>% 
       filter(index_type %in% input$index_type_checkboxes) 
   })
   

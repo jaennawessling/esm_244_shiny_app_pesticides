@@ -279,7 +279,7 @@ ui <- fluidPage(theme = my_theme,
                                         nonvascular plants. The overall net risk index can also be displayed."),
                              br(),
                              
-                             p("  Select which application site type (crop type) to display the risk indices for, and select which risk indices to display.
+                             p("NEED TO EXPLAIN THE FIGURES. Select which application site type (crop type) to display the risk indices for the different categories of plants and animals, and select which risk indices to display.
                                         Figure 1 shows .... la la la."),
                                         
                                       

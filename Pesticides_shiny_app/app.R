@@ -81,13 +81,17 @@ color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water"
 # Tab 3 data: days exceeding health benchmarks
 days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 
+# Making a longer data frame to work with 
 exceed_longer <- days_exceed %>% 
-  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") 
+  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") %>% 
+  clean_names() %>% 
+  rename(application_site = huc)
 
 
-watershed_species_risk <- exceed_longer %>% 
-  select(species, pesticide, huc, days) %>% 
-  filter(days > 0)
+# Filtering only the days of exceedance for each individual species - but not "any" species)
+app_site_species_risk <- exceed_longer %>% 
+  select(species, pesticide, application_site, days) %>% 
+  filter(species != "days_any_species")
 
 
 #######################################################################################
@@ -370,6 +374,7 @@ ui <- fluidPage(theme = my_theme,
                   
                   # Species tab - Jaenna ----
                   tabPanel("Pesticide Impact on Species",
+                           
                            sidebarLayout(
                              sidebarPanel("Widget",
                                           selectInput(
@@ -378,17 +383,18 @@ ui <- fluidPage(theme = my_theme,
                                             choices = unique(exceed_longer$species)),
                                           
                                           selectInput(
-                                            inputId = 'watershed_species_select',
-                                            label = 'Select watershed',
-                                            choices = unique(watershed_species_risk$huc))
+                                            inputId = 'app_site_species_select',
+                                            label = 'Select application site',
+                                            choices = unique(app_site_species_risk$application_site))
+                                          
                                           
                              ), # End sidebarpanel - Species tab 
                              
                              
-                             mainPanel(strong("OUTPUT"), # Subheader
-                                       # Adding the output from our server
-                                       plotlyOutput(outputId = 'species_plot'),
-                                       plotlyOutput(outputId = 'watershed_plot')
+                             mainPanel(
+                               # Adding the output from our server
+                               plotlyOutput(outputId = 'species_plot'),
+                               plotlyOutput(outputId = 'app_site_species_plot')
                              ) # End main panel - species tab
                              
                            ) # End sidebarLayout - species tab
@@ -511,39 +517,45 @@ server <- function(input, output) {
   ## Creating data set for reactive input for species selection
   species_select <- reactive({
     exceed_longer %>%
-      select(species, pesticide, huc, days) %>%
+      select(species, pesticide, application_site, days) %>%
       dplyr::filter(species == input$species_select) %>%
       slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
-      arrange(-days) # arranges selected choices from greatest to least
+      mutate(application_site = fct_reorder(application_site, -days)) # arranges selected choices from greatest to least
   }) # End species select reactive
   
   # Creating a plot using our species data
   output$species_plot <- renderPlotly({
     ggplot(data = species_select(),
-           aes(y = days, x = reorder(huc, -days), fill = pesticide)) +
+           aes(y = days, x = application_site, fill = pesticide)) +
       geom_col() +
-      labs(y = 'Days of Exceedance', x = "Watershed",
-           title = "Greatest Days of Exceedance per Species") +
-      theme(axis.text.x = element_text(angle =75, hjust = 1))
+      labs(y = 'Days of Exceedance', x = "Application site") +
+      ggtitle(paste("Greatest days of exceedance for", 
+                    input$species_select)) +
+      coord_flip() +
+      theme_minimal()
   }) # End species reactive plot
   
-  watershed_species_select <- reactive({
-    watershed_species_risk %>%
-      select(species, pesticide, huc, days) %>%
-      dplyr::filter(huc == input$watershed_species_select) %>%
-      slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
-      arrange(-days) # arranges selected choices from greatest to least
+  
+  # Creating reactive data input for the days of exceedance for every species per application site
+  app_site_species_select <- reactive({
+    app_site_species_risk %>%
+      select(species, pesticide, application_site, days) %>%
+      dplyr::filter(application_site == input$app_site_species_select) %>%
+      slice_max(days, n = 20) %>% # keeping the largest values of the counts by day
+      mutate(species = fct_reorder(species, -days))
   }) # End species watershed reactive
   
   
-  # Creating a watershed plot using our species data
-  output$watershed_plot <- renderPlotly({
-    ggplot(data = watershed_species_select(),
-           aes(y = days, x = reorder(species, -days), fill = pesticide)) +
+  # Creating bar charts of the days of exceedance for every species per application site type
+  output$app_site_species_plot <- renderPlotly({
+    ggplot(data = app_site_species_select(),
+           aes(y = days, x = species, fill = pesticide)) +
       geom_col(position = "dodge") +
-      labs(y = 'Days of Exceedance', x = "Watershed",
-           title = "Days of Species Pesticide Exposure Exceedance per Watershed") +
-      theme(axis.text.x = element_text(angle =75, hjust = 1))
+      labs(y = 'Days of Exceedance', x = "Species") + 
+      ggtitle(paste("Days of species exceedance within", 
+                    input$app_site_species_select)) +
+      coord_flip() +
+      theme_minimal()
   }) # End watershed reactive plot
   
   

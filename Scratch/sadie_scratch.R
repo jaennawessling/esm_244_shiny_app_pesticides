@@ -274,3 +274,11 @@ scale_color_manual(breaks = color_react$variable, color = color_react$color)
 # maybe delete the figure 1 figure 2 etc. from my graphs
 
 
+
+
+
+
+
+
+
+

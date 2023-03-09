@@ -244,13 +244,14 @@ fluidRow(
 
   
 # QUESTIONS
-## how to add text?
 ## can you split up the side bar panel with the widgets into smaller chunks and have them line
-# up with the figure that they apply to?
-## how to make the colors stay the same for each index?
+# up with the figure that they apply to? -- wellPanel
+## how to make the colors stay the same for each index? 
+## how to get the wellPanel tied to the graph
 
 #make a color df at the top
-color_df <- data.frame(variable = c("RI_net"), color = c("blue"))
+color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
+                       color = c("red", "orange", "yellow", "green", "blue", "purple")))
 
 #reactive thing in the server
 color_react(reactive{

@@ -284,7 +284,7 @@ ui <- fluidPage(theme = my_theme,
                                         nonvascular plants. The overall net risk index can also be displayed."),
                              br(),
                              
-                             p("  Select which application site type (crop type) to display the risk indices for, and select which risk indices to display.
+                             p("NEED TO EXPLAIN THE FIGURES. Select which application site type (crop type) to display the risk indices for the different categories of plants and animals, and select which risk indices to display.
                                         Figure 1 shows .... la la la."),
                                         
                                       
@@ -292,6 +292,9 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              
                              column(3,
+                                    
+                                    br(), 
+                                    
                                     #dropdown menu for application site type 
                                     wellPanel(
                                       strong("Application Site Type"),
@@ -325,12 +328,12 @@ ui <- fluidPage(theme = my_theme,
                                     br(),
                                     
                                     # risk index dropdown for top ten crop figures (does not impact line graphs)
-                                    wellPanel(
-                                      strong("Top Ten Crops with Highest Risk Index"),
-                                      selectInput("index_top_ten_dropdown",
-                                                  label = "Pick a risk index type",
-                                                  choices = unique(crop_annual$index_type)) #end risk dropdown
-                                    ) # end wellPanel
+                                    # wellPanel(
+                                    #   strong("Top Ten Crops with Highest Risk Index"),
+                                    #   selectInput("index_top_ten_dropdown",
+                                    #               label = "Pick a risk index type",
+                                    #               choices = unique(crop_annual$index_type)) #end risk dropdown
+                                    # ) # end wellPanel
                             
                                   ), #end column
                            
@@ -339,14 +342,20 @@ ui <- fluidPage(theme = my_theme,
                              mainPanel(
                                column(12, 
                                       
+                                      br(),
+                                      
                                       # Figure 1
-                                       strong("Figure 1: Temporal Trends by Application Site Type in Selected Year"),
+                                       #strong("Figure 1: Temporal Trends by Application Site Type in Selected Year"),
                                        plotlyOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
                                        
                                        br(), 
                                        
+                                       br(),
+                                      
+                                       br(),
+                                       
                                       # Figure 2
-                                       strong("Figure 2: Temporal Trends by Application Site Type for All Years"),
+                                       #strong("Figure 2: Temporal Trends by Application Site Type for All Years"),
                                        plotlyOutput(outputId = 'hru_annual_plot'),
                                        
                                        br(),
@@ -360,14 +369,34 @@ ui <- fluidPage(theme = my_theme,
                                        br(),
                                        
                                       # Figure 3
-                                       strong("Figure 3: Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
-                                       plotlyOutput(outputId = 'top_ten_crops'),
+                                       #strong("Figure 3: Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
+                                      #plotlyOutput(outputId = 'top_ten_crops'),
                                       
                                       br()
                                       
                                ) #end column        
                              ) #end mainPanel
-                           ) #end fluidRow        
+                           ), #end fluidRow 
+                           
+                           fluidRow(
+                             column(3,
+                                    # risk index dropdown for top ten crop figures (does not impact line graphs)
+                                    wellPanel(
+                                      strong("Risk Index Type"),
+                                      selectInput("index_top_ten_dropdown",
+                                                  label = "Pick a risk index type",
+                                                  choices = unique(crop_annual$index_type)) #end risk dropdown
+                                    ) # end wellPanel
+                              ), #end column
+                             
+                             mainPanel(
+                                    column(12,
+                                           plotlyOutput(outputId = 'top_ten_crops')  
+                                      
+                                    ) # end column
+                             ) #end mainPanel
+                            
+                           ) # end fluidRow
                   ), #end tabPanel - temporal trends by application site type
                   
                   #######################################################################################
@@ -470,6 +499,10 @@ server <- function(input, output) {
            aes(x = date, y = risk_index_value, color = index_type)) +
       geom_line(size = 1) +
       labs(x = "Date", y = "Risk Index", color = "Risk Index Type") +
+      ggtitle(paste("Risk Indexes for", 
+                    input$hru_dropdown,
+                    "in",
+                    input$year_dropdown)) +
       scale_color_manual(breaks = color_react_df()$variable, values = color_react_df()$color) +
       theme_minimal()
   })
@@ -488,6 +521,9 @@ server <- function(input, output) {
       geom_line(size = 1) +
       scale_color_manual(breaks = color_react_df()$variable, values = color_react_df()$color) +
       labs(x = "Year", y = "Risk Index", color = "Risk Index Type") +
+      ggtitle(paste("Risk Indexes for", 
+                    input$hru_dropdown,
+                    "across all years")) +
       theme_minimal()
   })
   
@@ -507,6 +543,8 @@ server <- function(input, output) {
       geom_col(fill = "turquoise") +
       coord_flip() +
       labs(x = "Average risk index across all years", y = "Application site type") +
+      ggtitle(paste("Top Ten Application Site Types for", 
+                    input$index_top_ten_dropdown)) +
       theme_minimal()
   })
   

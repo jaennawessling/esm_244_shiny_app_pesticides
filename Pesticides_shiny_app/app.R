@@ -27,7 +27,7 @@ library(grDevices)
 ### Model Output Data
 #######################################################################################
 
-# Tab 1 annual data: annual watershed risk summary
+#### Tab 1 annual data: annual watershed risk summary
 watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
 
 watersheds_sf <- read_sf(here::here("spatial_data/BDW_Watersheds/BDW_Near_HUC12.shp")) %>% 
@@ -73,14 +73,9 @@ crop_monthly_final <- crop_monthly_mod %>%
   mutate(year = year(date)) %>% 
   mutate(month = month(date))
 
-#### Tab 2 reactive color data frame
-color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
-                       color = c("red", "orange", "yellow", "green", "blue", "purple"))
-
-
 
 #######################################################################################
-# Tab 3 data: days exceeding health benchmarks
+#### Tab 3 data: days exceeding health benchmarks
 days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 
 # Making a longer data frame to work with 
@@ -104,13 +99,28 @@ app_site_species_risk <- exceed_longer %>%
 watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.shp"))
 
 
+#######################################################################################
+### Color Palette
+#######################################################################################
+# main color: #85d6a5
 
+#### Tab 2 reactive color data frame
+color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
+                       color = c("#85d6a5", "#00796b", "#DBA507", "#fa5a83", "#8EC7D2", "#168039"))
+
+
+#######################################################################################
 ## Theme
+#######################################################################################
 my_theme <- bs_theme(
   bootswatch = "minty")
 
 
+
+#######################################################################################
 ### Define UI ---- 
+#######################################################################################
+
 ui <- fluidPage(theme = my_theme, 
                 
                 # Application title
@@ -281,7 +291,7 @@ ui <- fluidPage(theme = my_theme,
                              
                              br(),
                              
-                             h5("The Pesticide Exposure Risk Index for Plants and Invertebrates Depending on Application Site Types ", style="text-align:center;color:black;background-color:lightgreen;padding:15px;border-radius:10px"),
+                             h5("The Pesticide Exposure Risk Index for Plants and Invertebrates Depending on Application Site Types ", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                              p("Application site types describe the different types of crops associated with pesticide use in the Bay Delta Watershed. The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (exposure through water or sediment), vascular plants, and
                                         nonvascular plants. The overall net risk index can also be displayed."),
                              br(),
@@ -438,8 +448,10 @@ ui <- fluidPage(theme = my_theme,
 ) # end fluidPage 
 
 
+#######################################################################################
+### Define server 
+#######################################################################################
 
-### Define server ----
 server <- function(input, output) {
   #######################################################################################
   ## Welcome tab output - Jaenna ----
@@ -542,7 +554,7 @@ server <- function(input, output) {
   output$top_ten_crops <- renderPlotly({
     ggplot(data = top_ten_crops_df(),
            aes(x = fct_reorder(hru, mean_ri), y = mean_ri)) +
-      geom_col(fill = "turquoise") +
+      geom_col(fill = "#85d6a5") +
       coord_flip() +
       labs(x = "Average risk index across all years", y = "Application site type") +
       ggtitle(paste("Top Ten Application Site Types for", 

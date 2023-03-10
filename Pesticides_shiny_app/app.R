@@ -118,6 +118,8 @@ color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water"
                        color = c("#85d6a5", "#00796b", "#DBA507", "#CC7351", "#8EC7D2", "#d0c1db"))
 
 
+### Creating a vector version of this, not connected to specific variables
+our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49", "#4d3591" )
 
 
 #######################################################################################
@@ -632,6 +634,7 @@ server <- function(input, output) {
       ggtitle(paste("Greatest days of exceedance for", 
                     input$species_select)) +
       coord_flip() +
+      scale_color_manual(values = our_colors, aesthetics = "fill") +
       theme_minimal()
   }) # End species reactive plot
   
@@ -654,6 +657,7 @@ server <- function(input, output) {
       labs(y = 'Days of Exceedance', x = "Species") + 
       ggtitle(paste("Days of species exceedance within", 
                     input$app_site_species_select)) +
+      scale_color_manual(values = our_colors, aesthetics = "fill") +
       coord_flip() +
       theme_minimal()
   }) # End watershed reactive plot

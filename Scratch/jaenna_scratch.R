@@ -18,27 +18,35 @@ library(vroom)
 library(dplyr)
 library(plotly)
 library(shinythemes)
+library(stringr)
 
 # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
 
-
-days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) 
+## Loading in data and renaming the column names
+days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) %>% 
+  clean_names() %>% 
+  rename(fish = days_fish) %>% 
+  rename("aquatic invertebrates" = days_invertebrate_water) %>% 
+  rename("sediment invertebrates" = days_invertebrate_sed) %>% 
+  rename("non-vascular plants" = days_plant_nonvascular) %>% 
+  rename("vascular plants" = days_plant_vascular) %>% 
+  rename("any species" = days_any_species)  
  
 
 # Making days exceed longer so I can use the filter feature in the server output for graphs 
 exceed_longer <- days_exceed %>% 
-  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") %>% 
-  clean_names() %>% 
-  rename(application_site = huc)
+  pivot_longer(cols = fish:"any species", names_to = "species", values_to = "days") %>% 
+  rename(application_sites = huc) %>% 
+  mutate(pesticide = str_to_lower(pesticide)) 
 
 
 
 # Filtering only the days of exceedance for each individual species - but not "any" species)
 app_site_species_risk <- exceed_longer %>% 
   select(species, pesticide, application_site, days) %>% 
-  filter(species != "days_any_species")
+  filter(species != "any species")
 
 
 

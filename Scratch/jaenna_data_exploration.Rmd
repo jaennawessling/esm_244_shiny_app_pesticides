@@ -21,7 +21,16 @@ library(stringr)
 ### Load in the new data
 
 ```{r, message = FALSE}
-days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
+
+## Loading in data and renaming the column names
+days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) %>% 
+  clean_names() %>% 
+ rename(fish = days_fish) %>% 
+  rename("aquatic invertebrates" = days_invertebrate_water) %>% 
+  rename("sediment invertebrates" = days_invertebrate_sed) %>% 
+  rename("non-vascular plants" = days_plant_nonvascular) %>% 
+  rename("vascular plants" = days_plant_vascular) %>% 
+  rename("any species" = days_any_species)  
 
 # summary(days_exceed)
 
@@ -37,8 +46,9 @@ days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 
 #### Creating a pivot longer df instead 
 exceed_longer <- days_exceed %>% 
-  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") %>% 
-  rename(application_sites = huc) 
+  pivot_longer(cols = fish:"any species", names_to = "species", values_to = "days") %>% 
+  rename(application_sites = huc) %>% 
+    mutate(pesticide = str_to_lower(pesticide)) 
 ```
 
 
@@ -167,7 +177,7 @@ ggplot(data = all_species, aes(y = days, x = huc, fill = species)) +
 
 
 watershed_data <- exceed_longer %>% 
-      select(species, pesticide, huc, days) %>% 
-  filter(days > 0, species != "days_any_species")
+      select(species, pesticide, application_sites, days) %>% 
+  filter(days > 0, species != "any species")
 ```
 

@@ -428,29 +428,65 @@ ui <- fluidPage(theme = my_theme,
                   # Species tab - Jaenna ----
                   tabPanel("Pesticide Impact on Species",
                            
-                           sidebarLayout(
-                             sidebarPanel("Widget",
-                                          selectInput(
-                                            inputId = 'species_select',
-                                            label = 'Select species',
-                                            choices = unique(exceed_longer$species)),
-                                          
-                                          selectInput(
-                                            inputId = 'app_site_species_select',
-                                            label = 'Select application site',
-                                            choices = unique(app_site_species_risk$application_sites))
-                                          
-                                          
-                             ), # End sidebarpanel - Species tab 
+                           br(),
+           
+                             fluidRow(
+                               column(3,
+                                      # risk index dropdown for top ten crop figures (does not impact line graphs)
+                                      wellPanel(
+                                        
+                                        strong("Days of Exceedance Per Species"),
+                                        selectInput(
+                                          inputId = 'species_select',
+                                          label = 'Select species',
+                                          choices = unique(exceed_longer$species)
+                                          ), #End SelectInput - species exceedance dropdown
+                                    
+                                      ) # end wellPanel - species exceedance dropdown
+                               ), #end column
+                               
+                               mainPanel(
+                                 column(12,
+                                        # Adding the species plot output from our server
+                                        plotlyOutput(outputId = 'species_plot') 
+
+                                 ) # end column  - species exceedance dropdown
+                               ) #end mainPanel  - species exceedance dropdown
+                               
+                             ), # end fluidRow  - species exceedance dropdown
                              
+                             br(),
+                           br(),
+                           
+                           fluidRow(
+                             column(3,
+                                    # risk index dropdown for top ten crop figures (does not impact line graphs)
+                                    wellPanel(
+                                      
+                                      strong("Days of Exceedance Per Application Site"),
+                                      selectInput(
+                                        inputId = 'app_site_species_select',
+                                        label = 'Select application site',
+                                        choices = unique(app_site_species_risk$application_sites)
+                                      ) # End SelectInput - application site exceedance dropdown
+                                      
+                                    ) # end wellPanel - application site exceedance dropdown
+                             ), #end column
                              
                              mainPanel(
-                               # Adding the output from our server
-                               plotlyOutput(outputId = 'species_plot'),
-                               plotlyOutput(outputId = 'app_site_species_plot')
-                             ) # End main panel - species tab
+                               column(12,
+                                      # Adding the application site plot output from our server
+                                      
+                                      plotlyOutput(outputId = 'app_site_species_plot')  
+                                      
+                               ), # end column - application site exceedance dropdown
+                               
+                               br(), 
+                               br()
+                             ) #end mainPanel - application site exceedance dropdown
                              
-                           ) # End sidebarLayout - species tab
+                           ) # end fluidRow - application site exceedance dropdown
+                        
                   ) # End tabPanel - species tab
                   
                   #######################################################################################

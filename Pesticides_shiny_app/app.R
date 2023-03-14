@@ -90,13 +90,13 @@ days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) %>%
 # Making a longer data frame to work with 
 exceed_longer <- days_exceed %>% 
   pivot_longer(cols = fish:"any species", names_to = "species", values_to = "days") %>% 
-  rename(application_sites = huc) %>% 
+  rename(watersheds = huc) %>% 
   mutate(pesticide = str_to_lower(pesticide),
          crop = str_to_lower(crop)) 
 
 # Filtering only the days of exceedance for each individual species - but not "any" species)
-app_site_species_risk <- exceed_longer %>% 
-  select(species, pesticide, application_sites, days) %>% 
+watershed_species_risk <- exceed_longer %>% 
+  select(species, pesticide, watersheds, days) %>% 
   filter(species != "any species")
 
 
@@ -136,7 +136,7 @@ my_theme <- bs_theme(
 #######################################################################################
 
 ui <- fluidPage(theme = my_theme, 
-                
+
                 # Application title
                 titlePanel("The Pesticide Management Prioritization Module (PMPM)"),
                 
@@ -178,7 +178,7 @@ ui <- fluidPage(theme = my_theme,
                      and aquatic vascular plants in the (San Francisco) Bay Delta Watershed."), # End paragraph 1 
                      br(), # Line break    
                      
-                     h3(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                     h4(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                      strong("What does the PMPM do?"),
                      p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
                      concentrations of pesticides from agricultural use in soil, water, and sediment. The use
@@ -215,9 +215,12 @@ ui <- fluidPage(theme = my_theme,
                        
                        hr(), 
                        
-                       # Data sourcing 
-                       h3(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                       p("Data sourced from Nicol Parker, PhD Candidate University of California, 
+                       
+                       ## Website contents
+
+                       ## Data sourcing 
+                       h4(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                       p("Data sourced from Nicol Parker, PhD Candidate at the University of California, 
                       Santa Barbara, Bren School of Environmental Science & Management. With support from the 
                       Bay Delta Science Fellowship, and initiative of the California Sea Grant."), 
                       
@@ -230,7 +233,7 @@ ui <- fluidPage(theme = my_theme,
                       hr(), 
                       # End data source 
                       
-                      # Adding development credits 
+                      ## Adding development credits 
                       p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px")
                      ) # End mainPanel - Welcome page
                   ), # End tabPanel - Welcome Page
@@ -289,7 +292,7 @@ ui <- fluidPage(theme = my_theme,
                                            
                                            plotlyOutput(outputId = 'watershed_yr_plot')
                                            
-                                         ), #END main panel - map tab
+                                         ) #END main panel - map tab
                                          
                            ) # END sidebarLayout - map tab
                            
@@ -349,9 +352,8 @@ ui <- fluidPage(theme = my_theme,
                                                          label = "Select risk index type(s)",
                                                          choices = unique(crop_monthly_final$index_type),
                                                          selected = "RI_net") #end risk index checkboxes
-                                    ), #end wellPanel
+                                    ) #end wellPanel
                                     
-                                    br(),
                                     
                                     # risk index dropdown for top ten crop figures (does not impact line graphs)
                                     # wellPanel(
@@ -429,21 +431,41 @@ ui <- fluidPage(theme = my_theme,
                   # Tab 3 - Species tab - Jaenna ----
                   
                   # Species tab - Jaenna ----
-                  tabPanel("Pesticide Impact on Species",
+                  tabPanel("Pesticide Exceedance on Species and Crops",
+                           
+                           hr(),
+                           
+                           h4("Daily Pesticide Exceedance on Species and Crops", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                           p(strong("How does pesticide concentration exceedance differ between animals, 
+                                    plants, and crops? Does it differ by application site type?")),
+                           
+                           p("The figures below illustrate the modeled number of days a pesticide in water
+                             exceeded the concentration at which severe and adverse effects would occur for
+                             various crops, and aquatic and sediment species. \nFor the purpose of this 
+                             analysis, only the top 15 counts of days of exceedance were selected for 
+                             each bar chart."),
+                          
+                           hr(),
+
+                           p("Select a watershed from the dropdown menu to view the days of pesticide 
+                             concentration exceedance for species in the top chart and by crop 
+                             (application site type) in the bottom chart:"),
                            
                            br(),
-           
+                           br(),
+                           
                            fluidRow(
                              column(3,
-                                    # days of exceedance drop down menu for top crops by application sites 
+                                    # days of exceedance drop down menu for top crops by watershed
                                     wellPanel(
-                                      
+                               
                                       strong("Days of Exceedance Per Crop"),
+                                      br(),
                                       selectInput(
                                         inputId = 'crop_exceedance_select',
-                                        label = 'Select application site',
-                                        choices = unique(exceed_longer$application_sites)
-                                      ), #End SelectInput - crop exceedance dropdown
+                                        label = 'Select a watershed',
+                                        choices = unique(exceed_longer$watersheds)
+                                      ) #End SelectInput - crop exceedance dropdown
                                       
                                     ) # end wellPanel - crop exceedance dropdown
                              ), #end column
@@ -460,35 +482,37 @@ ui <- fluidPage(theme = my_theme,
                            
                            br(),
                            br(),
+                           br(),
                            
                            fluidRow(
                              column(3,
-                                    # risk index dropdown for top ten crop figures (does not impact line graphs)
+                                    ## watershed drop down menu for species 
                                     wellPanel(
-                                      
+                                   
                                       strong("Days of Exceedance Per Species"),
+                                      br(),
                                       selectInput(
-                                        inputId = 'app_site_species_select',
-                                        label = 'Select application site',
-                                        choices = unique(app_site_species_risk$application_sites)
-                                      ) # End SelectInput - application site exceedance dropdown
+                                        inputId = 'watershed_species_select',
+                                        label = 'Select a watershed',
+                                        choices = unique(watershed_species_risk$watersheds)
+                                      ) # End SelectInput - species exceedance dropdown
                                       
-                                    ) # end wellPanel - application site exceedance dropdown
+                                    ) # end wellPanel - species exceedance dropdown
                              ), #end column
                              
                              mainPanel(
                                column(12,
-                                      # Adding the application site plot output from our server
+                                      # Adding the species plot output from our server
                                       
-                                      plotlyOutput(outputId = 'app_site_species_plot')  
+                                      plotlyOutput(outputId = 'watershed_species_plot')  
                                       
-                               ), # end column - application site exceedance dropdown
+                               ), # end column - species exceedance dropdown
                                
                                br(), 
                                br()
-                             ) #end mainPanel - application site exceedance dropdown
+                             ) #end mainPanel - species exceedance dropdown
                              
-                           ) # end fluidRow - application site exceedance dropdown
+                           ) # end fluidRow - species exceedance dropdown
                              
                         
                   ) # End tabPanel - species tab
@@ -621,19 +645,19 @@ server <- function(input, output) {
   # Creating reactive data input for the days of exceedance for every crop per application site
   crop_exceedance_select <- reactive({
     exceed_longer %>%
-      select(crop, pesticide, application_sites, days) %>%
-      dplyr::filter(application_sites == input$crop_exceedance_select) %>% 
+      select(crop, pesticide, watersheds, days) %>%
+      dplyr::filter(watersheds == input$crop_exceedance_select) %>% 
       slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
       mutate(crop = fct_reorder(crop, -days))
   }) # End crop type reactive
   
   
-  # Creating bar charts of the days of exceedance for every crop per application site type
+  # Creating bar charts of the days of exceedance for every crop per watershed
   output$crop_exceedance_plot <- renderPlotly({
     ggplot(data = crop_exceedance_select(),
            aes(y = days, x = crop, fill = pesticide)) +
       geom_col(position = "dodge", color = "white", size = 0.6) +
-      labs(y = 'Days of Exceedance', x = "Crop") + 
+      labs(y = 'Days of Exceedance', x = "Crop (application site type)") + 
       ggtitle(paste("Days of crop exceedance within", 
                     input$crop_exceedance_select)) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
@@ -643,23 +667,23 @@ server <- function(input, output) {
   
   
   # Creating reactive data input for the top 5 days of exceedance for every species per application site
-  app_site_species_select <- reactive({
-    app_site_species_risk %>%
-      select(species, pesticide, application_sites, days) %>%
-      dplyr::filter(application_sites == input$app_site_species_select) %>% 
+  watershed_species_select <- reactive({
+    watershed_species_risk %>%
+      select(species, pesticide, watersheds, days) %>%
+      dplyr::filter(watersheds == input$watershed_species_select) %>% 
       slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
       mutate(species = fct_reorder(species, -days))
   }) # End species application site reactive
   
   
   # Creating bar charts of the days of exceedance for every species per application site type
-  output$app_site_species_plot <- renderPlotly({
-    ggplot(data = app_site_species_select(),
+  output$watershed_species_plot <- renderPlotly({
+    ggplot(data = watershed_species_select(),
            aes(y = days, x = species, fill = pesticide)) +
       geom_col(position = "dodge", color = "white", size = 0.6) +
       labs(y = 'Days of Exceedance', x = "Species") + 
       ggtitle(paste("Days of species exceedance within", 
-                    input$app_site_species_select)) +
+                    input$watershed_species_select)) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
       coord_flip() + 
       theme_minimal()

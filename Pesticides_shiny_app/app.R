@@ -171,8 +171,7 @@ ui <- fluidPage(theme = my_theme,
                              column(width=8,
                                     
                                     h3(strong("Purpose"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                                    p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
-                     based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
+                                    p("This interactive tool illustrates pesticide risk based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
                      and aquatic vascular plants in the (San Francisco) Bay Delta Watershed."), # End paragraph 1 
                      br(), # Line break
                      

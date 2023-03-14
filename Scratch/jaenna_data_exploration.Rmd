@@ -16,6 +16,7 @@ library(patchwork)
 library(kableExtra)
 library(dplyr)
 library(stringr)
+library(janitor)
 ```
 
 ### Load in the new data
@@ -181,3 +182,33 @@ watershed_data <- exceed_longer %>%
   filter(days > 0, species != "any species")
 ```
 
+
+### By crop type - Almonds
+```{r}
+almond_exceed <- exceed_longer %>%
+      select(crop, pesticide, application_sites, days) %>%
+      dplyr::filter(crop == "Almonds") %>%
+      slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+      mutate(application_sites = fct_reorder(application_sites, -days)) 
+```
+
+
+### By crop type - Grapes
+```{r}
+ huc_HUC180400020401_exceed <- exceed_longer %>%
+      select(crop, pesticide, application_sites, days) %>%
+      dplyr::filter(application_sites == "HUC180400020401") %>% 
+      slice_max(days, n = 20) %>% # keeping the largest values of the counts by day
+      mutate(crop = fct_reorder(crop, -days))
+
+
+
+huc_plot <- huc_HUC180400020401_exceed
+    ggplot(data = huc_HUC180400020401_exceed,
+           aes(y = days, x = crop, fill = pesticide)) +
+      geom_col(position = "dodge") +
+      labs(y = 'Days of Exceedance', x = "Crop") +
+      coord_flip() +
+      theme_minimal()
+
+```

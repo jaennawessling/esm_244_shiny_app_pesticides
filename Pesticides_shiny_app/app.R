@@ -172,13 +172,13 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              column(width=8,
                                     
-                                    h4(strong("Purpose"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                                    h3(strong("Purpose"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                                     p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
                      based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
                      and aquatic vascular plants in the (San Francisco) Bay Delta Watershed."), # End paragraph 1 
                      br(), # Line break    
                      
-                     h4(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                     h3(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                      strong("What does the PMPM do?"),
                      p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
                      concentrations of pesticides from agricultural use in soil, water, and sediment. The use
@@ -212,13 +212,14 @@ ui <- fluidPage(theme = my_theme,
                      
                      # Adding text and output to the main panel
                        
+                     
+                     mainPanel(
                        ## Website contents
-                       titlePanel("Website content"),
-                       mainPanel(
-                         includeHTML("practice.Rhtml"),
-               
+                     h3(strong("Website Content"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                        
+                     
                        ## Data sourcing 
-                       h4(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                       h3(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                        p("Data sourced from Nicol Parker, PhD Candidate at the University of California, 
                       Santa Barbara, Bren School of Environmental Science & Management. With support from the 
                       Bay Delta Science Fellowship, and initiative of the California Sea Grant."), 
@@ -436,7 +437,7 @@ ui <- fluidPage(theme = my_theme,
                            
                            hr(),
                            
-                           h4("Daily Pesticide Exceedance on Species and Crops", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                           h3("Daily Pesticide Exceedance on Species and Crops", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                            p(strong("How does pesticide concentration exceedance differ between animals, 
                                     plants, and crops? Does it differ by application site type?")),
                            
@@ -544,13 +545,6 @@ server <- function(input, output) {
   # Just using sample output from the widget gallery website for now 
   output$value1 <- renderPrint({ input$select })
   
-  
-  ## Adding in HTML file
-  getPage<-function() {
-    return(includeHTML("practice.Rhtml"))
-  }
-
-  output$inc <- renderUI({getPage()})
   
   #######################################################################################
   ## Tab 1 - Map output (pesticide risk by watershed) - Kira ----

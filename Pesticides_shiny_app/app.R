@@ -111,17 +111,23 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 ### Color Palette
 #######################################################################################
 # main color: #85d6a5
-
 #### Tab 2 reactive color data frame
 color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
                        color = c("#85d6a5", "#00796b", "#DBA507", "#CC7351", "#8EC7D2", "#d0c1db"))
 
 
 ### Creating a vector version of this, not connected to specific variables
+<<<<<<< HEAD
 
 our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
                         "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
                         "#BBECF2", "#540B0C")
+=======
+our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
+                        "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
+                        "#BBECF2", "#540B0C")
+
+>>>>>>> ba2a96f07e72dfc3e2d4539379a6bb0db69096c7
 
 #######################################################################################
 ## Theme
@@ -138,11 +144,12 @@ my_theme <- bs_theme(
 ui <- fluidPage(theme = my_theme, 
 
                 # Application title
-                titlePanel("The Pesticide Management Prioritization Module (PMPM)"),
+                titlePanel("Pesticide Risk in the San Francisco Bay Delta Watershed"),
                 
                 # Adding our tabs panel
                 tabsetPanel(
                   #######################################################################################
+                 
                   # Welcome Tab - Jaenna ----
                   tabPanel(icon("home"),
                            
@@ -154,7 +161,7 @@ ui <- fluidPage(theme = my_theme,
                               courtesy of the National Park Service)"), style="text-align: center; font-size:12px"
                            ), # end photo text
                            hr(), # horizontal line break
-        
+                           
                            
                            # Creating a fluid row to can create multiple columns to have information and a small photo
                            fluidRow(
@@ -173,56 +180,48 @@ ui <- fluidPage(theme = my_theme,
                              column(width=8,
                                     
                                     h3(strong("Purpose"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                                    p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
-                     based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
+                                    p("This interactive tool illustrates pesticide risk based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
                      and aquatic vascular plants in the (San Francisco) Bay Delta Watershed."), # End paragraph 1 
-                     br(), # Line break    
+                     br(), # Line break
                      
                      h3(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                     strong("What does the PMPM do?"),
-                     p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
-                     concentrations of pesticides from agricultural use in soil, water, and sediment. The use
+                     strong("What does the Pesticide Management Prioritization Model (PMPM) - Environmental Fate Tool do?"),
+                     p("The data used in this analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
+                     The Environmental Fate Tool is the second model of the Pesticide Management Prioritization Module (PMPM), 
+                     which predicts spatiotemporal explicit concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
                      by growers in CA). Pesticide concentrations are predicted using mechanistic models that
                      consider climate, hydrology, irrigation practices, and pesticide properties in the 226 
                      watersheds within ~100 km of the Bay Delta Watershed (22,000 km2)."),
                      
                      br(),
-                     
-                    p(strong("The PMPM is designed to address limitations of existing tools for pesticide impact
+        
+                     p(strong("The PMPM is designed to address limitations of existing tools for pesticide impact
                     analyses by integrating features into a single tool that can:")),
                     p("1) Quantify the risk to diverse taxa over tens of thousands of kilometers (hundreds of watersheds)."),
                     p("2) Evaluate primary sources of pesticide risk as well as their temporal variability."),
                     p("3) Analyze the cumulative risk of the hundreds of pesticides in use."),
                     p("4) Quantify how often pesticide concentrations are predicted to exceed."),
+                  
                     br(),
-                    p("To achieve these aims, the Environmental Fate Tool, the second model of the PMPM was introduced. The tool can
-                    analyze pesticide risks across the United States and offers an option to autoload
-                    pesticide use data for California from the most recently available California Department
-                    of Pesticide Regulation Pesticide Use Reports."),
-                     
-                     br(),
-                     strong("Why is this analysis needed?"),
-                     p("13% of California’s 
+                    strong("Why is this analysis needed?"),
+                    p("13% of California’s 
                      waterways are designated as impaired by pesticides of those assessed for non-point 
                      source pollution under the Clean Water Act. 56% are present within the Bay Delta 
                      Watershed (BDW), home to over 90 threatened and endangered species."),
-                     
-                     br(),
-                     strong("What are the PMPM goals?"),
-                     p("As humans move
+                    
+                    br(),
+                    strong("What are the PMPM goals?"),
+                    p("As humans move
                      toward pesticides that are lower in toxicity for mammals, but are orders of magnitude
                      more toxic to invertebrates and aquatic organisms, the PMPM aims to identify:"),
-                     p("1) Which activities are imposing the greatest pesticide loads?"),
-                     p("2) Who is responsible?"),
-                     p("3) How can tradeoffs between the benefits of chemical use be managed to restore
+                    p("1) Which activities are imposing the greatest pesticide loads?"),
+                    p("2) Who is responsible?"),
+                    p("3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?") # end of background section 
                      
                              ), # end column 2 fluidrow 
-                           
-                     
-                     # Adding text and output to the fluidrow
-                     
+                 
                      column(width=8,
                    
                        ## Website contents
@@ -538,7 +537,10 @@ ui <- fluidPage(theme = my_theme,
                            ) # end fluidRow
                   ), #end tabPanel - temporal trends by application site type
                   
+<<<<<<< HEAD
                   br(),
+=======
+>>>>>>> ba2a96f07e72dfc3e2d4539379a6bb0db69096c7
                   
                   #######################################################################################
                   # Tab 3 - Species tab - Jaenna ----

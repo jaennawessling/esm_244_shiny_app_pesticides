@@ -119,7 +119,7 @@ color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water"
 
 
 ### Creating a vector version of this, not connected to specific variables
-our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49", "#4d3591" )
+our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49", "#4d3591")
 
 
 #######################################################################################

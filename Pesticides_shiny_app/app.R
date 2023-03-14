@@ -211,13 +211,12 @@ ui <- fluidPage(theme = my_theme,
                      
                      
                      # Adding text and output to the main panel
-                     mainPanel(
-                       
-                       hr(), 
-                       
                        
                        ## Website contents
-
+                       titlePanel("Website content"),
+                       mainPanel(
+                         includeHTML("practice.Rhtml"),
+               
                        ## Data sourcing 
                        h4(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                        p("Data sourced from Nicol Parker, PhD Candidate at the University of California, 
@@ -230,12 +229,14 @@ ui <- fluidPage(theme = my_theme,
                       tags$p(HTML("To download the data and userguide, click 
                                 <a href=\"https://datadryad.org/stash/share/7a-F-jEXmlvWi3-xeRx_X4osZqXrr8Nh97tnx2bBOSk/\">here.</a>")), 
                       
+                       ), ## end main panel
+                       
                       hr(), 
+                       
                       # End data source 
                       
                       ## Adding development credits 
                       p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px")
-                     ) # End mainPanel - Welcome page
                   ), # End tabPanel - Welcome Page
                   
                   #######################################################################################
@@ -542,6 +543,14 @@ server <- function(input, output) {
   
   # Just using sample output from the widget gallery website for now 
   output$value1 <- renderPrint({ input$select })
+  
+  
+  ## Adding in HTML file
+  getPage<-function() {
+    return(includeHTML("practice.Rhtml"))
+  }
+
+  output$inc <- renderUI({getPage()})
   
   #######################################################################################
   ## Tab 1 - Map output (pesticide risk by watershed) - Kira ----

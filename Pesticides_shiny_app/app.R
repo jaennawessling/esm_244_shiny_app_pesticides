@@ -185,6 +185,22 @@ ui <- fluidPage(theme = my_theme,
                      watersheds within ~100 km of the Bay Delta Watershed (22,000 km2)."),
                      
                      br(),
+                     
+                    p(strong("The PMPM is designed to address limitations of existing tools for pesticide impact
+                    analyses by integrating features into a single tool that can:")),
+                    p("1) Quantify the risk to diverse taxa over tens of thousands of kilometers (hundreds of watersheds)."),
+                    p("2) Evaluate primary sources of pesticide risk as well as their temporal variability."),
+                    p("3) Analyze the cumulative risk of the hundreds of pesticides in use."),
+                    p("4) Quantify how often pesticide concentrations are predicted to exceed."),
+                    br(),
+                    p("To achieve these aims,"),
+                    p(strong("the Environmental Fate Tool")),
+                    p(", the second model of the PMPM was introduced. The tool can analyze pesticide risks 
+                      across the United States and offers an option to autoload
+                    pesticide use data for California from the most recently available California Department
+                    of Pesticide Regulation Pesticide Use Reports."),
+                     
+                     br(),
                      strong("Why is this analysis needed?"),
                      p("13% of California’s 
                      waterways are designated as impaired by pesticides of those assessed for non-point 

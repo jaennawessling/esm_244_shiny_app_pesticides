@@ -193,10 +193,8 @@ ui <- fluidPage(theme = my_theme,
                     p("3) Analyze the cumulative risk of the hundreds of pesticides in use."),
                     p("4) Quantify how often pesticide concentrations are predicted to exceed."),
                     br(),
-                    p("To achieve these aims,"),
-                    p(strong("the Environmental Fate Tool")),
-                    p(", the second model of the PMPM was introduced. The tool can analyze pesticide risks 
-                      across the United States and offers an option to autoload
+                    p("To achieve these aims, the Environmental Fate Tool, the second model of the PMPM was introduced. The tool can
+                    analyze pesticide risks across the United States and offers an option to autoload
                     pesticide use data for California from the most recently available California Department
                     of Pesticide Regulation Pesticide Use Reports."),
                      

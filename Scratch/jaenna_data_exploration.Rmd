@@ -16,12 +16,22 @@ library(patchwork)
 library(kableExtra)
 library(dplyr)
 library(stringr)
+library(janitor)
 ```
 
 ### Load in the new data
 
 ```{r, message = FALSE}
-days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
+
+## Loading in data and renaming the column names
+days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) %>% 
+  clean_names() %>% 
+ rename(fish = days_fish) %>% 
+  rename("aquatic invertebrates" = days_invertebrate_water) %>% 
+  rename("sediment invertebrates" = days_invertebrate_sed) %>% 
+  rename("non-vascular plants" = days_plant_nonvascular) %>% 
+  rename("vascular plants" = days_plant_vascular) %>% 
+  rename("any species" = days_any_species)  
 
 # summary(days_exceed)
 
@@ -37,8 +47,9 @@ days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv"))
 
 #### Creating a pivot longer df instead 
 exceed_longer <- days_exceed %>% 
-  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") %>% 
-  rename(application_sites = huc) 
+  pivot_longer(cols = fish:"any species", names_to = "species", values_to = "days") %>% 
+  rename(application_sites = huc) %>% 
+    mutate(pesticide = str_to_lower(pesticide)) 
 ```
 
 
@@ -167,7 +178,37 @@ ggplot(data = all_species, aes(y = days, x = huc, fill = species)) +
 
 
 watershed_data <- exceed_longer %>% 
-      select(species, pesticide, huc, days) %>% 
-  filter(days > 0, species != "days_any_species")
+      select(species, pesticide, application_sites, days) %>% 
+  filter(days > 0, species != "any species")
 ```
 
+
+### By crop type - Almonds
+```{r}
+almond_exceed <- exceed_longer %>%
+      select(crop, pesticide, application_sites, days) %>%
+      dplyr::filter(crop == "Almonds") %>%
+      slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+      mutate(application_sites = fct_reorder(application_sites, -days)) 
+```
+
+
+### By crop type - Grapes
+```{r}
+ huc_HUC180400020401_exceed <- exceed_longer %>%
+      select(crop, pesticide, application_sites, days) %>%
+      dplyr::filter(application_sites == "HUC180400020401") %>% 
+      slice_max(days, n = 20) %>% # keeping the largest values of the counts by day
+      mutate(crop = fct_reorder(crop, -days))
+
+
+
+huc_plot <- huc_HUC180400020401_exceed
+    ggplot(data = huc_HUC180400020401_exceed,
+           aes(y = days, x = crop, fill = pesticide)) +
+      geom_col(position = "dodge") +
+      labs(y = 'Days of Exceedance', x = "Crop") +
+      coord_flip() +
+      theme_minimal()
+
+```

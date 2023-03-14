@@ -18,28 +18,44 @@ library(vroom)
 library(dplyr)
 library(plotly)
 library(shinythemes)
+library(stringr)
 
 # Bootstrapping library to make the Shiny App look even cooler
 # ?bs_theme() put in console to see what we can do 
 
+#########################################################
+## Data wrangling
 
+## Loading in data and renaming the column names
+days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) %>% 
+  rename(fish = days_fish) %>% 
+  rename("aquatic invertebrates" = days_invertebrate_water) %>% 
+  rename("sediment invertebrates" = days_invertebrate_sed) %>% 
+  rename("non-vascular plants" = days_plant_nonvascular) %>% 
+  rename("vascular plants" = days_plant_vascular) %>% 
+  rename("any species" = days_any_species)  
 
-days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) 
- 
-
-# Making days exceed longer so I can use the filter feature in the server output for graphs 
+# Making a longer data frame to work with 
 exceed_longer <- days_exceed %>% 
-  pivot_longer(cols = days_fish:days_any_species, names_to = "species", values_to = "days") %>% 
-  clean_names() %>% 
-  rename(application_site = huc)
-
+  pivot_longer(cols = fish:"any species", names_to = "species", values_to = "days") %>% 
+  rename(application_sites = huc) %>% 
+  mutate(pesticide = str_to_lower(pesticide),
+         crop = str_to_lower(crop)) 
 
 
 # Filtering only the days of exceedance for each individual species - but not "any" species)
 app_site_species_risk <- exceed_longer %>% 
-  select(species, pesticide, application_site, days) %>% 
-  filter(species != "days_any_species")
+  select(species, pesticide, application_sites, days) %>% 
+  filter(species != "any species") 
 
+
+### Creating a vector version of this, not connected to specific variables
+our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
+                        "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
+                        "#BBECF2", "#540B0C")
+
+
+##########################################################
 
 
 
@@ -140,35 +156,70 @@ ui <- fluidPage(theme = my_theme,
                      ) # End mainPanel - Welcome page
                   ), # End tabPanel - Welcome Page
                   
-                  
-                  
+                  #######################################################################################
+        
                   # Species tab - Jaenna ----
-                  tabPanel("Pesticide Impact on Species",
+                  tabPanel("Pesticide Exceedance on Species and Crops",
                            
-                           sidebarLayout(
-                             sidebarPanel("Widget",
-                                          selectInput(
-                                            inputId = 'species_select',
-                                            label = 'Select species',
-                                            choices = unique(exceed_longer$species)),
-                                          
-                                          selectInput(
-                                            inputId = 'app_site_species_select',
-                                            label = 'Select application site',
-                                            choices = unique(app_site_species_risk$application_site))
-                                          
-                                          
-                             ), # End sidebarpanel - Species tab 
-                             
+                           br(),
+                           
+                           fluidRow(
+                             column(3,
+                                    # days of exceedance drop down menu for top crops by application sites 
+                                    wellPanel(
+                                      
+                                      strong("Days of Exceedance Per Crop"),
+                                      selectInput(
+                                        inputId = 'crop_exceedance_select',
+                                        label = 'Select application site',
+                                        choices = unique(exceed_longer$application_sites)
+                                      ), #End SelectInput - crop exceedance dropdown
+                                      
+                                    ) # end wellPanel - crop exceedance dropdown
+                             ), #end column
                              
                              mainPanel(
-                                       # Adding the output from our server
-                                       plotlyOutput(outputId = 'species_plot'),
-                                       plotlyOutput(outputId = 'app_site_species_plot')
-  
-                           ) # End main panel - species tab
-  
-                  ) # End sidebarLayout - species tab
+                               column(12,
+                                      # Adding the species plot output from our server
+                                      plotlyOutput(outputId = 'crop_exceedance_plot') 
+                                      
+                               ) # end column  - crop exceedance dropdown
+                             ) #end mainPanel  - crop exceedance dropdown
+                             
+                           ), # end fluidRow  - crop exceedance dropdown
+                           
+                           br(),
+                           br(),
+                           
+                           fluidRow(
+                             column(3,
+                                    # risk index dropdown for top ten crop figures (does not impact line graphs)
+                                    wellPanel(
+                                      
+                                      strong("Days of Exceedance Per Species"),
+                                      selectInput(
+                                        inputId = 'app_site_species_select',
+                                        label = 'Select application site',
+                                        choices = unique(app_site_species_risk$application_sites)
+                                      ) # End SelectInput - application site exceedance dropdown
+                                      
+                                    ) # end wellPanel - application site exceedance dropdown
+                             ), #end column
+                             
+                             mainPanel(
+                               column(12,
+                                      # Adding the application site plot output from our server
+                                      
+                                      plotlyOutput(outputId = 'app_site_species_plot')  
+                                      
+                               ), # end column - application site exceedance dropdown
+                               
+                               br(), 
+                               br()
+                             ) #end mainPanel - application site exceedance dropdown
+                             
+                           ) # end fluidRow - application site exceedance dropdown
+                           
                 ) # End tabPanel - species tab
   
   #######################################################################################
@@ -195,34 +246,36 @@ server <- function(input, output) {
   
   #######################################################################################
   
-  ## Creating data set for reactive input for species selection
-  species_select <- reactive({
+  # Creating reactive data input for the days of exceedance for every crop per application site
+  crop_exceedance_select <- reactive({
     exceed_longer %>%
-      select(species, pesticide, application_site, days) %>%
-      dplyr::filter(species == input$species_select) %>%
-      slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
-      mutate(application_site = fct_reorder(application_site, -days)) # arranges selected choices from greatest to least
-  }) # End species select reactive
+      select(crop, pesticide, application_sites, days) %>%
+      dplyr::filter(application_sites == input$crop_exceedance_select) %>% 
+      slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
+      mutate(crop = fct_reorder(crop, -days))
+  }) # End species watershed reactive
   
-  # Creating a plot using our species data
-  output$species_plot <- renderPlotly({
-   ggplot(data = species_select(),
-           aes(y = days, x = application_site, fill = pesticide)) +
-      geom_col() +
-      labs(y = 'Days of Exceedance', x = "Application site") +
-        ggtitle(paste("Greatest days of exceedance for", 
-            input$species_select)) +
+  
+  # Creating bar charts of the days of exceedance for every crop per application site type
+  output$crop_exceedance_plot <- renderPlotly({
+    ggplot(data = crop_exceedance_select(),
+           aes(y = days, x = crop, fill = pesticide)) +
+      geom_col(position = "dodge", color = "white", size = 0.6) +
+      labs(y = 'Days of Exceedance', x = "Crop") + 
+      ggtitle(paste("Days of crop exceedance within", 
+                    input$crop_exceedance_select)) +
+      scale_color_manual(values = our_colors, aesthetics = "fill") +
       coord_flip() +
       theme_minimal()
-  }) # End species reactive plot
+  }) # End watershed reactive plot
   
   
-  # Creating reactive data input for the days of exceedance for every species per application site
+  # Creating reactive data input for the top 5 days of exceedance for every species per application site
   app_site_species_select <- reactive({
     app_site_species_risk %>%
-      select(species, pesticide, application_site, days) %>%
-      dplyr::filter(application_site == input$app_site_species_select) %>%
-      slice_max(days, n = 20) %>% # keeping the largest values of the counts by day
+    select(species, pesticide, application_sites, days) %>%
+      dplyr::filter(application_sites == input$app_site_species_select) %>% 
+      slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
       mutate(species = fct_reorder(species, -days))
   }) # End species watershed reactive
   
@@ -231,10 +284,11 @@ server <- function(input, output) {
   output$app_site_species_plot <- renderPlotly({
     ggplot(data = app_site_species_select(),
            aes(y = days, x = species, fill = pesticide)) +
-      geom_col(position = "dodge") +
+      geom_col(position = "dodge", color = "white", size = 0.6) +
       labs(y = 'Days of Exceedance', x = "Species") + 
-        ggtitle(paste("Days of species exceedance within", 
-                      input$app_site_species_select)) +
+      ggtitle(paste("Days of species exceedance within", 
+                    input$app_site_species_select)) +
+      scale_color_manual(values = our_colors, aesthetics = "fill") +
       coord_flip() +
       theme_minimal()
   }) # End watershed reactive plot

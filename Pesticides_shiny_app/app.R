@@ -19,9 +19,6 @@ library(forcats)
 library(plotly)
 library(bslib) 
 library(shinythemes)
-library(wesanderson)
-
-
 
 
 #######################################################################################
@@ -167,7 +164,7 @@ ui <- fluidPage(theme = my_theme,
                                  Photo courtesy of the United States Environmental Protection Agency.",
                                  br(),
                                  style="text-align:justify;color:black, font-size:12px"),
-                               width=3),
+                               width=3), ## End first fluid row column
                              
                              br(),
                              column(width=8,
@@ -204,34 +201,60 @@ ui <- fluidPage(theme = my_theme,
                      p("3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?") # end of background section 
                      
-                             ) # end column 1 
-                           ), # end fluidrow  
+                             ), # end column 2 fluidrow 
+                           
                      
-                     #### End fluidrow copied
+                     # Adding text and output to the fluidrow
                      
-                     
-                     # Adding text and output to the main panel
-                       
-                     
-                     mainPanel(
+                     column(width=8,
+                   
                        ## Website contents
                      h3(strong("Website Content"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                        
+                     p("This website is comprised of three main tabs:"), 
+                     br(),
                      
+                     p(strong("Tab 1: Map of Pesticide Risk")), 
+                     p("An interactive map of the pesticide exposure risk (risk index) by watersheds within the San Francisco Bay Delta
+                       watershed. The pesticide risk can be analyzed annually with model data from 2015 to 2019. 
+                       The pesticide risks selected represent the pesticide risks greater than 95%."), 
+                     br(),
+  
+                     p(strong("Tab 2: Temporal Trends by Application Site Type")), 
+                     p("Interactive time series graphs of the pesticide exposure risk (risk index) to fish, invertebrates 
+                       (exposure through water or sediment), vascular plants, and nonvascular plants. The graphs are grouped
+                       by application site type (crop type). Application site types describe the different types of crops associated with pesticide
+                       use in the Bay Delta Watershed. The overall net risk index can also be displayed.
+                       The pesticide risk graphs can be analyzed annually with model data from 2015 to 2019. 
+                       The pesticide risks selected represent the pesticide risks greater than 95%."), 
+                     br(),
+                     
+                  p(strong("Tab 3: Pesticide Exceedance on Species and Crops")), 
+                  p("Interactive bar charts of the modeled number of days a pesticide in water 
+                    exceeded the concentration at which severe and adverse effects would occur for various 
+                    crops, and aquatic and sediment species. For the purpose of this analysis, only the top 
+                    15 counts of days of exceedance were selected for each bar chart. 
+                    The model data is from 2015 - 2019. The bar charts are grouped by watershed."), 
+                     br(),
+    
                        ## Data sourcing 
                        h3(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                        p("Data sourced from Nicol Parker, PhD Candidate at the University of California, 
                       Santa Barbara, Bren School of Environmental Science & Management. With support from the 
-                      Bay Delta Science Fellowship, and initiative of the California Sea Grant."), 
+                      Bay Delta Science Fellowship, and initiative of the California Sea Grant.")
                       
+                     ) # End column 3 fluid row
+                  ), # end fluidrow  
+                  
+                  #### End fluidrow copied
+                  
+                  
                       br(),
                       
                       
                       tags$p(HTML("To download the data and userguide, click 
                                 <a href=\"https://datadryad.org/stash/share/7a-F-jEXmlvWi3-xeRx_X4osZqXrr8Nh97tnx2bBOSk/\">here.</a>")), 
                       
-                       ), ## end main panel
-                       
+        
                       hr(), 
                        
                       # End data source 
@@ -557,7 +580,6 @@ server <- function(input, output) {
       filter(huc %in% c(input$watershed_select)) %>% 
       group_by(year, huc) %>% 
       summarize(totals = sum(RI_net))
-    
   })
   
   ### Plot of selected watershed by year 

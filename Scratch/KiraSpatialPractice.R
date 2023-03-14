@@ -8,7 +8,7 @@ library(leaflet)
 
 ### Read in Spatial data with names 
 
-watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
+watershed_annual <- read_csv(here::here("Tab1_Watershed_RiskSummary_Annual.csv"))
 
 
 watersheds_sf <- read_sf(here::here("spatial_data/BDW_NearHUC12_Watersheds_Simplified/BDW_NearHUC12_Simp10m.shp")) %>% 
@@ -26,25 +26,30 @@ watershed_by_yr <- watershed_annual %>%
   
 ### Bind spatial data with names/risks
 watershed_sf_merge <- merge(watersheds_sf, watershed_annual, by.x = "NAME", by.y = "huc") %>%
-  st_transform('+proj=longlat +datum=WGS84')
+  st_transform('+proj=longlat +datum=WGS84') 
+
+unique_watersheds <- watershed_annual %>% 
+  select(huc, RI_invertebrate_water, RI_invertebrate_sed, RI_net) %>% 
+  distinct()
+
+write_csv(unique_watersheds, "watershed_data_processed.csv")
 
 # leaflet() %>%
-#   leaflet::addPolygons(data = watersheds_sf_merge) %>%
+#   leaflet::addPolygons(data = watershed_sf_merge) %>%
 #   addProviderTiles("Esri.WorldTopoMap") %>%
 #   setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
 #   addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
-#   addPolygons(data = watersheds_sf_merge,
+#   addPolygons(data = watershed_sf_merge,
 #               color = "Black", weight = 1, smoothFactor = 0.5,
 #               opacity = 1.0, fillOpacity = 0.5,
 #               fillColor = "Pink",
 #               highlightOptions = highlightOptions(color = "white", weight = 2,
-#                                                   bringToFront = TRUE), 
-#               popup = paste0("Watershed: </b>", 
+#                                                   bringToFront = TRUE)),
+#               popup = paste0("Watershed: </b>", unique_watersheds$huc, "</b>",
+#                              "Pesticide Risk to Aquatic Ecosystems: </b>", unique_watersheds$RI_invertebrate_water,
 #                              "</b>",
-#                              "Pesticide Risk to Aquatic Ecosystems: </b>",
+#                              "Pesticide Risk to Terrestrial Ecosystems: </b>", unique_watersheds$RI_invertebrate_sed,
 #                              "</b>",
-#                              "Pesticide Risk to Terrestrial Ecosystems: </b>",
-#                              "</b>",
-#                              "Net Pesticide Toxicity Risk: </b>"))
-# 
-# 
+#                              "Net Pesticide Toxicity Risk: </b>", unique_watersheds$RI_net))
+
+

@@ -174,9 +174,6 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 #######################################################################################
 # main color: #85d6a5
 
-#### Tab 1 map 
-fctpal <- colorFactor(palette = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'), 
-                      levels = c(1, 2, 3, 4))
 
 #### Tab 2 reactive color data frame
 color_df <- data.frame(variable = c("net risk", "fish", "aquatic invertebrates", "benthic invertebrates", "non-vascular plants", "vascular plants"), 
@@ -415,7 +412,13 @@ ui <- fluidPage(theme = my_theme,
                                       wellPanel(
                                         selectInput('index_map', 
                                                     label = 'Select Index Type:', 
+<<<<<<< HEAD
                                                     choices = unique(watershed_annual_avg$index_type)) 
+=======
+                                                    choices = c()) ##### NEED TO PIVOT AND CREATE 
+                                        
+  
+>>>>>>> b139a9c1f23ded73630c16f7d9ce3117b4bd5e27
                                             
                                       ), #end index wellPanel
                                    
@@ -744,6 +747,12 @@ server <- function(input, output) {
     filter(year %in% c(input$year_map))
   })
   
+  ### Reactive color palatte 
+  fctpal <- reactive({
+    colorFactor(palette = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'), 
+                        levels = unique(risk_annual_perc()$input$index_map))
+  })
+  
   ### Leaflet map based on year and risk index 
   output$risk_map <- renderLeaflet({
     
@@ -753,13 +762,13 @@ server <- function(input, output) {
       setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
       addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
       addPolygons(data = risk_annual_perc(),
-                  color = ~fctpal(risk_annual_perc()$input$index_map), weight = 1, smoothFactor = 0.5,
+                  color = ~fctpal()(risk_annual_perc()$input$index_map), weight = 1, smoothFactor = 0.5,
                   opacity = 1.0, fillOpacity = 0.8,
                   highlightOptions = highlightOptions(color = "white", weight = 2,
                                                       bringToFront = TRUE),
                   popup = paste0("Watershed: ", risk_annual_perc()$name,
                                  "<br>",
-                                 "Risk to Fish ", risk_annual_perc()$fish_quart, 
+                                 "Risk to Fish: ", risk_annual_perc()$fish_quart, 
                                  "<br>",
                                  "Risk to Aquatic Invertebrates: ", risk_annual_perc()$water_invert_quart, 
                                  "<br>",

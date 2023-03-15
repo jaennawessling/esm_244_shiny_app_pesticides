@@ -176,7 +176,12 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 # main color: #85d6a5
 
 #### Tab 1 map data frame
-map_colors <- colorFactor(c('#540B0C', '#ba9d9d', '#875454', '#ede6e6'), watershed_annual_avg$quartile)
+# high, low, moderate, negligible
+map_colors <- colorFactor(c('#320607', '#a98585', '#763b3c', '#ede6e6'), watershed_annual_avg$quartile)
+
+#original map colors if we want to switch back
+#c('#540B0C', '#ba9d9d', '#875454', '#ede6e6')
+
 
 #### Tab 2 reactive color data frame
 color_df <- data.frame(variable = c("net risk", "fish", "aquatic invertebrates", "benthic invertebrates", "non-vascular plants", "vascular plants"), 

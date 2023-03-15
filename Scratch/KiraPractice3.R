@@ -87,7 +87,7 @@ leaflet() %>%
   setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
   addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
   addPolygons(data = risk_annual_perc,
-              color = ~fctpal(net_quart), weight = 1, smoothFactor = 0.5,
+              color = ~fctpal(quartile), weight = 1, smoothFactor = 0.5,
               opacity = 1.0, fillOpacity = 0.8,
               highlightOptions = highlightOptions(color = "white", weight = 2,
                                                   bringToFront = TRUE),
@@ -103,7 +103,8 @@ leaflet() %>%
                              "<br>", 
                              "Risk to Terrestrial Invertebrates: ", risk_annual_perc$sed_quart,
                              "<br>",
-                             "Net Pesticide Toxicity Risk: ", risk_annual_perc$net_quart))
+                             "Net Pesticide Toxicity Risk: ", risk_annual_perc$net_quart)) 
+  
 
 
 

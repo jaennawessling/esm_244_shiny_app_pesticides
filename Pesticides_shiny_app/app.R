@@ -769,7 +769,7 @@ server <- function(input, output) {
                   popup = paste0("Watershed: ", risk_filter()$name,
                                  "<br>",
                                  "Selected Risk: ", risk_filter()$quartile)) %>% 
-      addLegend(colors = c('#540B0C', '#875454', '#ba9d9d', '#ede6e6'),
+      addLegend(colors = c('#320607', '#763b3c', '#a98585', '#ede6e6'),
         labels = c("high", 'moderate', 'low', 'negligible'),
         title = "Risk Severity:", 
         opacity = 1, 

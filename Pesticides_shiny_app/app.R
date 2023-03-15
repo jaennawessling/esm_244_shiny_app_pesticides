@@ -414,17 +414,8 @@ ui <- fluidPage(theme = my_theme,
                                       wellPanel(
                                         selectInput('index_map', 
                                                     label = 'Select Index Type:', 
-<<<<<<< HEAD
 
                                                     choices = unique(watershed_annual_avg$index_type)) 
-
-                                                    choices = c()) ##### NEED TO PIVOT AND CREATE 
-                                        
-
-=======
-                                                    choices = unique(watershed_annual_avg$index_type)) 
-       
->>>>>>> d4e1fefd8851366bbe9b8902e80d214acfab1730
                                             
                                       ), #end index wellPanel
                                    

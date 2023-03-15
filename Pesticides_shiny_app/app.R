@@ -33,6 +33,8 @@ watersheds_sf <- read_sf(here::here("spatial_data/BDW_Watersheds/BDW_Near_HUC12.
 
 rmapshaper::ms_simplify(watersheds_sf)
 
+#add dataframes for map data here with all risk indexes included, grouped by year and watershed, averaged for each year
+
 
 #######################################################################################
 #### Tab 2 annual data: annual crop risk summary
@@ -109,16 +111,17 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 ### Color Palette
 #######################################################################################
 # main color: #85d6a5
-
 #### Tab 2 reactive color data frame
 color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
                        color = c("#85d6a5", "#00796b", "#DBA507", "#CC7351", "#8EC7D2", "#d0c1db"))
 
 
 ### Creating a vector version of this, not connected to specific variables
+
 our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
                         "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
                         "#BBECF2", "#540B0C")
+
 
 #######################################################################################
 ## Theme
@@ -135,11 +138,12 @@ my_theme <- bs_theme(
 ui <- fluidPage(theme = my_theme, 
 
                 # Application title
-                titlePanel("The Pesticide Management Prioritization Module (PMPM)"),
+                titlePanel("Pesticide Risk in the San Francisco Bay Delta Watershed"),
                 
                 # Adding our tabs panel
                 tabsetPanel(
                   #######################################################################################
+                 
                   # Welcome Tab - Jaenna ----
                   tabPanel(icon("home"),
                            
@@ -151,7 +155,7 @@ ui <- fluidPage(theme = my_theme,
                               courtesy of the National Park Service)"), style="text-align: center; font-size:12px"
                            ), # end photo text
                            hr(), # horizontal line break
-        
+                           
                            
                            # Creating a fluid row to can create multiple columns to have information and a small photo
                            fluidRow(
@@ -170,42 +174,51 @@ ui <- fluidPage(theme = my_theme,
                              column(width=8,
                                     
                                     h3(strong("Purpose"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                                    p("This interactive tool illustrates the daily predicted pesticide concentrations and risk
-                     based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
+                                    p("This interactive tool illustrates pesticide risk based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
                      and aquatic vascular plants in the (San Francisco) Bay Delta Watershed."), # End paragraph 1 
-                     br(), # Line break    
+                     br(), # Line break
                      
                      h3(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                     strong("What does the PMPM do?"),
-                     p("The Pesticide Management Prioritization Module (PMPM) predicts spatiotemporal explicit 
-                     concentrations of pesticides from agricultural use in soil, water, and sediment. The use
+                     strong("What does the Pesticide Management Prioritization Model (PMPM) - Environmental Fate Tool do?"),
+                     p("The data used in this analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
+                     The Environmental Fate Tool is the second model of the Pesticide Management Prioritization Module (PMPM), 
+                     which predicts spatiotemporal explicit concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
                      by growers in CA). Pesticide concentrations are predicted using mechanistic models that
                      consider climate, hydrology, irrigation practices, and pesticide properties in the 226 
                      watersheds within ~100 km of the Bay Delta Watershed (22,000 km2)."),
+                     br(),
+                     p("For the analysis in this website, only pesticide exposure risk and days of exceedance of 
+                       pesticide exposure are utilized. Pesticide concentrations are not included in the analysis."),
                      
                      br(),
-                     strong("Why is this analysis needed?"),
-                     p("13% of California’s 
+        
+                     p(strong("The PMPM is designed to address limitations of existing tools for pesticide impact
+                    analyses by integrating features into a single tool that can:")),
+                    p("1) Quantify the risk to diverse taxa over tens of thousands of kilometers (hundreds of watersheds)."),
+                    p("2) Evaluate primary sources of pesticide risk as well as their temporal variability."),
+                    p("3) Analyze the cumulative risk of the hundreds of pesticides in use."),
+                    p("4) Quantify how often pesticide concentrations are predicted to exceed."),
+                  
+                    br(),
+                    strong("Why is this analysis needed?"),
+                    p("13% of California’s 
                      waterways are designated as impaired by pesticides of those assessed for non-point 
                      source pollution under the Clean Water Act. 56% are present within the Bay Delta 
                      Watershed (BDW), home to over 90 threatened and endangered species."),
-                     
-                     br(),
-                     strong("What are the PMPM goals?"),
-                     p("As humans move
+                    
+                    br(),
+                    strong("What are the PMPM goals?"),
+                    p("As humans move
                      toward pesticides that are lower in toxicity for mammals, but are orders of magnitude
                      more toxic to invertebrates and aquatic organisms, the PMPM aims to identify:"),
-                     p("1) Which activities are imposing the greatest pesticide loads?"),
-                     p("2) Who is responsible?"),
-                     p("3) How can tradeoffs between the benefits of chemical use be managed to restore
+                    p("1) Which activities are imposing the greatest pesticide loads?"),
+                    p("2) Who is responsible?"),
+                    p("3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?") # end of background section 
                      
                              ), # end column 2 fluidrow 
-                           
-                     
-                     # Adding text and output to the fluidrow
-                     
+                 
                      column(width=8,
                    
                        ## Website contents
@@ -265,95 +278,159 @@ ui <- fluidPage(theme = my_theme,
                   
                   #######################################################################################
                   # Tab 1 - Map tab - Kira ----
-                  tabPanel("Map of Pesticide Risk", 
-                           sidebarLayout(position = "right",
-                                         
-                                         sidebarPanel(
-                                           tags$strong("Overall Pesticide Toxicity Risk Over Time"), 
-                                           
-                                           selectInput('watershed_select', 
-                                                       label = 'Select Watershed(s):', 
-                                                       choices = unique(watershed_annual$huc),
-                                                       "Antelope Creek", 
-                                                       multiple = TRUE), #END Watershed dropdown
-                                           
-                                           sliderInput("tox_yr_slider", 
-                                                       label = h3("Select Year Range:"), 
-                                                       min = 2015, 
-                                                       max = 2019, value = c(2016, 2018), 
-                                                       sep = "") #END year slider 
-                                           
-                                         ), # END sidebar panel - Map tab
-                                         
-                                         
-                                         mainPanel(
-                                           
-                                           # Map Title 
-                                           
-                                           tags$strong("Pesticide Risk in Watersheds Surrounding the Bay Delta"), 
-                                           
-                                           #Leaflet map - NEED TO INCORPORATE REACTIVITY 
-                                           
-                                           leaflet() %>%
-                                             leaflet::addPolygons(data = watersheds_sf) %>%
-                                             addProviderTiles("Esri.WorldTopoMap") %>%
-                                             setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
-                                             addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
-                                             addPolygons(data = watersheds_sf,
-                                                         color = "Black", weight = 1, smoothFactor = 0.5,
-                                                         opacity = 1.0, fillOpacity = 0.5,
-                                                         fillColor = "Pink",
-                                                         highlightOptions = highlightOptions(color = "white", weight = 2,
-                                                                                             bringToFront = TRUE), 
-                                                         popup = paste0("Watershed: </b>", 
-                                                                        "</b>",
-                                                                        "Pesticide Risk to Aquatic Ecosystems: </b>",
-                                                                        "</b>",
-                                                                        "Pesticide Risk to Terrestrial Ecosystems: </b>",
-                                                                        "</b>",
-                                                                        "Net Pesticide Toxicity Risk: </b>")), 
-                                           
-                                           tags$strong("Overall Pesticide Toxicity Risk by Watershed"),
-                                           
-                                           plotlyOutput(outputId = 'watershed_yr_plot')
-                                           
-                                         ) #END main panel - map tab
-                                         
-                           ) # END sidebarLayout - map tab
-                           
-                  ), # END tabPanel - map
-                  
                  
-          
+                  hr(),
                   
-                  #######################################################################################
-                  # Tab 2 - Application site type (crop) data - Sadie ----
-                  tabPanel("Temporal Trends by Application Site Type", 
+                  tabPanel("Map of Pesticide Risk", 
+                           
+                           ###### Map and map widgets
                            fluidRow(
                              
                              br(),
                              
-                             h5("The Pesticide Exposure Risk Index for Plants and Invertebrates Depending on Application Site Types ", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                             p("Application site types describe the different types of crops associated with pesticide use in the Bay Delta Watershed. The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (exposure through water or sediment), vascular plants, and
-                                        nonvascular plants. The overall net risk index can also be displayed."),
+                             h5("Risk of Pesticide Exposure in the Bay Delta Watershed", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                             
                              br(),
                              
-                             p("NEED TO EXPLAIN THE FIGURES. Select which application site type (crop type) to display the risk indices for the different categories of plants and animals, and select which risk indices to display.
-                                        Figure 1 shows .... la la la."),
-                                        
-                                      
+                             p("TEXT TO EXPLAIN THE MAP."),
                              
+                             ### widgets for map
+                             column(3, position = "right",
+                                           
+                                      #select year
+                                      wellPanel(
+                                        selectInput('year_map', 
+                                                    label = 'Select Year:', 
+                                                    choices = unique(watershed_annual$year),
+                                                    "2015", 
+                                                    multiple = FALSE),
+                                        
+                                      ), #end year wellPanel
+                                           
+                                      #select index
+                                      wellPanel(
+                                        selectInput('index_map', 
+                                                    label = 'Select Index Type:', 
+                                                    choices = unique(watershed_annual$index)) ## NEED TO MAKE THIS A COLUMN
+                                            
+                                      ), #end index wellPanel
+                                   
+                                            
+                                    ), # end map widget column
+                       
+                             
+                             ### MAP
+                             mainPanel(
+                               column(12,
+                                      
+                                      # Map Title 
+                                      tags$strong("Pesticide Risk in Watersheds Surrounding the Bay Delta"), 
+                                      
+                                      #Leaflet map - NEED TO INCORPORATE REACTIVITY 
+                                      leaflet() %>%
+                                        leaflet::addPolygons(data = watersheds_sf) %>%
+                                        addProviderTiles("Esri.WorldTopoMap") %>%
+                                        setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
+                                        addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
+                                        addPolygons(data = watersheds_sf,
+                                                    color = "Black", weight = 1, smoothFactor = 0.5,
+                                                    opacity = 1.0, fillOpacity = 0.5,
+                                                    fillColor = "Pink",
+                                                    highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                                                        bringToFront = TRUE), 
+                                                    popup = paste0("Watershed: </b>", 
+                                                                   "</b>",
+                                                                   "Pesticide Risk to Aquatic Ecosystems: </b>",
+                                                                   "</b>",
+                                                                   "Pesticide Risk to Terrestrial Ecosystems: </b>",
+                                                                   "</b>",
+                                                                   "Net Pesticide Toxicity Risk: </b>"))
+                                      
+                                      ) #end column
+                               
+                             ) #end mainPanel
+                        
+                           ), #end fluidRow -- MAP
+                           
+                           br(),
+                           
+                           br(),
+                           
+                           br(),
+                        
+                          
+                           ##### fluidRow for graph and graph widgets
+                           fluidRow(
+                             
+                             p("TEXT TO EXPLAIN THE GRAPH."),
+                             
+                             column(3,
+                                    #widgets for graph 
+                                    wellPanel(tags$strong("Overall Pesticide Toxicity Risk Over Time"), 
+                                              
+                                              selectInput('watershed_select', 
+                                                          label = 'Select Watershed(s):', 
+                                                          choices = unique(watershed_annual$huc),
+                                                          "Antelope Creek", 
+                                                          multiple = TRUE), #END Watershed dropdown
+                                              
+                                              sliderInput("tox_yr_slider", 
+                                                          label = h3("Select Year Range:"), 
+                                                          min = 2015, 
+                                                          max = 2019, value = c(2016, 2018), 
+                                                          sep = "") #END year slider 
+                                              
+                                    ), # END wellPanel - Map tab
+                                    
+                              ), #end column
+                             
+                           
+                             ### Graph mainPanel
+                             mainPanel(
+                               column(12,
+                                      tags$strong("Overall Pesticide Toxicity Risk by Watershed"),
+                                      
+                                      plotlyOutput(outputId = 'watershed_yr_plot')   
+                                 
+                               ) #end graph column
+                               
+                             ) #end graph mainPanel
+                     
+                           ) #end fluidRow -- graph
+                           
+                  ), # END tabPanel - map
+                  
+                 
+                  
+                  #######################################################################################
+                  # Tab 2 - Application site type (crop) data - Sadie ----
+                  hr(),
+                  
+                  tabPanel("Temporal Trends by Application Site Type", 
+                           
+                           fluidRow(
+                             
+                             br(),
+                             
+                             h5("The Pesticide Exposure Risk Index for Plants and Invertebrates for Different Application Site Types ", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                             
+                             br(),
+                            
+                             p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each type of crop. 
+                             The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 
+                             The net risk index is the risk index observed for all species evaluated, summarized across all species."),
+
                              br(),
                              
                              column(3,
                                     
                                     br(), 
                                     
-                                    #dropdown menu for application site type 
+                                    # drop down menu for application site type 
                                     wellPanel(
-                                      strong("Application Site Type"),
+                                     # strong("Select an Application Site Type (crop type):"),
                                           selectInput("hru_dropdown",
-                                                      label = "Select an application site type (crop type)",
+                                                      label = "Select an application site type (crop type):",
                                                       choices = unique(crop_monthly_final$hru)) #end pesticide dropdown
                                     ), # end wellPanel
                                     
@@ -361,9 +438,9 @@ ui <- fluidPage(theme = my_theme,
                                     
                                     #dropdown menu to select year
                                     wellPanel( 
-                                      strong("Year"),
+                                      #strong("Select a Year:"),
                                       selectInput("year_dropdown",
-                                                  label = "Select year",
+                                                  label = "Select a year:",
                                                   choices = unique(crop_monthly_final$year)) #end year dropdown
                                 
                                     ), # end wellPanel
@@ -372,23 +449,14 @@ ui <- fluidPage(theme = my_theme,
                                     
                                     #checkboxes for risk index 
                                     wellPanel(
-                                      strong("Risk Index Type"),
+                                      #strong("Select Risk Index Type(s):"),
                                       checkboxGroupInput("index_type_checkboxes",
-                                                         label = "Select risk index type(s)",
+                                                         label = "Select risk index type(s):",
                                                          choices = unique(crop_monthly_final$index_type),
                                                          selected = "RI_net") #end risk index checkboxes
                                     ) #end wellPanel
-                                    
-                                    
-                                    # risk index dropdown for top ten crop figures (does not impact line graphs)
-                                    # wellPanel(
-                                    #   strong("Top Ten Crops with Highest Risk Index"),
-                                    #   selectInput("index_top_ten_dropdown",
-                                    #               label = "Pick a risk index type",
-                                    #               choices = unique(crop_annual$index_type)) #end risk dropdown
-                                    # ) # end wellPanel
-                            
-                                  ), #end column
+                              
+                                ), #end column
                            
                            
                              #display  the graphs of temporal trends for the selected application site type
@@ -397,36 +465,32 @@ ui <- fluidPage(theme = my_theme,
                                       
                                       br(),
                                       
+                                      p("The figure below illustrates the selected risk indexes for a selected application site type in one given year. Select which application site type (crop type), risk indexes, and year to display."),
+                                      
                                       # Figure 1
                                        #strong("Figure 1: Temporal Trends by Application Site Type in Selected Year"),
-                                       plotlyOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
+                                      plotlyOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
                                        
-                                       br(), 
+                                      br(), 
                                        
-                                       br(),
+                                      br(),
                                       
-                                       br(),
+                                      br(),
                                        
                                       # Figure 2
-                                       #strong("Figure 2: Temporal Trends by Application Site Type for All Years"),
-                                       plotlyOutput(outputId = 'hru_annual_plot'),
-                                       
-                                       br(),
-                                       
-                                       br(),
-                                       
-                                       br(),
-                                       
-                                       br(),
-                                       
-                                       br(),
-                                       
-                                      # Figure 3
-                                       #strong("Figure 3: Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
-                                      #plotlyOutput(outputId = 'top_ten_crops'),
                                       
-                                      br()
+                                      p("The following figure shows the selected risk indexes for a selected application site type across all years of the analysis, 2015-2019. Select which application site type (crop type) and risk indexes to display across all years of the data."),
                                       
+                                      plotlyOutput(outputId = 'hru_annual_plot'),
+                                       
+                                      br(),
+                                       
+                                      br(),
+                                       
+                                      br(),
+                                       
+                                      br(),
+                                     
                                ) #end column        
                              ) #end mainPanel
                            ), #end fluidRow 
@@ -444,6 +508,11 @@ ui <- fluidPage(theme = my_theme,
                              
                              mainPanel(
                                     column(12,
+                                           
+                                           #Figure 3: top ten crops that contribute to risk for each index
+                                           p("The figure below shows which ten application site types contribute the most pesticide exposure risk for each index type.
+                                             Select which application site type (crop type) to display."),
+                                       
                                            plotlyOutput(outputId = 'top_ten_crops')  
                                       
                                     ) # end column
@@ -451,6 +520,9 @@ ui <- fluidPage(theme = my_theme,
                             
                            ) # end fluidRow
                   ), #end tabPanel - temporal trends by application site type
+                  
+                  br(),
+
                   
                   #######################################################################################
                   # Tab 3 - Species tab - Jaenna ----

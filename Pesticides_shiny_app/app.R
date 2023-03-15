@@ -234,7 +234,7 @@ ui <- fluidPage(theme = my_theme,
                                     h4(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                                     strong("What does the Pesticide Management Prioritization Model (PMPM) - Environmental Fate Tool do?"),
                                     p("The data used in this analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
-                     The Environmental Fate Tool is the second model of the Pesticide Management Prioritization Module (PMPM), 
+                     The Environmental Fate Tool (EFT) is the second model of the Pesticide Management Prioritization Module (PMPM), 
                      which predicts spatiotemporal explicit concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
                      by growers in CA). Pesticide concentrations are predicted using mechanistic models that
@@ -261,9 +261,9 @@ ui <- fluidPage(theme = my_theme,
                      Watershed (BDW), home to over 90 threatened and endangered species."),
                     
                     br(),
-                    strong("What are the PMPM goals?"),
+                    strong("What are the PMPM and the Environmental Fate Tool goals?"),
                     p("As humans move toward pesticides that are lower in toxicity for mammals, but are orders of magnitude
-                     more toxic to invertebrates and aquatic organisms, the PMPM aims to identify:"),
+                     more toxic to invertebrates and aquatic organisms, the PMPM and EFT aim to identify:"),
                     p("1) Which activities are imposing the greatest pesticide loads?"),
                     p("2) Who is responsible?"),
                     p("3) How can tradeoffs between the benefits of chemical use be managed to restore
@@ -275,8 +275,10 @@ ui <- fluidPage(theme = my_theme,
                       tags$img(src="watershed.jpg",width="250px",height="310px", align = "justify"),
                       br(),
                       br(), 
-                      p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
-                                 Photo courtesy of the United States Environmental Protection Agency.",
+                      p("The Bay Delta Watershed. The various colored regions represent the five main areas of the watershed.
+                        In this analysis, only portions of the San Francisco Bay and the Sacramento-San 
+                        Joaquin River Delta regions (dark green and orange regions) were analyzed. 
+                        (Photo courtesy of the United States Environmental Protection Agency.)",
                         br(),
                         style="text-align:justify;color:black, font-size:12px"),
                       width=3) ## End first fluid row column
@@ -316,12 +318,13 @@ ui <- fluidPage(theme = my_theme,
                     
                     column(width=3,
                            br(),
-                           tags$img(src="crops.png",width="310px",height="360px", align = "justify"),
+                           tags$img(src="crops.png",width="400px",height="460px", align = "justify"),
                            br(),
                            br(), 
-                           p("Plant nursery, Almond orchard, and Christmas tree farm. Various application site types within the Bay Delta Watershed."),
+                           p("Plant nursery, Almond orchard, and Christmas tree farm. Various application site types within the Bay Delta Watershed.
+                             (Photos courtesy of Modern Farmer, The Almond Doctor, and California Crossroads.",
                            br(),
-                           style="text-align:justify;color:black, font-size:12px",
+                           style="text-align:justify;color:black, font-size:12px"),
                     ) ## End column 6 - fluidrow
                     ), # end fluid row
                     
@@ -362,10 +365,11 @@ ui <- fluidPage(theme = my_theme,
                       ## Species photo column
                       column(width=3,
                              br(),
-                             tags$img(src="species.png",width="310px",height="360px", align = "justify"),
+                             tags$img(src="species.png",width="400px",height="460px", align = "justify"),
                              br(),
                              br(), 
-                             p("Polychaete, pricky sculpin, and rock crab. Aquatic and benthic fish and invertebrate species of the Bay Delta Watershed."),
+                             p("Polychaete, prickly sculpin, and rock crab. Aquatic and benthic fish and invertebrate species of the Bay Delta Watershed.
+                               (Photos courtesy of iNaturalist Canada, Pearson Ecological, and Walla Walla University."),
                              br(),
                              style="text-align:justify;color:black, font-size:12px",
                       ), ## End column 4 - species photo column
@@ -390,7 +394,7 @@ ui <- fluidPage(theme = my_theme,
                              
                              br(),
                              
-                             p("Below is an interactive map of watersheds within Bay Delta region, color indicates risk severity. 
+                             p("Below is an interactive map of watersheds within the Bay Delta region, color indicates risk severity. 
                                Each risk index has been divided into percentile categories based on their yearly averages:
                                Negligible Risk, Low Risk, Moderate Risk, and High Risk. Years range from 2015 to 2019, and risk indices include overall risk, as well as risk to fish, 
                                aquatic invertebrates, vascular plants, nonvascular plants, and terrestrial invertebrates. Select a year and index to begin."),
@@ -626,15 +630,21 @@ ui <- fluidPage(theme = my_theme,
                   tabPanel("Pesticide Exceedance on Species and Crops",
                            hr(),
                            h5("Daily Pesticide Exceedance on Species and Crops", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                           p(strong("How does pesticide concentration exceedance differ between animals, 
-                                    plants, and crops? Does it differ by application site type?")),
-                           
                            p("The figures below illustrate the modeled number of days a pesticide in water
                              exceeded the concentration at which severe and adverse effects would occur for
-                             various crops, and aquatic and benthic sediment species. \nFor the purpose of this 
-                             analysis, only the top 15 counts of days of exceedance were selected for 
+                             various crops, and aquatic and benthic sediment species. For this analysis, 
+                             only the top 15 counts of days of exceedance were selected for 
                              each bar chart."),
-                 
+                           
+                           
+                           br(),
+                           p("The purpose of this tab is to explore:"), 
+                           p("1) How pesticide concentration exceedance differs between animals, plants, and crops."),
+                           p("2) How days of exceedance in animals, plants, and crops differ by application site type."),
+                           br(), 
+                           p("Understanding these relationships illustrates which crop
+                             (application site) activities are related to the greatest days of exceedance."),
+                           
                            hr(),
                            p(strong("Select a watershed from the dropdown menu to view the days of pesticide 
                              concentration exceedance for species in the top chart and by crop 
@@ -897,7 +907,7 @@ server <- function(input, output) {
                     input$crop_exceedance_select)) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
       coord_flip() +
-      theme_minimal()
+      theme_minimal() + theme(axis.title.y = element_blank())
   }) # End crop type reactive plot
   
   
@@ -921,7 +931,7 @@ server <- function(input, output) {
                     input$watershed_species_select)) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
       coord_flip() + 
-      theme_minimal()
+      theme_minimal() + theme(axis.title.y = element_blank())
   }) # End species application site reactive plot
   
   

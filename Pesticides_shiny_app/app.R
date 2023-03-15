@@ -73,18 +73,8 @@ crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>%
         "vascular plants" = RI_plant_vascular, "non-vascular plants" = RI_plant_nonvascular, "net risk" = RI_net) %>% 
   pivot_longer("fish":"net risk", names_to = "index_type", values_to = "risk_index_value") %>% 
   filter(huc == "All Watersheds") %>% 
-  mutate(hru = str_to_lower(hru)) #%>% 
-  # mutate(index = case_when(index_type == "RI_net" ~ "net risk index",
-  #                          index_type == "RI_fish" ~ "fish",
-  #                          index_type == "RI_invertebrate_water" ~ "aquatic invertebrates",
-  #                          index_type == "RI_invertebrate_sed" ~ "benthic invertebrates",
-  #                          index_type == "RI_plant_vascular" ~ "vascular plants",
-  #                          index_type == "RI_plant_nonvascular" ~ "non-vascular plants"))
-
-#rename("fish" = RI_fish, "aquatic invertebrates" = RI_invertebrate_water, "sediment invertebrates" = RI_invertebrate_sed,
-       #"vascular plants" = RI_plant_vascular, "non-vascular plants" = RI_plant_nonvascular, "net risk" = RI_net) %>% 
- # rename() do all the risk index renaming
-
+  mutate(hru = str_to_lower(hru)) 
+ 
 
 #### Tab 2 monthly data: monthly crop risk summary
 crop_monthly <- read_csv(here("Tab2_Crop_RiskSummary_Monthly.csv"))%>% 
@@ -117,14 +107,8 @@ crop_monthly_final <- crop_monthly_mod %>%
   pivot_longer("fish":"net risk", names_to = "index_type", values_to = "risk_index_value") %>% 
   mutate(year = year(date)) %>% 
   mutate(month = month(date)) %>% 
-  mutate(hru = str_to_lower(hru))# %>% 
-  # mutate(index = case_when(index_type == "RI_net" ~ "net risk index",
-  #                          index_type == "RI_fish" ~ "fish",
-  #                          index_type == "RI_invertebrate_water" ~ "aquatic invertebrates",
-  #                          index_type == "RI_invertebrate_sed" ~ "benthic invertebrates",
-  #                          index_type == "RI_plant_vascular" ~ "vascular plants",
-  #                          index_type == "RI_plant_nonvascular" ~ "non-vascular plants"))
-  # 
+  mutate(hru = str_to_lower(hru))
+  
 
 
 #######################################################################################
@@ -134,7 +118,7 @@ crop_monthly_final <- crop_monthly_mod %>%
 days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) %>% 
   rename(fish = days_fish) %>% 
   rename("aquatic invertebrates" = days_invertebrate_water) %>% 
-  rename("sediment invertebrates" = days_invertebrate_sed) %>% 
+  rename("benthic invertebrates" = days_invertebrate_sed) %>% 
   rename("non-vascular plants" = days_plant_nonvascular) %>% 
   rename("vascular plants" = days_plant_vascular) %>% 
   rename("any species" = days_any_species)  
@@ -290,7 +274,7 @@ ui <- fluidPage(theme = my_theme,
   
                      p(strong("Tab 2: Temporal Trends by Application Site Type")), 
                      p("Interactive time series graphs of the pesticide exposure risk (risk index) to fish, invertebrates 
-                       (exposure through water or sediment), vascular plants, and nonvascular plants. The graphs are grouped
+                       (exposure through water or benthic sediment), vascular plants, and nonvascular plants. The graphs are grouped
                        by application site type (crop type). Application site types describe the different types of crops associated with pesticide
                        use in the Bay Delta Watershed. The overall net risk index can also be displayed.
                        The pesticide risk graphs can be analyzed annually with model data from 2015 to 2019. 
@@ -300,7 +284,7 @@ ui <- fluidPage(theme = my_theme,
                   p(strong("Tab 3: Pesticide Exceedance on Species and Crops")), 
                   p("Interactive bar charts of the modeled number of days a pesticide in water 
                     exceeded the concentration at which severe and adverse effects would occur for various 
-                    crops, and aquatic and sediment species. For the purpose of this analysis, only the top 
+                    crops, and aquatic and benthic sediment species. For the purpose of this analysis, only the top 
                     15 counts of days of exceedance were selected for each bar chart. 
                     The model data is from 2015 - 2019. The bar charts are grouped by watershed."), 
                      br(),
@@ -627,7 +611,7 @@ ui <- fluidPage(theme = my_theme,
                            
                            p("The figures below illustrate the modeled number of days a pesticide in water
                              exceeded the concentration at which severe and adverse effects would occur for
-                             various crops, and aquatic and sediment species. \nFor the purpose of this 
+                             various crops, and aquatic and benthic sediment species. \nFor the purpose of this 
                              analysis, only the top 15 counts of days of exceedance were selected for 
                              each bar chart."),
                  

@@ -590,6 +590,8 @@ ui <- fluidPage(theme = my_theme,
                              ) #end mainPanel
                            ), #end fluidRow 
                            
+                           hr(),
+                           
                            fluidRow(
                              column(3,
                                     # risk index dropdown for top ten crop figures (does not impact line graphs)

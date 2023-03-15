@@ -69,15 +69,17 @@ watershed_sf_merge_clean <- watershed_sf_merge %>%
 #######################################################################################
 #### Tab 2 annual data: annual crop risk summary
 crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>% 
-  pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
+  rename("fish" = RI_fish, "aquatic invertebrates" = RI_invertebrate_water, "benthic invertebrates" = RI_invertebrate_sed,
+        "vascular plants" = RI_plant_vascular, "non-vascular plants" = RI_plant_nonvascular, "net risk" = RI_net) %>% 
+  pivot_longer("fish":"net risk", names_to = "index_type", values_to = "risk_index_value") %>% 
   filter(huc == "All Watersheds") %>% 
-  mutate(hru = str_to_lower(hru)) %>% 
-  mutate(index = case_when(index_type == "RI_net" ~ "net risk index",
-                           index_type == "RI_fish" ~ "fish",
-                           index_type == "RI_invertebrate_water" ~ "aquatic invertebrates",
-                           index_type == "RI_invertebrate_sed" ~ "sediment invertebrates",
-                           index_type == "RI_plant_vascular" ~ "vascular plants",
-                           index_type == "RI_plant_nonvascular" ~ "non-vascular plants"))
+  mutate(hru = str_to_lower(hru)) #%>% 
+  # mutate(index = case_when(index_type == "RI_net" ~ "net risk index",
+  #                          index_type == "RI_fish" ~ "fish",
+  #                          index_type == "RI_invertebrate_water" ~ "aquatic invertebrates",
+  #                          index_type == "RI_invertebrate_sed" ~ "benthic invertebrates",
+  #                          index_type == "RI_plant_vascular" ~ "vascular plants",
+  #                          index_type == "RI_plant_nonvascular" ~ "non-vascular plants"))
 
 #rename("fish" = RI_fish, "aquatic invertebrates" = RI_invertebrate_water, "sediment invertebrates" = RI_invertebrate_sed,
        #"vascular plants" = RI_plant_vascular, "non-vascular plants" = RI_plant_nonvascular, "net risk" = RI_net) %>% 
@@ -107,20 +109,22 @@ crop_monthly_mod <- crop_monthly %>%
 crop_monthly_mod$date <- my(crop_monthly_mod$date)
 
 #pivot longer -- THIS IS THE FINAL DF TO USE FOR MONTHLY APPLICATION SITE TYPE
-crop_monthly_final <- crop_monthly_mod %>% 
+crop_monthly_final <- crop_monthly_mod %>%  
   filter(huc == "All Watersheds") %>% 
   select(-year, -month, -month_num) %>% 
-  pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
+  rename("fish" = RI_fish, "aquatic invertebrates" = RI_invertebrate_water, "benthic invertebrates" = RI_invertebrate_sed,
+         "vascular plants" = RI_plant_vascular, "non-vascular plants" = RI_plant_nonvascular, "net risk" = RI_net) %>% 
+  pivot_longer("fish":"net risk", names_to = "index_type", values_to = "risk_index_value") %>% 
   mutate(year = year(date)) %>% 
   mutate(month = month(date)) %>% 
-  mutate(hru = str_to_lower(hru)) %>% 
-  mutate(index = case_when(index_type == "RI_net" ~ "net risk index",
-                           index_type == "RI_fish" ~ "fish",
-                           index_type == "RI_invertebrate_water" ~ "aquatic invertebrates",
-                           index_type == "RI_invertebrate_sed" ~ "sediment invertebrates",
-                           index_type == "RI_plant_vascular" ~ "vascular plants",
-                           index_type == "RI_plant_nonvascular" ~ "non-vascular plants"))
- 
+  mutate(hru = str_to_lower(hru))# %>% 
+  # mutate(index = case_when(index_type == "RI_net" ~ "net risk index",
+  #                          index_type == "RI_fish" ~ "fish",
+  #                          index_type == "RI_invertebrate_water" ~ "aquatic invertebrates",
+  #                          index_type == "RI_invertebrate_sed" ~ "benthic invertebrates",
+  #                          index_type == "RI_plant_vascular" ~ "vascular plants",
+  #                          index_type == "RI_plant_nonvascular" ~ "non-vascular plants"))
+  # 
 
 
 #######################################################################################
@@ -166,7 +170,7 @@ fctpal <- colorFactor(palette = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'),
                       levels = c(1, 2, 3, 4))
 
 #### Tab 2 reactive color data frame
-color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
+color_df <- data.frame(variable = c("net risk", "fish", "aquatic invertebrates", "benthic invertebrates", "non-vascular plants", "vascular plants"), 
                        color = c("#85d6a5", "#00796b", "#DBA507", "#CC7351", "#8EC7D2", "#d0c1db"))
 
 
@@ -547,7 +551,7 @@ ui <- fluidPage(theme = my_theme,
                                       checkboxGroupInput("index_type_checkboxes",
                                                          label = "Select risk index type(s):",
                                                          choices = unique(crop_monthly_final$index_type),
-                                                         selected = "RI_net") #end risk index checkboxes
+                                                         selected = "net risk") #end risk index checkboxes
                                     ) #end wellPanel
                               
                                 ), #end column
@@ -605,7 +609,7 @@ ui <- fluidPage(theme = my_theme,
                                            
                                            #Figure 3: top ten crops that contribute to risk for each index
                                            p("The figure below shows which ten application site types contribute the most pesticide exposure risk for each index type.
-                                             Select which application site type (crop type) to display."),
+                                             Select which risk index type to display."),
                                        
                                            plotlyOutput(outputId = 'top_ten_crops')  
                                           
@@ -855,8 +859,8 @@ server <- function(input, output) {
            aes(x = fct_reorder(hru, mean_ri), y = mean_ri)) +
       geom_col(fill = "#85d6a5") +
       coord_flip() +
-      labs(x = "Average risk index across all years", y = "Application site type") +
-      ggtitle(paste("Top ten application site types with the \n highest risk index for", 
+      labs(x = "Application site type", y = "Average risk index across all years") +
+      ggtitle(paste("Top ten application site types with the highest risk index for", 
                     input$index_top_ten_dropdown,
                     "")) +
       theme_minimal()

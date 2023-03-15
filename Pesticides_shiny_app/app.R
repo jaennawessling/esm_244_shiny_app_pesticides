@@ -19,21 +19,40 @@ library(forcats)
 library(plotly)
 library(bslib) 
 library(shinythemes)
+library(dplyr)
 
 
 #######################################################################################
 ### Model Output Data
 #######################################################################################
 
-#### Tab 1 annual data: annual watershed risk summary
+#### Tab 1 annual data: annual watershed risk summary ----
 watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
 
-watersheds_sf <- read_sf(here::here("spatial_data/BDW_Watersheds/BDW_Near_HUC12.shp")) %>% 
+
+### Tab 1 spatial watersheds
+watersheds_sf <- read_sf(here::here("spatial_data/BDW_NearHUC12_Watersheds_Simplified/BDW_NearHUC12_Simp10m.shp")) %>% 
   st_transform('+proj=longlat +datum=WGS84')
 
 rmapshaper::ms_simplify(watersheds_sf)
 
-#add dataframes for map data here with all risk indexes included, grouped by year and watershed, averaged for each year
+watershed_annual_avg <- watershed_annual %>% 
+  select(!hru, !pesticide) %>% 
+  group_by(year, huc) %>% 
+  summarize(avg_net = mean(RI_net), 
+            avg_fish = mean(RI_fish), 
+            avg_water_invert = mean(RI_invertebrate_water), 
+            avg_plant_vasc = mean(RI_plant_vascular), 
+            avg_plant_nonvasc = mean(RI_plant_nonvascular),
+            avg_sed_invert = mean(RI_invertebrate_sed))
+
+### Tab 1 Bind spatial data with names/risks 
+watershed_sf_merge <- merge(watersheds_sf, watershed_annual_avg, by.x = "NAME", by.y = "huc") %>%
+  st_transform('+proj=longlat +datum=WGS84')
+
+watershed_sf_merge_clean <- watershed_sf_merge %>% 
+  janitor::clean_names() %>% 
+  select(!huc)
 
 
 #######################################################################################
@@ -111,6 +130,11 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 ### Color Palette
 #######################################################################################
 # main color: #85d6a5
+
+#### Tab 1 map 
+fctpal <- colorFactor(palette = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'), 
+                      levels = c("Negligible", 'Low', "Moderate", "High"))
+
 #### Tab 2 reactive color data frame
 color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
                        color = c("#85d6a5", "#00796b", "#DBA507", "#CC7351", "#8EC7D2", "#d0c1db"))
@@ -301,7 +325,7 @@ ui <- fluidPage(theme = my_theme,
                                       wellPanel(
                                         selectInput('year_map', 
                                                     label = 'Select Year:', 
-                                                    choices = unique(watershed_annual$year),
+                                                    choices = unique(watershed_annual_avg$year),
                                                     "2015", 
                                                     multiple = FALSE),
                                         
@@ -311,7 +335,12 @@ ui <- fluidPage(theme = my_theme,
                                       wellPanel(
                                         selectInput('index_map', 
                                                     label = 'Select Index Type:', 
-                                                    choices = unique(watershed_annual$index)) ## NEED TO MAKE THIS A COLUMN
+                                                    choices = c("Overall Risk", 
+                                                                "Risk to Fish", 
+                                                                "Risk to Aquatic Invertebrates", 
+                                                                "Risk to Plants (Vascular)", 
+                                                                "Risk to Plants (Nonvascular)", 
+                                                                'Risk to Terrestrial Invertebrates')) 
                                             
                                       ), #end index wellPanel
                                    
@@ -326,25 +355,8 @@ ui <- fluidPage(theme = my_theme,
                                       # Map Title 
                                       tags$strong("Pesticide Risk in Watersheds Surrounding the Bay Delta"), 
                                       
-                                      #Leaflet map - NEED TO INCORPORATE REACTIVITY 
-                                      leaflet() %>%
-                                        leaflet::addPolygons(data = watersheds_sf) %>%
-                                        addProviderTiles("Esri.WorldTopoMap") %>%
-                                        setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
-                                        addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
-                                        addPolygons(data = watersheds_sf,
-                                                    color = "Black", weight = 1, smoothFactor = 0.5,
-                                                    opacity = 1.0, fillOpacity = 0.5,
-                                                    fillColor = "Pink",
-                                                    highlightOptions = highlightOptions(color = "white", weight = 2,
-                                                                                        bringToFront = TRUE), 
-                                                    popup = paste0("Watershed: </b>", 
-                                                                   "</b>",
-                                                                   "Pesticide Risk to Aquatic Ecosystems: </b>",
-                                                                   "</b>",
-                                                                   "Pesticide Risk to Terrestrial Ecosystems: </b>",
-                                                                   "</b>",
-                                                                   "Net Pesticide Toxicity Risk: </b>"))
+                                      #Leaflet map - 
+                                      leafletOutput("risk_map")
                                       
                                       ) #end column
                                
@@ -645,6 +657,41 @@ server <- function(input, output) {
   ## Tab 1 - Map output (pesticide risk by watershed) - Kira ----
   # output$range <- renderPrint({ input$tox_yr_slider }) 
   
+  ### Reactive df for Map 
+  risk_annual_perc <- reactive({
+    watershed_sf_merge_clean %>% 
+    filter(year %in% c(input$year_map)) %>% 
+      select(year, name, input$index_map)
+  })
+  
+  ### Leaflet map based on year and risk index 
+  output$risk_map <- renderLeaflet({
+    
+    leaflet() %>%
+      leaflet::addPolygons(data = risk_annual_perc()) %>%
+      addProviderTiles("Esri.WorldTopoMap") %>%
+      setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
+      addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
+      addPolygons(data = risk_annual_perc(),
+                  color = ~fctpal(risk_annual_perc()$quartile), weight = 1, smoothFactor = 0.5,
+                  opacity = 1.0, fillOpacity = 0.5,
+                  highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                      bringToFront = TRUE),
+                  popup = paste0("Watershed: ", risk_annual_perc()$name,
+                                 "<br>",
+                                 "Risk to Fish ", risk_annual_perc()$avg_fish, 
+                                 "<br>",
+                                 "Risk to Aquatic Invertebrates: ", risk_annual_perc()$avg_water_invert, 
+                                 "<br>",
+                                 "Risk to Vascular Plants: ", risk_annual_perc()$avg_plant_vasc, 
+                                 "<br>", 
+                                 "Risk to Nonvascular Plants: ", risk_annual_perc()$avg_plant_nonvasc,
+                                 "<br>", 
+                                 "Risk to Terrestrial Invertebrates: ", risk_annual_perc()$avg_sed_invert,
+                                 "<br>",
+                                 "Net Pesticide Toxicity Risk: ", risk_annual_perc()$avg_net))
+  })
+  
   ### Reactive df for watershed 
   watershed_by_yr <- reactive({
     watershed_annual %>% 
@@ -659,7 +706,8 @@ server <- function(input, output) {
                                                    aes(x = year, y = totals, color = huc)) +
       geom_line(size = 1) +
       labs(x = "Date", y = "Overall Risk", color = "Watershed") +
-      theme_minimal()
+      theme_minimal()  +
+      scale_color_manual(values = our_colors)
   }) 
   
   

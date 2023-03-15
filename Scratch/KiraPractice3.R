@@ -19,7 +19,22 @@ watershed_annual_avg <- watershed_annual %>%
             avg_water_invert = mean(RI_invertebrate_water), 
             avg_plant_vasc = mean(RI_plant_vascular), 
             avg_plant_nonvasc = mean(RI_plant_nonvascular),
-            avg_sed_invert = mean(RI_invertebrate_sed))
+            avg_sed_invert = mean(RI_invertebrate_sed)) %>% 
+  mutate(net_quart = ntile(avg_net, 4), 
+         fish_quart = ntile(avg_fish, 4),
+         water_invert_quart = ntile(avg_water_invert, 4), 
+         plant_v_quart = ntile(avg_plant_vasc, 4), 
+         plant_nv_quart = ntile(avg_plant_nonvasc, 4), 
+         sed_quart = ntile(avg_sed_invert, 4)) %>% 
+  select(year, huc, net_quart, fish_quart, 
+         water_invert_quart, plant_v_quart, 
+         plant_nv_quart, sed_quart) %>% 
+  replace(watershed_annual_avg$net_quart:sed_quart, "1", "Negligible") %>% 
+  replace(watershed_annual_avg$net_quart:sed_quart, "2", "Low") %>% 
+  replace(watershed_annual_avg$net_quart:sed_quart, "3", "Moderate") %>% 
+  replace(watershed_annual_avg$net_quart:sed_quart, "4", "High")
+  
+  
             
 
 
@@ -38,7 +53,9 @@ watershed_sf_merge_clean <- watershed_sf_merge %>%
   select(!huc)
 
 ### Create Categories based on percentiles ----
+# this will go into reactive portion 
 risk_annual_perc <- watershed_sf_merge_clean %>% 
+  filter(year %in% '2016') %>% 
   mutate(quartile = ntile(avg_net, 4)) 
 
 ### Color palette for categories ----

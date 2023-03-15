@@ -20,6 +20,7 @@ library(plotly)
 library(bslib) 
 library(shinythemes)
 library(dplyr)
+library(shinycssloaders)
 
 
 #######################################################################################
@@ -44,7 +45,17 @@ watershed_annual_avg <- watershed_annual %>%
             avg_water_invert = mean(RI_invertebrate_water), 
             avg_plant_vasc = mean(RI_plant_vascular), 
             avg_plant_nonvasc = mean(RI_plant_nonvascular),
-            avg_sed_invert = mean(RI_invertebrate_sed))
+            avg_sed_invert = mean(RI_invertebrate_sed)) %>%
+  mutate(net_quart = ntile(avg_net, 4),
+         fish_quart = ntile(avg_fish, 4),
+         water_invert_quart = ntile(avg_water_invert, 4),
+         plant_v_quart = ntile(avg_plant_vasc, 4),
+         plant_nv_quart = ntile(avg_plant_nonvasc, 4),
+         sed_quart = ntile(avg_sed_invert, 4)) %>%
+  select(year, huc, net_quart, fish_quart,
+         water_invert_quart, plant_v_quart,
+         plant_nv_quart, sed_quart)
+
 
 ### Tab 1 Bind spatial data with names/risks 
 watershed_sf_merge <- merge(watersheds_sf, watershed_annual_avg, by.x = "NAME", by.y = "huc") %>%
@@ -152,7 +163,7 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 
 #### Tab 1 map 
 fctpal <- colorFactor(palette = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'), 
-                      levels = c("Negligible", 'Low', "Moderate", "High"))
+                      levels = c(1, 2, 3, 4))
 
 #### Tab 2 reactive color data frame
 color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
@@ -412,7 +423,10 @@ ui <- fluidPage(theme = my_theme,
                                       tags$strong("Pesticide Risk in Watersheds Surrounding the Bay Delta"), 
                                       
                                       #Leaflet map - 
-                                      leafletOutput("risk_map")
+                                      leafletOutput("risk_map") %>% 
+                                        withSpinner(color = "#00796b", type = 4, size = 1)
+                                      
+                                      
                                       
                                       ) #end column
                                
@@ -459,7 +473,8 @@ ui <- fluidPage(theme = my_theme,
                                column(12,
                                       tags$strong("Overall Pesticide Toxicity Risk by Watershed"),
                                       
-                                      plotlyOutput(outputId = 'watershed_yr_plot')   
+                                      plotlyOutput(outputId = 'watershed_yr_plot') %>% 
+                                        withSpinner(color = "#00796b", type = 4, size = 1)
                                  
                                ), #end graph column
                                br(), 
@@ -725,8 +740,7 @@ server <- function(input, output) {
   ### Reactive df for Map 
   risk_annual_perc <- reactive({
     watershed_sf_merge_clean %>% 
-    filter(year %in% c(input$year_map)) %>% 
-      select(year, name, input$index_map)
+    filter(year %in% c(input$year_map))
   })
   
   ### Leaflet map based on year and risk index 
@@ -738,23 +752,23 @@ server <- function(input, output) {
       setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
       addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
       addPolygons(data = risk_annual_perc(),
-                  color = ~fctpal(risk_annual_perc()$input$indexmap), weight = 1, smoothFactor = 0.5,
-                  opacity = 1.0, fillOpacity = 0.5,
+                  color = ~fctpal(risk_annual_perc()$input$index_map), weight = 1, smoothFactor = 0.5,
+                  opacity = 1.0, fillOpacity = 0.8,
                   highlightOptions = highlightOptions(color = "white", weight = 2,
                                                       bringToFront = TRUE),
                   popup = paste0("Watershed: ", risk_annual_perc()$name,
                                  "<br>",
-                                 "Risk to Fish ", risk_annual_perc()$avg_fish, 
+                                 "Risk to Fish ", risk_annual_perc()$fish_quart, 
                                  "<br>",
-                                 "Risk to Aquatic Invertebrates: ", risk_annual_perc()$avg_water_invert, 
+                                 "Risk to Aquatic Invertebrates: ", risk_annual_perc()$water_invert_quart, 
                                  "<br>",
-                                 "Risk to Vascular Plants: ", risk_annual_perc()$avg_plant_vasc, 
+                                 "Risk to Vascular Plants: ", risk_annual_perc()$plant_v_quart, 
                                  "<br>", 
-                                 "Risk to Nonvascular Plants: ", risk_annual_perc()$avg_plant_nonvasc,
+                                 "Risk to Nonvascular Plants: ", risk_annual_perc()$plant_nv_quart,
                                  "<br>", 
-                                 "Risk to Terrestrial Invertebrates: ", risk_annual_perc()$avg_sed_invert,
+                                 "Risk to Terrestrial Invertebrates: ", risk_annual_perc()$sed_quart,
                                  "<br>",
-                                 "Net Pesticide Toxicity Risk: ", risk_annual_perc()$avg_net))
+                                 "Net Pesticide Toxicity Risk: ", risk_annual_perc()$net_quart))
   })
   
   ### Reactive df for watershed 

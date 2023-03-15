@@ -19,31 +19,16 @@ watershed_annual_avg <- watershed_annual %>%
             avg_water_invert = mean(RI_invertebrate_water), 
             avg_plant_vasc = mean(RI_plant_vascular), 
             avg_plant_nonvasc = mean(RI_plant_nonvascular),
-            avg_sed_invert = mean(RI_invertebrate_sed)) %>% 
-  mutate(net_quart = ntile(avg_net, 4), 
+            avg_sed_invert = mean(RI_invertebrate_sed)) %>%
+  mutate(net_quart = ntile(avg_net, 4),
          fish_quart = ntile(avg_fish, 4),
-         water_invert_quart = ntile(avg_water_invert, 4), 
-         plant_v_quart = ntile(avg_plant_vasc, 4), 
-         plant_nv_quart = ntile(avg_plant_nonvasc, 4), 
-         sed_quart = ntile(avg_sed_invert, 4)) %>% 
-  select(year, huc, net_quart, fish_quart, 
-         water_invert_quart, plant_v_quart, 
+         water_invert_quart = ntile(avg_water_invert, 4),
+         plant_v_quart = ntile(avg_plant_vasc, 4),
+         plant_nv_quart = ntile(avg_plant_nonvasc, 4),
+         sed_quart = ntile(avg_sed_invert, 4)) %>%
+  select(year, huc, net_quart, fish_quart,
+         water_invert_quart, plant_v_quart,
          plant_nv_quart, sed_quart)
-
-watershed_annual_avg[ watershed_annual_avg == 4 ] <- "High"
-
-
-  # watershed_annual_categories <- watershed_annual_avg %>% 
-  #   ifelse(watershed_annual_avg$net_quart:sed_quart == 1, "Negligible", 
-  #           watershed_annual_avg$net_quart:sed_quart == 2, "Low", 
-  #           watershed_annual_avg$net_quart:sed_quart == 3, "Moderate", 
-  #           watershed_annual_avg$net_quart:sed_quart == 4, "High")
-  
-
-  
-  
-  
-            
 
 
 watersheds_sf <- read_sf(here::here("spatial_data/BDW_NearHUC12_Watersheds_Simplified/BDW_NearHUC12_Simp10m.shp")) %>%
@@ -63,8 +48,7 @@ watershed_sf_merge_clean <- watershed_sf_merge %>%
 ### Create Categories based on percentiles ----
 # this will go into reactive portion 
 risk_annual_perc <- watershed_sf_merge_clean %>% 
-  filter(year %in% '2016') %>% 
-  mutate(quartile = ntile(avg_net, 4)) 
+  filter(year %in% '2016')   
 
 ### Color palette for categories ----
 fctpal <- colorFactor(palette = c('white', 'yellow', 'orange', 'red'), 
@@ -78,23 +62,23 @@ leaflet() %>%
   setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
   addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
   addPolygons(data = risk_annual_perc,
-              color = ~fctpal(quartile), weight = 1, smoothFactor = 0.5,
-              opacity = 1.0, fillOpacity = 0.5,
+              color = ~fctpal(net_quart), weight = 1, smoothFactor = 0.5,
+              opacity = 1.0, fillOpacity = 0.8,
               highlightOptions = highlightOptions(color = "white", weight = 2,
                                                   bringToFront = TRUE),
               popup = paste0("Watershed: ", risk_annual_perc$name,
                              "<br>",
-                             "Risk to Fish ", risk_annual_perc$avg_fish, 
+                             "Risk to Fish ", risk_annual_perc$fish_quart, 
                              "<br>",
-                             "Risk to Aquatic Invertebrates: ", risk_annual_perc$avg_water_invert, 
+                             "Risk to Aquatic Invertebrates: ", risk_annual_perc$water_invert_quart, 
                              "<br>",
-                             "Risk to Vascular Plants: ", risk_annual_perc$avg_plant_vasc, 
+                             "Risk to Vascular Plants: ", risk_annual_perc$plant_v_quart, 
                              "<br>", 
-                             "Risk to Nonvascular Plants: ", risk_annual_perc$avg_plant_nonvasc,
+                             "Risk to Nonvascular Plants: ", risk_annual_perc$plant_nv_quart,
                              "<br>", 
-                             "Risk to Terrestrial Invertebrates: ", risk_annual_perc$avg_sed_invert,
+                             "Risk to Terrestrial Invertebrates: ", risk_annual_perc$sed_quart,
                              "<br>",
-                             "Net Pesticide Toxicity Risk: ", risk_annual_perc$avg_net))
+                             "Net Pesticide Toxicity Risk: ", risk_annual_perc$net_quart))
 
 
 
@@ -126,3 +110,10 @@ leaflet() %>%
 #  watershed_sf_merge_clean$quartile == '2' ~ 'Low',
 #  watershed_sf_merge_clean$quartile == '3' ~ 'Moderate',
 #  watershed_sf_merge_clean$quartile == '4' ~ 'High'))
+
+# watershed_annual_categories <- watershed_annual_avg %>% 
+#   ifelse(watershed_annual_avg$net_quart:sed_quart == 1, "Negligible", 
+#           watershed_annual_avg$net_quart:sed_quart == 2, "Low", 
+#           watershed_annual_avg$net_quart:sed_quart == 3, "Moderate", 
+#           watershed_annual_avg$net_quart:sed_quart == 4, "High")
+# replace(c(1, 2, 3, 4), c("Negligible", "Low", "Moderate", "High"))

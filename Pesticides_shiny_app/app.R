@@ -122,7 +122,10 @@ our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db",
                         "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
                         "#BBECF2", "#540B0C")
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c67303fd6a4f1385e517583c5c5072316f30ee34
 
 #######################################################################################
 ## Theme
@@ -405,7 +408,6 @@ ui <- fluidPage(theme = my_theme,
                   ), # END tabPanel - map
                   
                  
-          
                   
                   #######################################################################################
                   # Tab 2 - Application site type (crop) data - Sadie ----
@@ -417,10 +419,11 @@ ui <- fluidPage(theme = my_theme,
                              
                              br(),
                              
-                             h5("The Pesticide Exposure Risk Index for Plants and Invertebrates Depending on Application Site Types ", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                             h5("The Pesticide Exposure Risk Index for Plants and Invertebrates for Different Application Site Types ", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                              
                              br(),
                             
+<<<<<<< HEAD
                              p("Application site types describe the different types of crops associated with pesticide use in the Bay Delta Watershed. The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (exposure through water or sediment), vascular plants, and
                                         nonvascular plants. The overall net risk index can also be displayed."),
                              br(),
@@ -429,17 +432,23 @@ ui <- fluidPage(theme = my_theme,
                                         Figure 1 shows .... la la la."),
                                         
                              hr(),
+=======
+                             p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each type of crop. 
+                             The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 
+                             The net risk index is the risk index observed for all species evaluated, summarized across all species."),
+
+>>>>>>> c67303fd6a4f1385e517583c5c5072316f30ee34
                              br(),
                              
                              column(3,
                                     
                                     br(), 
                                     
-                                    #dropdown menu for application site type 
+                                    # drop down menu for application site type 
                                     wellPanel(
-                                      strong("Application Site Type"),
+                                     # strong("Select an Application Site Type (crop type):"),
                                           selectInput("hru_dropdown",
-                                                      label = "Select an application site type (crop type)",
+                                                      label = "Select an application site type (crop type):",
                                                       choices = unique(crop_monthly_final$hru)) #end pesticide dropdown
                                     ), # end wellPanel
                                     
@@ -447,9 +456,9 @@ ui <- fluidPage(theme = my_theme,
                                     
                                     #dropdown menu to select year
                                     wellPanel( 
-                                      strong("Year"),
+                                      #strong("Select a Year:"),
                                       selectInput("year_dropdown",
-                                                  label = "Select year",
+                                                  label = "Select a year:",
                                                   choices = unique(crop_monthly_final$year)) #end year dropdown
                                 
                                     ), # end wellPanel
@@ -458,23 +467,14 @@ ui <- fluidPage(theme = my_theme,
                                     
                                     #checkboxes for risk index 
                                     wellPanel(
-                                      strong("Risk Index Type"),
+                                      #strong("Select Risk Index Type(s):"),
                                       checkboxGroupInput("index_type_checkboxes",
-                                                         label = "Select risk index type(s)",
+                                                         label = "Select risk index type(s):",
                                                          choices = unique(crop_monthly_final$index_type),
                                                          selected = "RI_net") #end risk index checkboxes
                                     ) #end wellPanel
-                                    
-                                    
-                                    # risk index dropdown for top ten crop figures (does not impact line graphs)
-                                    # wellPanel(
-                                    #   strong("Top Ten Crops with Highest Risk Index"),
-                                    #   selectInput("index_top_ten_dropdown",
-                                    #               label = "Pick a risk index type",
-                                    #               choices = unique(crop_annual$index_type)) #end risk dropdown
-                                    # ) # end wellPanel
-                            
-                                  ), #end column
+                              
+                                ), #end column
                            
                            
                              #display  the graphs of temporal trends for the selected application site type
@@ -483,36 +483,32 @@ ui <- fluidPage(theme = my_theme,
                                       
                                       br(),
                                       
+                                      p("The figure below illustrates the selected risk indexes for a selected application site type in one given year. Select which application site type (crop type), risk indexes, and year to display."),
+                                      
                                       # Figure 1
                                        #strong("Figure 1: Temporal Trends by Application Site Type in Selected Year"),
-                                       plotlyOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
+                                      plotlyOutput(outputId = 'hru_monthly_plot'), #tell the app where to put the graph
                                        
-                                       br(), 
+                                      br(), 
                                        
-                                       br(),
+                                      br(),
                                       
-                                       br(),
+                                      br(),
                                        
                                       # Figure 2
-                                       #strong("Figure 2: Temporal Trends by Application Site Type for All Years"),
-                                       plotlyOutput(outputId = 'hru_annual_plot'),
-                                       
-                                       br(),
-                                       
-                                       br(),
-                                       
-                                       br(),
-                                       
-                                       br(),
-                                       
-                                       br(),
-                                       
-                                      # Figure 3
-                                       #strong("Figure 3: Top Ten Application Site Types with the Highest Average Risk Index for All Years"),
-                                      #plotlyOutput(outputId = 'top_ten_crops'),
                                       
-                                      br()
+                                      p("The following figure shows the selected risk indexes for a selected application site type across all years of the analysis, 2015-2019. Select which application site type (crop type) and risk indexes to display across all years of the data."),
                                       
+                                      plotlyOutput(outputId = 'hru_annual_plot'),
+                                       
+                                      br(),
+                                       
+                                      br(),
+                                       
+                                      br(),
+                                       
+                                      br(),
+                                     
                                ) #end column        
                              ) #end mainPanel
                            ), #end fluidRow 
@@ -530,6 +526,11 @@ ui <- fluidPage(theme = my_theme,
                              
                              mainPanel(
                                     column(12,
+                                           
+                                           #Figure 3: top ten crops that contribute to risk for each index
+                                           p("The figure below shows which ten application site types contribute the most pesticide exposure risk for each index type.
+                                             Select which application site type (crop type) to display."),
+                                       
                                            plotlyOutput(outputId = 'top_ten_crops')  
                                           
                                            
@@ -540,8 +541,15 @@ ui <- fluidPage(theme = my_theme,
                             
                            ) # end fluidRow
                   ), #end tabPanel - temporal trends by application site type
+<<<<<<< HEAD
                  
                
+=======
+                  
+                  br(),
+
+                  
+>>>>>>> c67303fd6a4f1385e517583c5c5072316f30ee34
                   #######################################################################################
                   # Tab 3 - Species tab - Jaenna ----
                   # Species tab - Jaenna ----

@@ -172,14 +172,14 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              column(width=8,
                                     
-                                    h3(strong("Purpose"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                                    h4(strong("Purpose"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                                     p("This interactive tool illustrates pesticide risk based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
                      and aquatic vascular plants in the (San Francisco) Bay Delta Watershed."), # End paragraph 1 
                      br(), # Line break
                      
-                     h3(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                     h4(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                      strong("What does the Pesticide Management Prioritization Model (PMPM) - Environmental Fate Tool do?"),
-                     p("The data used in this analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
+                     p("The data used in t his analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
                      The Environmental Fate Tool is the second model of the Pesticide Management Prioritization Module (PMPM), 
                      which predicts spatiotemporal explicit concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
@@ -188,7 +188,7 @@ ui <- fluidPage(theme = my_theme,
                      watersheds within ~100 km of the Bay Delta Watershed (22,000 km2)."),
                      br(),
                      p("For the analysis in this website, only pesticide exposure risk and days of exceedance of 
-                       pesticide exposure are utilized. Pesticide concentrations are not included in the analysis."),
+                       pesticide concentration are utilized. Pesticide concentration values are not included in the analysis."),
                      
                      br(),
         
@@ -221,7 +221,7 @@ ui <- fluidPage(theme = my_theme,
                      column(width=8,
                    
                        ## Website contents
-                     h3(strong("Website Content"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                     h4(strong("Website Content"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                      p("This website is comprised of three main tabs:"), 
                      br(),
                      
@@ -249,7 +249,7 @@ ui <- fluidPage(theme = my_theme,
                      br(),
     
                        ## Data sourcing 
-                       h3(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                       h4(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                        p("Data sourced from Nicol Parker, PhD Candidate at the University of California, 
                       Santa Barbara, Bren School of Environmental Science & Management. With support from the 
                       Bay Delta Science Fellowship, and initiative of the California Sea Grant.")
@@ -552,7 +552,7 @@ ui <- fluidPage(theme = my_theme,
                              various crops, and aquatic and sediment species. \nFor the purpose of this 
                              analysis, only the top 15 counts of days of exceedance were selected for 
                              each bar chart."),
-                           
+                 
                            hr(),
                            p("Select a watershed from the dropdown menu to view the days of pesticide 
                              concentration exceedance for species in the top chart and by crop 

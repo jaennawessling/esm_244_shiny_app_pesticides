@@ -52,7 +52,8 @@ watershed_annual_avg <- watershed_annual %>%
          sed_quart = case_when(sed_quart == "1" ~ "negligible",
                                sed_quart == "2" ~ "low",
                                sed_quart == "3" ~ "moderate",
-                               sed_quart == "4" ~ "high"))
+                               sed_quart == "4" ~ "high")) %>% 
+  pivot_longer(net_quart:sed_quart, names_to = "index_type", values_to = "quartile")
 
 
 watersheds_sf <- read_sf(here::here("spatial_data/BDW_NearHUC12_Watersheds_Simplified/BDW_NearHUC12_Simp10m.shp")) %>%
@@ -141,3 +142,6 @@ leaflet() %>%
 #           watershed_annual_avg$net_quart:sed_quart == 3, "Moderate", 
 #           watershed_annual_avg$net_quart:sed_quart == 4, "High")
 # replace(c(1, 2, 3, 4), c("Negligible", "Low", "Moderate", "High"))
+
+map_color_df <- data.frame(quartile = c("negligible", "low", "moderate", "high"),
+                           color = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'))

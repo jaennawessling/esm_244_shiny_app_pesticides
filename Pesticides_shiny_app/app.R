@@ -174,6 +174,9 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 #######################################################################################
 # main color: #85d6a5
 
+#### Tab 1 map data frame
+map_color_df <- data.frame(quartile = c("negligible", "low", "moderate", "high"),
+                           color = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'))
 
 #### Tab 2 reactive color data frame
 color_df <- data.frame(variable = c("net risk", "fish", "aquatic invertebrates", "benthic invertebrates", "non-vascular plants", "vascular plants"), 
@@ -181,11 +184,11 @@ color_df <- data.frame(variable = c("net risk", "fish", "aquatic invertebrates",
 
 
 ### Creating a vector version of this, not connected to specific variables
-
 our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
                         "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
                         "#BBECF2", "#540B0C")
                         
+
 
 #######################################################################################
 ## Theme
@@ -412,13 +415,8 @@ ui <- fluidPage(theme = my_theme,
                                       wellPanel(
                                         selectInput('index_map', 
                                                     label = 'Select Index Type:', 
-<<<<<<< HEAD
                                                     choices = unique(watershed_annual_avg$index_type)) 
-=======
-                                                    choices = c()) ##### NEED TO PIVOT AND CREATE 
-                                        
-  
->>>>>>> b139a9c1f23ded73630c16f7d9ce3117b4bd5e27
+       
                                             
                                       ), #end index wellPanel
                                    
@@ -741,44 +739,47 @@ server <- function(input, output) {
   ## Tab 1 - Map output (pesticide risk by watershed) - Kira ----
   # output$range <- renderPrint({ input$tox_yr_slider }) 
   
-  ### Reactive df for Map 
+  ### Reactive df for Map popup
   risk_annual_perc <- reactive({
     watershed_sf_merge_clean %>% 
-    filter(year %in% c(input$year_map))
+    filter(year %in% input$year_map)
   })
   
-  ### Reactive color palatte 
-  fctpal <- reactive({
-    colorFactor(palette = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'), 
-                        levels = unique(risk_annual_perc()$input$index_map))
+  ### Reactive df for filtering Map data
+  risk_filter <- reactive({
+    watershed_sf_merge_clean %>% 
+    filter(year %in% input$year_map) %>% 
+    filter(index_type %in% input$index_map)
   })
+  
+  
   
   ### Leaflet map based on year and risk index 
   output$risk_map <- renderLeaflet({
     
     leaflet() %>%
-      leaflet::addPolygons(data = risk_annual_perc()) %>%
+      leaflet::addPolygons(data = risk_filter()) %>%
       addProviderTiles("Esri.WorldTopoMap") %>%
       setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
       addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
-      addPolygons(data = risk_annual_perc(),
-                  color = ~fctpal()(risk_annual_perc()$input$index_map), weight = 1, smoothFactor = 0.5,
+      addPolygons(data = risk_filter(),
+                  color = map_color_df$color, weight = 1, smoothFactor = 0.5,
                   opacity = 1.0, fillOpacity = 0.8,
                   highlightOptions = highlightOptions(color = "white", weight = 2,
                                                       bringToFront = TRUE),
                   popup = paste0("Watershed: ", risk_annual_perc()$name,
                                  "<br>",
-                                 "Risk to Fish: ", risk_annual_perc()$fish_quart, 
-                                 "<br>",
-                                 "Risk to Aquatic Invertebrates: ", risk_annual_perc()$water_invert_quart, 
-                                 "<br>",
-                                 "Risk to Vascular Plants: ", risk_annual_perc()$plant_v_quart, 
-                                 "<br>", 
-                                 "Risk to Nonvascular Plants: ", risk_annual_perc()$plant_nv_quart,
-                                 "<br>", 
-                                 "Risk to Terrestrial Invertebrates: ", risk_annual_perc()$sed_quart,
-                                 "<br>",
-                                 "Net Pesticide Toxicity Risk: ", risk_annual_perc()$net_quart))
+                                 "Risk to Fish: ", risk_annual_perc()$quartile))#, 
+                                 # "<br>",
+                                 # "Risk to Aquatic Invertebrates: ", risk_annual_perc()$water_invert_quart, 
+                                 # "<br>",
+                                 # "Risk to Vascular Plants: ", risk_annual_perc()$plant_v_quart, 
+                                 # "<br>", 
+                                 # "Risk to Nonvascular Plants: ", risk_annual_perc()$plant_nv_quart,
+                                 # "<br>", 
+                                 # "Risk to Terrestrial Invertebrates: ", risk_annual_perc()$sed_quart,
+                                 # "<br>",
+                                 # "Net Pesticide Toxicity Risk: ", risk_annual_perc()$net_quart))
   })
   
   ### Reactive df for watershed 

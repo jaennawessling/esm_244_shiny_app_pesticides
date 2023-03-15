@@ -121,11 +121,7 @@ color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water"
 our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
                         "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
                         "#BBECF2", "#540B0C")
-
-<<<<<<< HEAD
-
-=======
->>>>>>> c67303fd6a4f1385e517583c5c5072316f30ee34
+                        
 
 #######################################################################################
 ## Theme
@@ -422,8 +418,7 @@ ui <- fluidPage(theme = my_theme,
                              h5("The Pesticide Exposure Risk Index for Plants and Invertebrates for Different Application Site Types ", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                              
                              br(),
-                            
-<<<<<<< HEAD
+                          
                              p("Application site types describe the different types of crops associated with pesticide use in the Bay Delta Watershed. The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (exposure through water or sediment), vascular plants, and
                                         nonvascular plants. The overall net risk index can also be displayed."),
                              br(),
@@ -432,12 +427,12 @@ ui <- fluidPage(theme = my_theme,
                                         Figure 1 shows .... la la la."),
                                         
                              hr(),
-=======
+
                              p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each type of crop. 
                              The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 
                              The net risk index is the risk index observed for all species evaluated, summarized across all species."),
 
->>>>>>> c67303fd6a4f1385e517583c5c5072316f30ee34
+
                              br(),
                              
                              column(3,
@@ -541,15 +536,15 @@ ui <- fluidPage(theme = my_theme,
                             
                            ) # end fluidRow
                   ), #end tabPanel - temporal trends by application site type
-<<<<<<< HEAD
+
                  
                
-=======
+
                   
                   br(),
 
                   
->>>>>>> c67303fd6a4f1385e517583c5c5072316f30ee34
+
                   #######################################################################################
                   # Tab 3 - Species tab - Jaenna ----
                   # Species tab - Jaenna ----

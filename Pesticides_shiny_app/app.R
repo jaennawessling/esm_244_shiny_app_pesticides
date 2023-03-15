@@ -175,13 +175,11 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 # main color: #85d6a5
 
 #### Tab 1 map data frame
-map_color_df <- data.frame(quartile = c("negligible", "low", "moderate", "high"),
-                           color = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'))
+map_colors <- colorFactor(c('#540B0C', '#ba9d9d', '#875454', '#ede6e6'), watershed_annual_avg$quartile)
 
 #### Tab 2 reactive color data frame
 color_df <- data.frame(variable = c("net risk", "fish", "aquatic invertebrates", "benthic invertebrates", "non-vascular plants", "vascular plants"), 
                        color = c("#85d6a5", "#00796b", "#DBA507", "#CC7351", "#8EC7D2", "#d0c1db"))
-
 
 ### Creating a vector version of this, not connected to specific variables
 our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
@@ -762,13 +760,13 @@ server <- function(input, output) {
       setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
       addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
       addPolygons(data = risk_filter(),
-                  color = map_color_df$color, weight = 1, smoothFactor = 0.5,
-                  opacity = 1.0, fillOpacity = 0.8,
+                  color = ~map_colors(quartile), weight = 0.6, smoothFactor = 0.5,
+                  opacity = 1, fillOpacity = 0.8,
                   highlightOptions = highlightOptions(color = "white", weight = 2,
                                                       bringToFront = TRUE),
-                  popup = paste0("Watershed: ", risk_annual_perc()$name,
+                  popup = paste0("Watershed: ", risk_filter()$name,
                                  "<br>",
-                                 "Risk to Fish: ", risk_annual_perc()$quartile))#, 
+                                 "Selected Risk: ", risk_filter()$quartile))#, 
                                  # "<br>",
                                  # "Risk to Aquatic Invertebrates: ", risk_annual_perc()$water_invert_quart, 
                                  # "<br>",

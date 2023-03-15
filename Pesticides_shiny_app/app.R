@@ -20,6 +20,7 @@ library(plotly)
 library(bslib) 
 library(shinythemes)
 library(dplyr)
+library(shinycssloaders)
 
 
 #######################################################################################
@@ -44,7 +45,17 @@ watershed_annual_avg <- watershed_annual %>%
             avg_water_invert = mean(RI_invertebrate_water), 
             avg_plant_vasc = mean(RI_plant_vascular), 
             avg_plant_nonvasc = mean(RI_plant_nonvascular),
-            avg_sed_invert = mean(RI_invertebrate_sed))
+            avg_sed_invert = mean(RI_invertebrate_sed)) %>%
+  mutate(net_quart = ntile(avg_net, 4),
+         fish_quart = ntile(avg_fish, 4),
+         water_invert_quart = ntile(avg_water_invert, 4),
+         plant_v_quart = ntile(avg_plant_vasc, 4),
+         plant_nv_quart = ntile(avg_plant_nonvasc, 4),
+         sed_quart = ntile(avg_sed_invert, 4)) %>%
+  select(year, huc, net_quart, fish_quart,
+         water_invert_quart, plant_v_quart,
+         plant_nv_quart, sed_quart)
+
 
 ### Tab 1 Bind spatial data with names/risks 
 watershed_sf_merge <- merge(watersheds_sf, watershed_annual_avg, by.x = "NAME", by.y = "huc") %>%
@@ -152,7 +163,7 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 
 #### Tab 1 map 
 fctpal <- colorFactor(palette = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'), 
-                      levels = c("Negligible", 'Low', "Moderate", "High"))
+                      levels = c(1, 2, 3, 4))
 
 #### Tab 2 reactive color data frame
 color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water", "RI_invertebrate_sed", "RI_plant_nonvascular", "RI_plant_vascular"), 
@@ -201,28 +212,15 @@ ui <- fluidPage(theme = my_theme,
                            
                            # Creating a fluid row to can create multiple columns to have information and a small photo
                            fluidRow(
-                             column(
-                               br(),
-                               tags$img(src="watershed.jpg",width="250px",height="310px", align = "justify"),
-                               br(),
-                               br(), 
-                               p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
-                                 Photo courtesy of the United States Environmental Protection Agency.",
-                                 br(),
-                                 style="text-align:justify;color:black, font-size:12px"),
-                               width=3), ## End first fluid row column
-                             
-                             br(),
-                             column(width=8,
-                                    
+                           column(width=8,
                                     h4(strong("Purpose"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                                     p("This interactive tool illustrates pesticide risk based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
-                     and aquatic vascular plants in the (San Francisco) Bay Delta Watershed."), # End paragraph 1 
-                     br(), # Line break
-                     
-                     h4(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                                    and aquatic vascular plants in the (San Francisco) Bay Delta Watershed."), # End paragraph 1 
+                            br(), # Line break
+         
+                    h4(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                      strong("What does the Pesticide Management Prioritization Model (PMPM) - Environmental Fate Tool do?"),
-                     p("The data used in t his analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
+                     p("The data used in this analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
                      The Environmental Fate Tool is the second model of the Pesticide Management Prioritization Module (PMPM), 
                      which predicts spatiotemporal explicit concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
@@ -241,7 +239,7 @@ ui <- fluidPage(theme = my_theme,
                     p("2) Evaluate primary sources of pesticide risk as well as their temporal variability."),
                     p("3) Analyze the cumulative risk of the hundreds of pesticides in use."),
                     p("4) Quantify how often pesticide concentrations are predicted to exceed."),
-                  
+                       
                     br(),
                     strong("Why is this analysis needed?"),
                     p("13% of California’s 
@@ -251,16 +249,28 @@ ui <- fluidPage(theme = my_theme,
                     
                     br(),
                     strong("What are the PMPM goals?"),
-                    p("As humans move
-                     toward pesticides that are lower in toxicity for mammals, but are orders of magnitude
+                    p("As humans move toward pesticides that are lower in toxicity for mammals, but are orders of magnitude
                      more toxic to invertebrates and aquatic organisms, the PMPM aims to identify:"),
                     p("1) Which activities are imposing the greatest pesticide loads?"),
                     p("2) Who is responsible?"),
                     p("3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?") # end of background section 
-                     
-                             ), # end column 2 fluidrow 
-                 
+                             ), # end column 5 fluidrow 
+                    
+                    column(
+                      br(),
+                      tags$img(src="watershed.jpg",width="250px",height="310px", align = "justify"),
+                      br(),
+                      br(), 
+                      p("The Bay Delta Watershed. The various colored regions represent the main areas of the watershed.
+                                 Photo courtesy of the United States Environmental Protection Agency.",
+                        br(),
+                        style="text-align:justify;color:black, font-size:12px"),
+                      width=3) ## End first fluid row column
+                           ), # end fluidrow 1
+
+                    
+                    fluidRow(
                      column(width=8,
                    
                        ## Website contents
@@ -290,34 +300,68 @@ ui <- fluidPage(theme = my_theme,
                     15 counts of days of exceedance were selected for each bar chart. 
                     The model data is from 2015 - 2019. The bar charts are grouped by watershed."), 
                      br(),
+                     ), # End column 7
+                  
+                  column(width=3,
+                         br(),
+                         tags$img(src="crops.png",width="310px",height="360px", align = "justify"),
+                         br(),
+                         br(), 
+                         p("Plant nursery, Almond orchard, and Christmas tree farm. Various application site types within the Bay Delta Watershed."),
+                         br(),
+                         style="text-align:justify;color:black, font-size:12px",
+                  ) ## End column 6 - fluidrow
+                    ), # end fluid row
     
-                       ## Data sourcing 
-                       h4(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                       p("Data sourced from Nicol Parker, PhD Candidate at the University of California, 
+                  
+                  fluidRow(
+                    ## Data sourcing 
+                    column(width=8,
+                    h4(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                    p("Data sourced from Nicol Parker, PhD Candidate at the University of California, 
                       Santa Barbara, Bren School of Environmental Science & Management. With support from the 
-                      Bay Delta Science Fellowship, and initiative of the California Sea Grant.")
+                      Bay Delta Science Fellowship, and initiative of the California Sea Grant."),
                       
-                     ) # End column 3 fluid row
-                  ), # end fluidrow  
+                   br(),
+                   br(),
+                   br(),
+                   br(),
+                   br(),
+                   br(),
+                   br(),
+                     
+                  tags$p(HTML("To download the data and userguide, click 
+                                <a href=\"https://datadryad.org/stash/share/7a-F-jEXmlvWi3-xeRx_X4osZqXrr8Nh97tnx2bBOSk/\">here.</a>")), 
+        
+                  br(),
+                  br(),
+                  br(),
+                  hr(), 
+                  
+                  ## End data source 
+                  
+                  ## Adding development credits 
+                  p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                  br(),
+                  br(),
+                 ), # End column 8 fluid row- species photo 
+                 
+                 
+                 ## Species photo column
+                 column(width=3,
+                        br(),
+                        tags$img(src="species.png",width="310px",height="360px", align = "justify"),
+                        br(),
+                        br(), 
+                        p("Polychaete, pricky sculpin, and rock crab. Aquatic and benthic fish and invertebrate species of the Bay Delta Watershed."),
+                        br(),
+                        style="text-align:justify;color:black, font-size:12px",
+                 ), ## End column 4 - species photo column
+                 
+                  ), # end fluidrow 3
                   
                   #### End fluidrow copied
-                  
-                  
-                      br(),
-                      
-                      
-                      tags$p(HTML("To download the data and userguide, click 
-                                <a href=\"https://datadryad.org/stash/share/7a-F-jEXmlvWi3-xeRx_X4osZqXrr8Nh97tnx2bBOSk/\">here.</a>")), 
-                      
-        
-                      hr(), 
-                       
-                      # End data source 
-                      
-                      ## Adding development credits 
-                      p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                  br(),
-                  br(),
+             
                   ), # End tabPanel - Welcome Page
                   
                   #######################################################################################
@@ -334,7 +378,10 @@ ui <- fluidPage(theme = my_theme,
                              
                              br(),
                              
-                             p("TEXT TO EXPLAIN THE MAP."),
+                             p("Below is an interactive map of watersheds within Bay Delta region, color indicates risk severity. 
+                               Each risk index has been divided into percentile categories based on their yearly averages:
+                               Negligible Risk, Low Risk, Moderate Risk, and High Risk. Years range from 2015 to 2019, and risk indices include overall risk, as well as risk to fish, 
+                               aquatic invertebrates, vascular plants, nonvascular plants, and terrestrial invertebrates. Select a year and index to begin."),
                              hr(),
                              br(),
                              
@@ -376,7 +423,10 @@ ui <- fluidPage(theme = my_theme,
                                       tags$strong("Pesticide Risk in Watersheds Surrounding the Bay Delta"), 
                                       
                                       #Leaflet map - 
-                                      leafletOutput("risk_map")
+                                      leafletOutput("risk_map") %>% 
+                                        withSpinner(color = "#00796b", type = 4, size = 1)
+                                      
+                                      
                                       
                                       ) #end column
                                
@@ -394,7 +444,8 @@ ui <- fluidPage(theme = my_theme,
                            ##### fluidRow for graph and graph widgets
                            fluidRow(
                              
-                             p("TEXT TO EXPLAIN THE GRAPH."),
+                             p("The graph below depicts total risk based on annual toxicity data. Use the above map to determine which watersheds you wish to focus on and 
+                               select each name below to see how net risk has changed through time."),
                              
                              column(3,
                                     #widgets for graph 
@@ -422,7 +473,8 @@ ui <- fluidPage(theme = my_theme,
                                column(12,
                                       tags$strong("Overall Pesticide Toxicity Risk by Watershed"),
                                       
-                                      plotlyOutput(outputId = 'watershed_yr_plot')   
+                                      plotlyOutput(outputId = 'watershed_yr_plot') %>% 
+                                        withSpinner(color = "#00796b", type = 4, size = 1)
                                  
                                ), #end graph column
                                br(), 
@@ -456,14 +508,12 @@ ui <- fluidPage(theme = my_theme,
                              
                              p("NEED TO EXPLAIN THE FIGURES. Select which application site type (crop type) to display the risk indices for the different categories of plants and animals, and select which risk indices to display.
                                         Figure 1 shows .... la la la."),
-                                        
-                             hr(),
-
+                
                              p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each type of crop. 
                              The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 
                              The net risk index is the risk index observed for all species evaluated, summarized across all species."),
 
-
+                             hr(),
                              br(),
                              
                              column(3,
@@ -585,9 +635,9 @@ ui <- fluidPage(theme = my_theme,
                              each bar chart."),
                  
                            hr(),
-                           p("Select a watershed from the dropdown menu to view the days of pesticide 
+                           p(strong("Select a watershed from the dropdown menu to view the days of pesticide 
                              concentration exceedance for species in the top chart and by crop 
-                             (application site type) in the bottom chart:"),
+                             (application site type) in the bottom chart:")),
                            
                            br(),
                            br(),
@@ -690,8 +740,7 @@ server <- function(input, output) {
   ### Reactive df for Map 
   risk_annual_perc <- reactive({
     watershed_sf_merge_clean %>% 
-    filter(year %in% c(input$year_map)) %>% 
-      select(year, name, input$index_map)
+    filter(year %in% c(input$year_map))
   })
   
   ### Leaflet map based on year and risk index 
@@ -703,23 +752,23 @@ server <- function(input, output) {
       setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
       addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
       addPolygons(data = risk_annual_perc(),
-                  color = ~fctpal(risk_annual_perc()$quartile), weight = 1, smoothFactor = 0.5,
-                  opacity = 1.0, fillOpacity = 0.5,
+                  color = ~fctpal(risk_annual_perc()$input$index_map), weight = 1, smoothFactor = 0.5,
+                  opacity = 1.0, fillOpacity = 0.8,
                   highlightOptions = highlightOptions(color = "white", weight = 2,
                                                       bringToFront = TRUE),
                   popup = paste0("Watershed: ", risk_annual_perc()$name,
                                  "<br>",
-                                 "Risk to Fish ", risk_annual_perc()$avg_fish, 
+                                 "Risk to Fish ", risk_annual_perc()$fish_quart, 
                                  "<br>",
-                                 "Risk to Aquatic Invertebrates: ", risk_annual_perc()$avg_water_invert, 
+                                 "Risk to Aquatic Invertebrates: ", risk_annual_perc()$water_invert_quart, 
                                  "<br>",
-                                 "Risk to Vascular Plants: ", risk_annual_perc()$avg_plant_vasc, 
+                                 "Risk to Vascular Plants: ", risk_annual_perc()$plant_v_quart, 
                                  "<br>", 
-                                 "Risk to Nonvascular Plants: ", risk_annual_perc()$avg_plant_nonvasc,
+                                 "Risk to Nonvascular Plants: ", risk_annual_perc()$plant_nv_quart,
                                  "<br>", 
-                                 "Risk to Terrestrial Invertebrates: ", risk_annual_perc()$avg_sed_invert,
+                                 "Risk to Terrestrial Invertebrates: ", risk_annual_perc()$sed_quart,
                                  "<br>",
-                                 "Net Pesticide Toxicity Risk: ", risk_annual_perc()$avg_net))
+                                 "Net Pesticide Toxicity Risk: ", risk_annual_perc()$net_quart))
   })
   
   ### Reactive df for watershed 

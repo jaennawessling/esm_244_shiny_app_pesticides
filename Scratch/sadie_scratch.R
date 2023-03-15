@@ -267,17 +267,57 @@ scale_color_manual(breaks = color_react$variable, color = color_react$color)
 ## how to get the wellPanel tied to the graph
 
 
-### To DO:
-# tie wellPanel to graphs
-# color scheme
-# write intro stuff and info
-# maybe delete the figure 1 figure 2 etc. from my graphs
 
 
+## trying to figure out how to get the renamed index names onto the dropdowns/graphs
+
+crop_monthly <- read_csv(here("Tab2_Crop_RiskSummary_Monthly.csv"))%>% 
+  separate(col = monthyear, into = c("month", "year"), sep = "-") 
+
+crop_monthly_mod <- crop_monthly %>% 
+  mutate(month_num = case_when(month == "Jan" ~ "01",
+                               month == "Feb" ~ "02",
+                               month == "Mar" ~ "03",
+                               month == "Apr" ~ "04",
+                               month == "May" ~ "05",
+                               month == "Jun" ~ "06",
+                               month == "Jul" ~ "07",
+                               month == "Aug" ~ "08",
+                               month == "Sep" ~ "09",
+                               month == "Oct" ~ "10",
+                               month == "Nov" ~ "11",
+                               month == "Dec" ~ "12")) %>% 
+  mutate(date = paste(month_num, year, sep = "-"))
+
+#lubridate the date column
+crop_monthly_mod$date <- my(crop_monthly_mod$date)
+
+#pivot longer -- THIS IS THE FINAL DF TO USE FOR MONTHLY APPLICATION SITE TYPE
+crop_monthly_final <- crop_monthly_mod %>% 
+  filter(huc == "All Watersheds") %>% 
+  select(-year, -month, -month_num) %>% 
+  pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
+  mutate(year = year(date)) %>% 
+  mutate(month = month(date)) %>% 
+  mutate(hru = str_to_lower(hru)) %>% 
+  mutate(index = case_when(index_type == "RI_net" ~ "net risk index",
+                           index_type == "RI_fish" ~ "fish",
+                           index_type == "RI_invertebrate_water" ~ "aquatic invertebrates",
+                           index_type == "RI_invertebrate_sed" ~ "sediment invertebrates",
+                           index_type == "RI_plant_vascular" ~ "vascular plants",
+                           index_type == "RI_plant_nonvascular" ~ "non-vascular plants"))
 
 
-
-
+crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>% 
+  pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
+  filter(huc == "All Watersheds") %>% 
+  mutate(hru = str_to_lower(hru)) %>% 
+  mutate(index = case_when(index_type == "RI_net" ~ "net risk index",
+                           index_type == "RI_fish" ~ "fish",
+                           index_type == "RI_invertebrate_water" ~ "aquatic invertebrates",
+                           index_type == "RI_invertebrate_sed" ~ "sediment invertebrates",
+                           index_type == "RI_plant_vascular" ~ "vascular plants",
+                           index_type == "RI_plant_nonvascular" ~ "non-vascular plants"))
 
 
 

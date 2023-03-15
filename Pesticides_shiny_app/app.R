@@ -244,7 +244,7 @@ ui <- fluidPage(theme = my_theme,
                      which predicts spatiotemporal explicit concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
                      by growers in CA). Pesticide concentrations are predicted using mechanistic models that
-                     consider climate, hydrology, irrigation practices, and pesticide properties in the 226 
+                     consider climate, hydrology, irrigation practices, and pesticide properties in the 
                      watersheds within ~100 km of the Bay Delta Watershed (22,000 km2)."),
                      br(),
                      p("For the analysis in this website, only pesticide exposure risk and days of exceedance of 
@@ -328,7 +328,7 @@ ui <- fluidPage(theme = my_theme,
                            br(),
                            br(), 
                            p("Plant nursery, Almond orchard, and Christmas tree farm. Various application site types within the Bay Delta Watershed.
-                             (Photos courtesy of Modern Farmer, The Almond Doctor, and California Crossroads.",
+                             (Photos courtesy of Modern Farmer, The Almond Doctor, and California Crossroads.)",
                            br(),
                            style="text-align:justify;color:black, font-size:12px"),
                     ) ## End column 6 - fluidrow
@@ -336,38 +336,37 @@ ui <- fluidPage(theme = my_theme,
                     
                     
                     fluidRow(
-                      ## Data sourcing 
+                      
+                      ## Data information 
                       column(width=8,
+                             h4(strong("Data Summary"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                             p("In this analysis, 226 watersheds within Bay Delta Waterhshed were analyzed. 
+                               Only portions of the San Francisco Bay and the Sacramento-San 
+                               Joaquin River Delta regions (dark green and orange regions) were analyzed."),
+                             br(),
+                             p("Only pesticides contributing to the top 99.5% of toxicity levels were included in this analysis, 
+                               the remaining 0.05% were omitted due to data size limitations and overall clarity."),
+                             br(),
+                             p("There were five species analyzed in this data set including fish, aquatic and benthic invertebrates, and vascular and non-vascular plants. 
+                               There were 39 crop (application site) types including almonds, grapes, flowers, nurseries, Christmas tree farms, fallow, olives, wheat, and more. 
+                               The model data years ranged from 2015 - 2019."),
+                     
+                      br(),
+             
+                      ## Data sourcing 
+                     
                              h4(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                              p("Data sourced from Nicol Parker, PhD Candidate at the University of California, 
                       Santa Barbara, Bren School of Environmental Science & Management. With support from the 
                       Bay Delta Science Fellowship, and initiative of the California Sea Grant."),
                       
                       br(),
-                      br(),
-                      br(),
-                      br(),
-                      br(),
-                      br(),
-                      br(),
                       
                       tags$p(HTML("To download the data and userguide, click 
-                                <a href=\"https://datadryad.org/stash/share/7a-F-jEXmlvWi3-xeRx_X4osZqXrr8Nh97tnx2bBOSk/\">here.</a>")), 
-                      
-                      br(),
-                      br(),
-                      br(),
-                      hr(), 
-                      
-                      ## End data source 
-                      
-                      ## Adding development credits 
-                      p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                      br(),
-                      br(),
-                      ), # End column 8 fluid row- species photo 
-                      
-                      
+                                <a href=\"https://datadryad.org/stash/share/7a-F-jEXmlvWi3-xeRx_X4osZqXrr8Nh97tnx2bBOSk/\">here.</a>"))
+                     
+                     ), ## End data source column
+             
                       ## Species photo column
                       column(width=3,
                              br(),
@@ -375,15 +374,21 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              br(), 
                              p("Polychaete, prickly sculpin, and rock crab. Aquatic and benthic fish and invertebrate species of the Bay Delta Watershed.
-                               (Photos courtesy of iNaturalist Canada, Pearson Ecological, and Walla Walla University."),
+                               (Photos courtesy of iNaturalist Canada, Pearson Ecological, and Walla Walla University.)",
                              br(),
-                             style="text-align:justify;color:black, font-size:12px",
+                             style="text-align:justify;color:black, font-size:12px"),
                       ), ## End column 4 - species photo column
-                      
-                    ), # end fluidrow 3
+                     hr()
+                     ), # end fluidrow 3
                     
-                    #### End fluidrow copied
+                   
+                    ## Adding our development credits
+                    p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                    br(),
+                    br(),
                     
+                   
+                  
                   ), # End tabPanel - Welcome Page
                   
                   #######################################################################################

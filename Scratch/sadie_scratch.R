@@ -321,7 +321,6 @@ crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>%
 
 
 
-## QUESTIONS:
-# how to get the names to change and work on the graphs? validate didn't work
+## QUESTIONS/TO DO:
 # different margins on the headers for tab 3, how do we get those little gaps?
-
+# need to make the names of the risk indexes consistent -- also clarify the sed inverts -- in the read me it says benthic sediment? so i think we should call them benthic inverts

@@ -503,15 +503,8 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              
                              h5("The Pesticide Exposure Risk Index for Plants and Invertebrates for Different Application Site Types ", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                             
+                        
                              br(),
-                          
-                             p("Application site types describe the different types of crops associated with pesticide use in the Bay Delta Watershed. The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (exposure through water or sediment), vascular plants, and
-                                        nonvascular plants. The overall net risk index can also be displayed."),
-                             br(),
-                             
-                             p("NEED TO EXPLAIN THE FIGURES. Select which application site type (crop type) to display the risk indices for the different categories of plants and animals, and select which risk indices to display.
-                                        Figure 1 shows .... la la la."),
                 
                              p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each type of crop. 
                              The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 

@@ -209,7 +209,7 @@ ui <- fluidPage(theme = my_theme,
          
                     h4(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                      strong("What does the Pesticide Management Prioritization Model (PMPM) - Environmental Fate Tool do?"),
-                     p("The data used in t his analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
+                     p("The data used in this analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
                      The Environmental Fate Tool is the second model of the Pesticide Management Prioritization Module (PMPM), 
                      which predicts spatiotemporal explicit concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required

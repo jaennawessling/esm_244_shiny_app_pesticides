@@ -822,9 +822,8 @@ server <- function(input, output) {
                                                    aes(x = year, y = totals, color = huc)) +
       geom_line(size = 1) +
       labs(x = "Date", y = "Overall Risk", color = "Watershed") +
-      scale_x_continuous(breaks = c(2015, 2016, 2017, 2018, 2019)) +
-      scale_color_manual(values = our_colors) +
-      theme_minimal()  
+      theme_minimal()  +
+      scale_color_manual(values = our_colors)
   }) 
   
   

@@ -300,8 +300,7 @@ ui <- fluidPage(theme = my_theme,
                              
                              p(strong("Tab 1: Map of Pesticide Risk")), 
                              p("An interactive map of the pesticide exposure risk (risk index) by watersheds within the San Francisco Bay Delta
-                       watershed. The pesticide risk can be analyzed annually with model data from 2015 to 2019. 
-                       The pesticide risks selected represent the pesticide risks greater than 95%."), 
+                       watershed. The pesticide risk can be analyzed annually with model data from 2015 to 2019."), 
                        br(),
                        
                        p(strong("Tab 2: Temporal Trends by Application Site Type")), 
@@ -309,8 +308,7 @@ ui <- fluidPage(theme = my_theme,
                        (exposure through water or sediment), vascular plants, and nonvascular plants. The graphs are grouped
                        by application site type (crop type). Application site types describe the different types of crops associated with pesticide
                        use in the Bay Delta Watershed. The overall net risk index can also be displayed.
-                       The pesticide risk graphs can be analyzed annually with model data from 2015 to 2019. 
-                       The pesticide risks selected represent the pesticide risks greater than 95%."), 
+                       The pesticide risk graphs can be analyzed annually with model data from 2015 to 2019."), 
                        br(),
                        
                        p(strong("Tab 3: Pesticide Exceedance on Species and Crops")), 

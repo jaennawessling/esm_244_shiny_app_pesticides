@@ -79,7 +79,10 @@ watershed_annual_avg <- watershed_annual %>%
                                sed_quart == "2" ~ "low",
                                sed_quart == "3" ~ "moderate",
                                sed_quart == "4" ~ "high")) %>% 
-  pivot_longer(net_quart:sed_quart, names_to = "index_type", values_to = "quartile")
+  rename("fish" = fish_quart, "aquatic invertebrates" = water_invert_quart, "benthic invertebrates" = sed_quart,
+         "vascular plants" = plant_v_quart, "non-vascular plants" = plant_nv_quart, "net risk" = net_quart) %>% 
+  pivot_longer("net risk":"benthic invertebrates", names_to = "index_type", values_to = "quartile")
+
 
 
 ### Tab 1 Bind spatial data with names/risks 
@@ -175,13 +178,16 @@ watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.
 # main color: #85d6a5
 
 #### Tab 1 map data frame
-map_color_df <- data.frame(quartile = c("negligible", "low", "moderate", "high"),
-                           color = c('#d0c1db', '#DBA507', '#CC7351', '#540B0C'))
+# high, low, moderate, negligible
+map_colors <- colorFactor(c('#320607', '#a98585', '#763b3c', '#ede6e6'), watershed_annual_avg$quartile)
+
+#original map colors if we want to switch back
+#c('#540B0C', '#ba9d9d', '#875454', '#ede6e6')
+
 
 #### Tab 2 reactive color data frame
 color_df <- data.frame(variable = c("net risk", "fish", "aquatic invertebrates", "benthic invertebrates", "non-vascular plants", "vascular plants"), 
                        color = c("#85d6a5", "#00796b", "#DBA507", "#CC7351", "#8EC7D2", "#d0c1db"))
-
 
 ### Creating a vector version of this, not connected to specific variables
 our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
@@ -385,9 +391,13 @@ ui <- fluidPage(theme = my_theme,
        
                   tabPanel("Map of Pesticide Risk", 
                            hr(),
+                           
+                           h5("Risk of Pesticide Exposure in the Bay Delta Watershed", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                         
                            ###### Map and map widgets
                            fluidRow(
                              
+<<<<<<< HEAD
                              br(),
                              
                              h5("Risk of Pesticide Exposure in the Bay Delta Watershed", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
@@ -395,9 +405,12 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              
                              p("Below is an interactive map of watersheds within the Bay Delta region, color indicates risk severity. 
+=======
+                             p("Below is an interactive map of watersheds within Bay Delta region, color indicates risk severity. 
+>>>>>>> 5445254f4d2337d147629a4b44fec0eb4f8e1e67
                                Each risk index has been divided into percentile categories based on their yearly averages:
-                               Negligible Risk, Low Risk, Moderate Risk, and High Risk. Years range from 2015 to 2019, and risk indices include overall risk, as well as risk to fish, 
-                               aquatic invertebrates, vascular plants, nonvascular plants, and terrestrial invertebrates. Select a year and index to begin."),
+                               Negligible Risk, Low Risk, Moderate Risk, and High Risk. Years range from 2015 to 2019, and risk indices include overall risk, risk to fish, 
+                              risk to vascular and nonvascular plants, and risk to aquatic and benthic invertebrates. Select a year and risk index to begin."),
                              hr(),
                              br(),
                              
@@ -407,7 +420,7 @@ ui <- fluidPage(theme = my_theme,
                                       #select year
                                       wellPanel(
                                         selectInput('year_map', 
-                                                    label = 'Select Year:', 
+                                                    label = 'Select year:', 
                                                     choices = unique(watershed_annual_avg$year),
                                                     "2015", 
                                                     multiple = FALSE),
@@ -417,7 +430,7 @@ ui <- fluidPage(theme = my_theme,
                                       #select index
                                       wellPanel(
                                         selectInput('index_map', 
-                                                    label = 'Select Index Type:', 
+                                                    label = 'Select risk index type:', 
 
                                                     choices = unique(watershed_annual_avg$index_type)) 
                                             
@@ -464,13 +477,13 @@ ui <- fluidPage(theme = my_theme,
                                     wellPanel(tags$strong("Overall Pesticide Toxicity Risk Over Time"), 
                                               
                                               selectInput('watershed_select', 
-                                                          label = 'Select Watershed(s):', 
+                                                          label = 'Select satershed(s):', 
                                                           choices = unique(watershed_annual$huc),
                                                           "Antelope Creek", 
                                                           multiple = TRUE), #END Watershed dropdown
                                               
                                               sliderInput("tox_yr_slider", 
-                                                          label = h3("Select Year Range:"), 
+                                                          label = h3("Select year range:"), 
                                                           min = 2015, 
                                                           max = 2019, value = c(2016, 2018), 
                                                           sep = "") #END year slider 
@@ -506,14 +519,11 @@ ui <- fluidPage(theme = my_theme,
                   
                   tabPanel("Temporal Trends by Application Site Type", 
                            hr(),
+                           
+                           h5("The Pesticide Exposure Risk Index for Plants and Invertebrates for Different Application Site Types ", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                           
                            fluidRow(
-                             
-                             br(),
-                             
-                             h5("The Pesticide Exposure Risk Index for Plants and Invertebrates for Different Application Site Types ", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                         
-                             br(),
-                
                              p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each type of crop. 
                              The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 
                              The net risk index is the risk index observed for all species evaluated, summarized across all species."),
@@ -662,7 +672,7 @@ ui <- fluidPage(theme = my_theme,
                                       br(),
                                       selectInput(
                                         inputId = 'crop_exceedance_select',
-                                        label = 'Select a watershed',
+                                        label = 'Select a watershed:',
                                         choices = unique(exceed_longer$watersheds)
                                       ) #End SelectInput - crop exceedance dropdown
                                       
@@ -692,7 +702,7 @@ ui <- fluidPage(theme = my_theme,
                                       br(),
                                       selectInput(
                                         inputId = 'watershed_species_select',
-                                        label = 'Select a watershed',
+                                        label = 'Select a watershed:',
                                         choices = unique(watershed_species_risk$watersheds)
                                       ) # End SelectInput - species exceedance dropdown
                                       
@@ -772,13 +782,20 @@ server <- function(input, output) {
       setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
       addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
       addPolygons(data = risk_filter(),
-                  color = map_color_df$color, weight = 1, smoothFactor = 0.5,
-                  opacity = 1.0, fillOpacity = 0.8,
+                  color = ~map_colors(quartile), weight = 0.6, smoothFactor = 0.5,
+                  opacity = 1, fillOpacity = 0.8,
                   highlightOptions = highlightOptions(color = "white", weight = 2,
                                                       bringToFront = TRUE),
-                  popup = paste0("Watershed: ", risk_annual_perc()$name,
+                  popup = paste0("Watershed: ", risk_filter()$name,
                                  "<br>",
-                                 "Risk to Fish: ", risk_annual_perc()$quartile))#, 
+                                 "Selected Risk: ", risk_filter()$quartile)) %>% 
+      addLegend(colors = c('#320607', '#763b3c', '#a98585', '#ede6e6'),
+        labels = c("high", 'moderate', 'low', 'negligible'),
+        title = "Risk Severity:", 
+        opacity = 1, 
+        position = "topright")
+      
+    #, 
                                  # "<br>",
                                  # "Risk to Aquatic Invertebrates: ", risk_annual_perc()$water_invert_quart, 
                                  # "<br>",
@@ -805,8 +822,9 @@ server <- function(input, output) {
                                                    aes(x = year, y = totals, color = huc)) +
       geom_line(size = 1) +
       labs(x = "Date", y = "Overall Risk", color = "Watershed") +
-      theme_minimal()  +
-      scale_color_manual(values = our_colors)
+      scale_x_continuous(breaks = c(2015, 2016, 2017, 2018, 2019)) +
+      scale_color_manual(values = our_colors) +
+      theme_minimal()  
   }) 
   
   

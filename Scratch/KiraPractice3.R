@@ -4,6 +4,7 @@ library(tmap)
 library(tidyverse)
 library(broom)
 library(leaflet)
+library(lubridate)
 
 ### Map Practice ----
 
@@ -53,8 +54,19 @@ watershed_annual_avg <- watershed_annual %>%
                                sed_quart == "2" ~ "low",
                                sed_quart == "3" ~ "moderate",
                                sed_quart == "4" ~ "high")) %>% 
-  pivot_longer(net_quart:sed_quart, names_to = "index_type", values_to = "quartile")
+  rename("fish" = fish_quart, "aquatic invertebrates" = water_invert_quart, "benthic invertebrates" = sed_quart,
+         "vascular plants" = plant_v_quart, "non-vascular plants" = plant_nv_quart, "net risk" = net_quart) %>% 
+ pivot_longer("net risk":"benthic invertebrates", names_to = "index_type", values_to = "quartile")
 
+
+
+# watershed_annual_avg$year <- as.Date(as.character(watershed_annual_avg$year), format = "%Y")
+
+
+# watershed_annual_avg$year <- ymd(watershed_annual_avg$year) 
+# 
+# watershed_annual_avg <- watershed_annual_avg %>% 
+#   mutate(year_date = year(watershed_annual_avg$year))
 
 watersheds_sf <- read_sf(here::here("spatial_data/BDW_NearHUC12_Watersheds_Simplified/BDW_NearHUC12_Simp10m.shp")) %>%
   st_transform('+proj=longlat +datum=WGS84')
@@ -87,7 +99,7 @@ leaflet() %>%
   setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
   addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
   addPolygons(data = risk_annual_perc,
-              color = ~fctpal(net_quart), weight = 1, smoothFactor = 0.5,
+              color = ~fctpal(quartile), weight = 1, smoothFactor = 0.5,
               opacity = 1.0, fillOpacity = 0.8,
               highlightOptions = highlightOptions(color = "white", weight = 2,
                                                   bringToFront = TRUE),
@@ -103,7 +115,8 @@ leaflet() %>%
                              "<br>", 
                              "Risk to Terrestrial Invertebrates: ", risk_annual_perc$sed_quart,
                              "<br>",
-                             "Net Pesticide Toxicity Risk: ", risk_annual_perc$net_quart))
+                             "Net Pesticide Toxicity Risk: ", risk_annual_perc$net_quart)) 
+  
 
 
 

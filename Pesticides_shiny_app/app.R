@@ -537,13 +537,6 @@ ui <- fluidPage(theme = my_theme,
                            ) # end fluidRow
                   ), #end tabPanel - temporal trends by application site type
 
-                 
-               
-
-                  
-                  br(),
-
-                  
 
                   #######################################################################################
                   # Tab 3 - Species tab - Jaenna ----

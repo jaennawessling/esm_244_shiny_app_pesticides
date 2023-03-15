@@ -463,7 +463,7 @@ ui <- fluidPage(theme = my_theme,
                                     wellPanel(tags$strong("Overall Pesticide Toxicity Risk Over Time"), 
                                               
                                               selectInput('watershed_select', 
-                                                          label = 'Select satershed(s):', 
+                                                          label = 'Select watershed(s):', 
                                                           choices = unique(watershed_annual$huc),
                                                           "Antelope Creek", 
                                                           multiple = TRUE), #END Watershed dropdown

@@ -40,7 +40,18 @@ rmapshaper::ms_simplify(watersheds_sf)
 #### Tab 2 annual data: annual crop risk summary
 crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>% 
   pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
-  filter(huc == "All Watersheds")
+  filter(huc == "All Watersheds") %>% 
+  mutate(hru = str_to_lower(hru)) %>% 
+  mutate(index = case_when(index_type == "RI_net" ~ "net risk index",
+                           index_type == "RI_fish" ~ "fish",
+                           index_type == "RI_invertebrate_water" ~ "aquatic invertebrates",
+                           index_type == "RI_invertebrate_sed" ~ "sediment invertebrates",
+                           index_type == "RI_plant_vascular" ~ "vascular plants",
+                           index_type == "RI_plant_nonvascular" ~ "non-vascular plants"))
+
+#rename("fish" = RI_fish, "aquatic invertebrates" = RI_invertebrate_water, "sediment invertebrates" = RI_invertebrate_sed,
+       #"vascular plants" = RI_plant_vascular, "non-vascular plants" = RI_plant_nonvascular, "net risk" = RI_net) %>% 
+ # rename() do all the risk index renaming
 
 
 #### Tab 2 monthly data: monthly crop risk summary
@@ -71,7 +82,15 @@ crop_monthly_final <- crop_monthly_mod %>%
   select(-year, -month, -month_num) %>% 
   pivot_longer(RI_fish:RI_net, names_to = "index_type", values_to = "risk_index_value") %>% 
   mutate(year = year(date)) %>% 
-  mutate(month = month(date))
+  mutate(month = month(date)) %>% 
+  mutate(hru = str_to_lower(hru)) %>% 
+  mutate(index = case_when(index_type == "RI_net" ~ "net risk index",
+                           index_type == "RI_fish" ~ "fish",
+                           index_type == "RI_invertebrate_water" ~ "aquatic invertebrates",
+                           index_type == "RI_invertebrate_sed" ~ "sediment invertebrates",
+                           index_type == "RI_plant_vascular" ~ "vascular plants",
+                           index_type == "RI_plant_nonvascular" ~ "non-vascular plants"))
+ 
 
 
 #######################################################################################
@@ -499,9 +518,9 @@ ui <- fluidPage(theme = my_theme,
                              column(3,
                                     # risk index dropdown for top ten crop figures (does not impact line graphs)
                                     wellPanel(
-                                      strong("Risk Index Type"),
+                                     # strong("Risk Index Type"),
                                       selectInput("index_top_ten_dropdown",
-                                                  label = "Pick a risk index type",
+                                                  label = "Select a risk index type:",
                                                   choices = unique(crop_annual$index_type)) #end risk dropdown
                                     ) # end wellPanel
                               ), #end column
@@ -685,7 +704,7 @@ server <- function(input, output) {
            aes(x = date, y = risk_index_value, color = index_type)) +
       geom_line(size = 1) +
       labs(x = "Date", y = "Risk Index", color = "Risk Index Type") +
-      ggtitle(paste("Risk Indexes for", 
+      ggtitle(paste("Risk indexes for", 
                     input$hru_dropdown,
                     "in",
                     input$year_dropdown)) +
@@ -707,7 +726,7 @@ server <- function(input, output) {
       geom_line(size = 1) +
       scale_color_manual(breaks = color_react_df()$variable, values = color_react_df()$color) +
       labs(x = "Year", y = "Risk Index", color = "Risk Index Type") +
-      ggtitle(paste("Risk Indexes for", 
+      ggtitle(paste("Risk indexes for", 
                     input$hru_dropdown,
                     "across all years")) +
       theme_minimal()
@@ -729,8 +748,9 @@ server <- function(input, output) {
       geom_col(fill = "#85d6a5") +
       coord_flip() +
       labs(x = "Average risk index across all years", y = "Application site type") +
-      ggtitle(paste("Top Ten Application Site Types for", 
-                    input$index_top_ten_dropdown)) +
+      ggtitle(paste("Top ten application site types with the \n highest risk index for", 
+                    input$index_top_ten_dropdown,
+                    "")) +
       theme_minimal()
   })
   

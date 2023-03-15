@@ -53,7 +53,11 @@ watershed_annual_avg <- watershed_annual %>%
                                sed_quart == "2" ~ "low",
                                sed_quart == "3" ~ "moderate",
                                sed_quart == "4" ~ "high")) %>% 
-  pivot_longer(net_quart:sed_quart, names_to = "index_type", values_to = "quartile")
+  rename("fish" = fish_quart, "aquatic invertebrates" = water_invert_quart, "benthic invertebrates" = sed_quart,
+         "vascular plants" = plant_v_quart, "non-vascular plants" = plant_nv_quart, "net risk" = net_quart) %>% 
+ pivot_longer("net risk":"benthic invertebrates", names_to = "index_type", values_to = "quartile")
+
+
 
 
 watersheds_sf <- read_sf(here::here("spatial_data/BDW_NearHUC12_Watersheds_Simplified/BDW_NearHUC12_Simp10m.shp")) %>%

@@ -28,11 +28,19 @@ watershed_annual_avg <- watershed_annual %>%
          sed_quart = ntile(avg_sed_invert, 4)) %>% 
   select(year, huc, net_quart, fish_quart, 
          water_invert_quart, plant_v_quart, 
-         plant_nv_quart, sed_quart) %>% 
-  replace(watershed_annual_avg$net_quart:sed_quart, "1", "Negligible") %>% 
-  replace(watershed_annual_avg$net_quart:sed_quart, "2", "Low") %>% 
-  replace(watershed_annual_avg$net_quart:sed_quart, "3", "Moderate") %>% 
-  replace(watershed_annual_avg$net_quart:sed_quart, "4", "High")
+         plant_nv_quart, sed_quart)
+
+watershed_annual_avg[ watershed_annual_avg == 4 ] <- "High"
+
+
+  # watershed_annual_categories <- watershed_annual_avg %>% 
+  #   ifelse(watershed_annual_avg$net_quart:sed_quart == 1, "Negligible", 
+  #           watershed_annual_avg$net_quart:sed_quart == 2, "Low", 
+  #           watershed_annual_avg$net_quart:sed_quart == 3, "Moderate", 
+  #           watershed_annual_avg$net_quart:sed_quart == 4, "High")
+  
+
+  
   
   
             

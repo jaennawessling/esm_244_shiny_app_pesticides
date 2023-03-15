@@ -367,7 +367,10 @@ ui <- fluidPage(theme = my_theme,
                              
                              br(),
                              
-                             p("TEXT TO EXPLAIN THE MAP."),
+                             p("Below is an interactive map of watersheds within Bay Delta region, color indicates risk severity. 
+                               Each risk index has been divided into percentile categories based on their yearly averages:
+                               Negligible Risk, Low Risk, Moderate Risk, and High Risk. Years range from 2015 to 2019, and risk indices include overall risk, as well as risk to fish, 
+                               aquatic invertebrates, vascular plants, nonvascular plants, and terrestrial invertebrates. Select a year and index to begin."),
                              hr(),
                              br(),
                              
@@ -427,7 +430,8 @@ ui <- fluidPage(theme = my_theme,
                            ##### fluidRow for graph and graph widgets
                            fluidRow(
                              
-                             p("TEXT TO EXPLAIN THE GRAPH."),
+                             p("The graph below depicts total risk based on annual toxicity data. Use the above map to determine which watersheds you wish to focus on and 
+                               select each name below to see how net risk has changed through time."),
                              
                              column(3,
                                     #widgets for graph 
@@ -734,7 +738,7 @@ server <- function(input, output) {
       setView(lng = -121.4194, lat = 37.7749, zoom = 8) %>%
       addMiniMap(toggleDisplay = TRUE, minimized = TRUE) %>%
       addPolygons(data = risk_annual_perc(),
-                  color = ~fctpal(risk_annual_perc()$quartile), weight = 1, smoothFactor = 0.5,
+                  color = ~fctpal(risk_annual_perc()$input$indexmap), weight = 1, smoothFactor = 0.5,
                   opacity = 1.0, fillOpacity = 0.5,
                   highlightOptions = highlightOptions(color = "white", weight = 2,
                                                       bringToFront = TRUE),

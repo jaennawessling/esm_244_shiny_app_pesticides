@@ -4,6 +4,7 @@ library(tmap)
 library(tidyverse)
 library(broom)
 library(leaflet)
+library(lubridate)
 
 ### Map Practice ----
 
@@ -55,6 +56,13 @@ watershed_annual_avg <- watershed_annual %>%
                                sed_quart == "4" ~ "high")) %>% 
   pivot_longer(net_quart:sed_quart, names_to = "index_type", values_to = "quartile")
 
+# watershed_annual_avg$year <- as.Date(as.character(watershed_annual_avg$year), format = "%Y")
+
+
+# watershed_annual_avg$year <- ymd(watershed_annual_avg$year) 
+# 
+# watershed_annual_avg <- watershed_annual_avg %>% 
+#   mutate(year_date = year(watershed_annual_avg$year))
 
 watersheds_sf <- read_sf(here::here("spatial_data/BDW_NearHUC12_Watersheds_Simplified/BDW_NearHUC12_Simp10m.shp")) %>%
   st_transform('+proj=longlat +datum=WGS84')

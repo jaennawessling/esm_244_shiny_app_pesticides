@@ -82,6 +82,8 @@ watershed_annual_avg <- watershed_annual %>%
   pivot_longer(net_quart:sed_quart, names_to = "index_type", values_to = "quartile")
 
 
+
+
 ### Tab 1 Bind spatial data with names/risks 
 watershed_sf_merge <- merge(watersheds_sf, watershed_annual_avg, by.x = "NAME", by.y = "huc") %>%
   st_transform('+proj=longlat +datum=WGS84')
@@ -390,8 +392,8 @@ ui <- fluidPage(theme = my_theme,
                              
                              p("Below is an interactive map of watersheds within Bay Delta region, color indicates risk severity. 
                                Each risk index has been divided into percentile categories based on their yearly averages:
-                               Negligible Risk, Low Risk, Moderate Risk, and High Risk. Years range from 2015 to 2019, and risk indices include overall risk, as well as risk to fish, 
-                               aquatic invertebrates, vascular plants, nonvascular plants, and terrestrial invertebrates. Select a year and index to begin."),
+                               Negligible Risk, Low Risk, Moderate Risk, and High Risk. Years range from 2015 to 2019, and risk indices include overall risk, risk to fish, 
+                              risk to vascular and nonvascular plants, and risk to aquatic and benthic invertebrates. Select a year and risk index to begin."),
                              hr(),
                              br(),
                              
@@ -766,7 +768,14 @@ server <- function(input, output) {
                                                       bringToFront = TRUE),
                   popup = paste0("Watershed: ", risk_filter()$name,
                                  "<br>",
-                                 "Selected Risk: ", risk_filter()$quartile))#, 
+                                 "Selected Risk: ", risk_filter()$quartile)) %>% 
+      addLegend(colors = c('#540B0C', '#875454', '#ba9d9d', '#ede6e6'),
+        labels = c("high", 'moderate', 'low', 'negligible'),
+        title = "Risk Severity:", 
+        opacity = 1, 
+        position = "topright")
+      
+    #, 
                                  # "<br>",
                                  # "Risk to Aquatic Invertebrates: ", risk_annual_perc()$water_invert_quart, 
                                  # "<br>",

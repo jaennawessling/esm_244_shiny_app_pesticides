@@ -397,17 +397,12 @@ ui <- fluidPage(theme = my_theme,
                            ###### Map and map widgets
                            fluidRow(
                              
-<<<<<<< HEAD
                              br(),
-                             
-                             h5("Risk of Pesticide Exposure in the Bay Delta Watershed", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                              
                              br(),
                              
-                             p("Below is an interactive map of watersheds within the Bay Delta region, color indicates risk severity. 
-=======
+                            
                              p("Below is an interactive map of watersheds within Bay Delta region, color indicates risk severity. 
->>>>>>> 5445254f4d2337d147629a4b44fec0eb4f8e1e67
                                Each risk index has been divided into percentile categories based on their yearly averages:
                                Negligible Risk, Low Risk, Moderate Risk, and High Risk. Years range from 2015 to 2019, and risk indices include overall risk, risk to fish, 
                               risk to vascular and nonvascular plants, and risk to aquatic and benthic invertebrates. Select a year and risk index to begin."),
@@ -426,6 +421,8 @@ ui <- fluidPage(theme = my_theme,
                                                     multiple = FALSE),
                                         
                                       ), #end year wellPanel
+                                    
+                                    br(),
                                            
                                       #select index
                                       wellPanel(

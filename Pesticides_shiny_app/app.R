@@ -86,14 +86,14 @@ days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) %>%
   rename("vascular plants" = days_plant_vascular) %>% 
   rename("any species" = days_any_species)  
 
-# Making a longer data frame to work with 
+## Making a longer data frame to work with 
 exceed_longer <- days_exceed %>% 
   pivot_longer(cols = fish:"any species", names_to = "species", values_to = "days") %>% 
   rename(watersheds = huc) %>% 
   mutate(pesticide = str_to_lower(pesticide),
          crop = str_to_lower(crop)) 
 
-# Filtering only the days of exceedance for each individual species - but not "any" species)
+##  Filtering only the days of exceedance for each individual species - but not "any" species)
 watershed_species_risk <- exceed_longer %>% 
   select(species, pesticide, watersheds, days) %>% 
   filter(species != "any species")
@@ -117,17 +117,12 @@ color_df <- data.frame(variable = c("RI_net", "RI_fish", "RI_invertebrate_water"
 
 
 ### Creating a vector version of this, not connected to specific variables
-<<<<<<< HEAD
 
 our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
                         "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
                         "#BBECF2", "#540B0C")
-=======
-our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
-                        "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
-                        "#BBECF2", "#540B0C")
 
->>>>>>> ba2a96f07e72dfc3e2d4539379a6bb0db69096c7
+
 
 #######################################################################################
 ## Theme
@@ -148,8 +143,7 @@ ui <- fluidPage(theme = my_theme,
                 
                 # Adding our tabs panel
                 tabsetPanel(
-                  #######################################################################################
-                 
+
                   # Welcome Tab - Jaenna ----
                   tabPanel(icon("home"),
                            
@@ -279,16 +273,16 @@ ui <- fluidPage(theme = my_theme,
                       # End data source 
                       
                       ## Adding development credits 
-                      p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px")
+                      p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                  br(),
+                  br(),
                   ), # End tabPanel - Welcome Page
                   
                   #######################################################################################
                   # Tab 1 - Map tab - Kira ----
-                 
-                  hr(),
-                  
+       
                   tabPanel("Map of Pesticide Risk", 
-                           
+                           hr(),
                            ###### Map and map widgets
                            fluidRow(
                              
@@ -299,6 +293,8 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              
                              p("TEXT TO EXPLAIN THE MAP."),
+                             hr(),
+                             br(),
                              
                              ### widgets for map
                              column(3, position = "right",
@@ -398,7 +394,9 @@ ui <- fluidPage(theme = my_theme,
                                       
                                       plotlyOutput(outputId = 'watershed_yr_plot')   
                                  
-                               ) #end graph column
+                               ), #end graph column
+                               br(), 
+                               br(),
                                
                              ) #end graph mainPanel
                      
@@ -411,10 +409,10 @@ ui <- fluidPage(theme = my_theme,
                   
                   #######################################################################################
                   # Tab 2 - Application site type (crop) data - Sadie ----
-                  hr(),
+                  
                   
                   tabPanel("Temporal Trends by Application Site Type", 
-                           
+                           hr(),
                            fluidRow(
                              
                              br(),
@@ -430,7 +428,7 @@ ui <- fluidPage(theme = my_theme,
                              p("NEED TO EXPLAIN THE FIGURES. Select which application site type (crop type) to display the risk indices for the different categories of plants and animals, and select which risk indices to display.
                                         Figure 1 shows .... la la la."),
                                         
-                            
+                             hr(),
                              br(),
                              
                              column(3,
@@ -533,27 +531,23 @@ ui <- fluidPage(theme = my_theme,
                              mainPanel(
                                     column(12,
                                            plotlyOutput(outputId = 'top_ten_crops')  
-                                      
-                                    ) # end column
+                                          
+                                           
+                                    ), # end column
+                                    br(), 
+                                    br(),
                              ) #end mainPanel
                             
                            ) # end fluidRow
                   ), #end tabPanel - temporal trends by application site type
-                  
-<<<<<<< HEAD
-                  br(),
-=======
->>>>>>> ba2a96f07e72dfc3e2d4539379a6bb0db69096c7
-                  
+                 
+               
                   #######################################################################################
                   # Tab 3 - Species tab - Jaenna ----
-                  
                   # Species tab - Jaenna ----
                   tabPanel("Pesticide Exceedance on Species and Crops",
-                           
                            hr(),
-                           
-                           h3("Daily Pesticide Exceedance on Species and Crops", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                           h5("Daily Pesticide Exceedance on Species and Crops", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                            p(strong("How does pesticide concentration exceedance differ between animals, 
                                     plants, and crops? Does it differ by application site type?")),
                            
@@ -562,9 +556,8 @@ ui <- fluidPage(theme = my_theme,
                              various crops, and aquatic and sediment species. \nFor the purpose of this 
                              analysis, only the top 15 counts of days of exceedance were selected for 
                              each bar chart."),
-                          
+                           
                            hr(),
-
                            p("Select a watershed from the dropdown menu to view the days of pesticide 
                              concentration exceedance for species in the top chart and by crop 
                              (application site type) in the bottom chart:"),
@@ -576,7 +569,7 @@ ui <- fluidPage(theme = my_theme,
                              column(3,
                                     # days of exceedance drop down menu for top crops by watershed
                                     wellPanel(
-                               
+                                      
                                       strong("Days of Exceedance Per Crop"),
                                       br(),
                                       selectInput(
@@ -606,7 +599,7 @@ ui <- fluidPage(theme = my_theme,
                              column(3,
                                     ## watershed drop down menu for species 
                                     wellPanel(
-                                   
+                                      
                                       strong("Days of Exceedance Per Species"),
                                       br(),
                                       selectInput(
@@ -631,9 +624,10 @@ ui <- fluidPage(theme = my_theme,
                              ) #end mainPanel - species exceedance dropdown
                              
                            ) # end fluidRow - species exceedance dropdown
-                             
-                        
+                           
+                           
                   ) # End tabPanel - species tab
+                  
                   
                   #######################################################################################
                   
@@ -805,7 +799,6 @@ server <- function(input, output) {
       scale_color_manual(values = our_colors, aesthetics = "fill") +
       coord_flip() + 
       theme_minimal()
-    
   }) # End species application site reactive plot
   
   

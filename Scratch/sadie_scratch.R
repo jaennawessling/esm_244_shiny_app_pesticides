@@ -321,4 +321,7 @@ crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>%
 
 
 
+## QUESTIONS:
+# how to get the names to change and work on the graphs? validate didn't work
+# different margins on the headers for tab 3, how do we get those little gaps?
 

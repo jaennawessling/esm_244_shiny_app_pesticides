@@ -222,15 +222,15 @@ ui <- fluidPage(theme = my_theme,
                            
                            # Creating a fluid row to can create multiple columns to have information and a small photo
                            fluidRow(
-                           column(width=8,
+                             column(width=8,
                                     h4(strong("Purpose"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                                     p("This interactive tool illustrates pesticide risk based on toxicity to fish, aquatic invertebrates, aquatic nonvascular plants (algae), 
                                     and aquatic vascular plants in the (San Francisco) Bay Delta Watershed."), # End paragraph 1 
-                            br(), # Line break
-         
-                    h4(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                     strong("What does the Pesticide Management Prioritization Model (PMPM) - Environmental Fate Tool do?"),
-                     p("The data used in this analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
+                                    br(), # Line break
+                                    
+                                    h4(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                                    strong("What does the Pesticide Management Prioritization Model (PMPM) - Environmental Fate Tool do?"),
+                                    p("The data used in this analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
                      The Environmental Fate Tool is the second model of the Pesticide Management Prioritization Module (PMPM), 
                      which predicts spatiotemporal explicit concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
@@ -242,14 +242,14 @@ ui <- fluidPage(theme = my_theme,
                        pesticide concentration are utilized. Pesticide concentration values are not included in the analysis."),
                      
                      br(),
-        
+                     
                      p(strong("The PMPM is designed to address limitations of existing tools for pesticide impact
                     analyses by integrating features into a single tool that can:")),
                     p("1) Quantify the risk to diverse taxa over tens of thousands of kilometers (hundreds of watersheds)."),
                     p("2) Evaluate primary sources of pesticide risk as well as their temporal variability."),
                     p("3) Analyze the cumulative risk of the hundreds of pesticides in use."),
                     p("4) Quantify how often pesticide concentrations are predicted to exceed."),
-                       
+                    
                     br(),
                     strong("Why is this analysis needed?"),
                     p("13% of California’s 
@@ -278,100 +278,99 @@ ui <- fluidPage(theme = my_theme,
                         style="text-align:justify;color:black, font-size:12px"),
                       width=3) ## End first fluid row column
                            ), # end fluidrow 1
-
                     
                     fluidRow(
-                     column(width=8,
-                   
-                       ## Website contents
-                     h4(strong("Website Content"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                     p("This website is comprised of three main tabs:"), 
-                     br(),
-                     
-                     p(strong("Tab 1: Map of Pesticide Risk")), 
-                     p("An interactive map of the pesticide exposure risk (risk index) by watersheds within the San Francisco Bay Delta
+                      column(width=8,
+                             
+                             ## Website contents
+                             h4(strong("Website Content"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                             p("This website is comprised of three main tabs:"), 
+                             br(),
+                             
+                             p(strong("Tab 1: Map of Pesticide Risk")), 
+                             p("An interactive map of the pesticide exposure risk (risk index) by watersheds within the San Francisco Bay Delta
                        watershed. The pesticide risk can be analyzed annually with model data from 2015 to 2019. 
                        The pesticide risks selected represent the pesticide risks greater than 95%."), 
-                     br(),
-  
-                     p(strong("Tab 2: Temporal Trends by Application Site Type")), 
-                     p("Interactive time series graphs of the pesticide exposure risk (risk index) to fish, invertebrates 
-                       (exposure through water or benthic sediment), vascular plants, and nonvascular plants. The graphs are grouped
+                       br(),
+                       
+                       p(strong("Tab 2: Temporal Trends by Application Site Type")), 
+                       p("Interactive time series graphs of the pesticide exposure risk (risk index) to fish, invertebrates 
+                       (exposure through water or sediment), vascular plants, and nonvascular plants. The graphs are grouped
                        by application site type (crop type). Application site types describe the different types of crops associated with pesticide
                        use in the Bay Delta Watershed. The overall net risk index can also be displayed.
                        The pesticide risk graphs can be analyzed annually with model data from 2015 to 2019. 
                        The pesticide risks selected represent the pesticide risks greater than 95%."), 
-                     br(),
-                     
-                  p(strong("Tab 3: Pesticide Exceedance on Species and Crops")), 
-                  p("Interactive bar charts of the modeled number of days a pesticide in water 
+                       br(),
+                       
+                       p(strong("Tab 3: Pesticide Exceedance on Species and Crops")), 
+                       p("Interactive bar charts of the modeled number of days a pesticide in water 
                     exceeded the concentration at which severe and adverse effects would occur for various 
-                    crops, and aquatic and benthic sediment species. For the purpose of this analysis, only the top 
+                    crops, and aquatic and sediment species. For the purpose of this analysis, only the top 
                     15 counts of days of exceedance were selected for each bar chart. 
                     The model data is from 2015 - 2019. The bar charts are grouped by watershed."), 
-                     br(),
-                     ), # End column 7
-                  
-                  column(width=3,
-                         br(),
-                         tags$img(src="crops.png",width="310px",height="360px", align = "justify"),
-                         br(),
-                         br(), 
-                         p("Plant nursery, Almond orchard, and Christmas tree farm. Various application site types within the Bay Delta Watershed."),
-                         br(),
-                         style="text-align:justify;color:black, font-size:12px",
-                  ) ## End column 6 - fluidrow
+                    br(),
+                      ), # End column 7
+                    
+                    column(width=3,
+                           br(),
+                           tags$img(src="crops.png",width="310px",height="360px", align = "justify"),
+                           br(),
+                           br(), 
+                           p("Plant nursery, Almond orchard, and Christmas tree farm. Various application site types within the Bay Delta Watershed."),
+                           br(),
+                           style="text-align:justify;color:black, font-size:12px",
+                    ) ## End column 6 - fluidrow
                     ), # end fluid row
-    
-                  
-                  fluidRow(
-                    ## Data sourcing 
-                    column(width=8,
-                    h4(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                    p("Data sourced from Nicol Parker, PhD Candidate at the University of California, 
+                    
+                    
+                    fluidRow(
+                      ## Data sourcing 
+                      column(width=8,
+                             h4(strong("Data Source"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                             p("Data sourced from Nicol Parker, PhD Candidate at the University of California, 
                       Santa Barbara, Bren School of Environmental Science & Management. With support from the 
                       Bay Delta Science Fellowship, and initiative of the California Sea Grant."),
                       
-                   br(),
-                   br(),
-                   br(),
-                   br(),
-                   br(),
-                   br(),
-                   br(),
-                     
-                  tags$p(HTML("To download the data and userguide, click 
+                      br(),
+                      br(),
+                      br(),
+                      br(),
+                      br(),
+                      br(),
+                      br(),
+                      
+                      tags$p(HTML("To download the data and userguide, click 
                                 <a href=\"https://datadryad.org/stash/share/7a-F-jEXmlvWi3-xeRx_X4osZqXrr8Nh97tnx2bBOSk/\">here.</a>")), 
-        
-                  br(),
-                  br(),
-                  br(),
-                  hr(), 
-                  
-                  ## End data source 
-                  
-                  ## Adding development credits 
-                  p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                  br(),
-                  br(),
-                 ), # End column 8 fluid row- species photo 
-                 
-                 
-                 ## Species photo column
-                 column(width=3,
-                        br(),
-                        tags$img(src="species.png",width="310px",height="360px", align = "justify"),
-                        br(),
-                        br(), 
-                        p("Polychaete, pricky sculpin, and rock crab. Aquatic and benthic fish and invertebrate species of the Bay Delta Watershed."),
-                        br(),
-                        style="text-align:justify;color:black, font-size:12px",
-                 ), ## End column 4 - species photo column
-                 
-                  ), # end fluidrow 3
-                  
-                  #### End fluidrow copied
-             
+                      
+                      br(),
+                      br(),
+                      br(),
+                      hr(), 
+                      
+                      ## End data source 
+                      
+                      ## Adding development credits 
+                      p(em("Developed by"),br("Kira Archipov, Sadie Cwikiel, and Jaenna Wessling"),style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                      br(),
+                      br(),
+                      ), # End column 8 fluid row- species photo 
+                      
+                      
+                      ## Species photo column
+                      column(width=3,
+                             br(),
+                             tags$img(src="species.png",width="310px",height="360px", align = "justify"),
+                             br(),
+                             br(), 
+                             p("Polychaete, pricky sculpin, and rock crab. Aquatic and benthic fish and invertebrate species of the Bay Delta Watershed."),
+                             br(),
+                             style="text-align:justify;color:black, font-size:12px",
+                      ), ## End column 4 - species photo column
+                      
+                    ), # end fluidrow 3
+                    
+                    #### End fluidrow copied
+                    
                   ), # End tabPanel - Welcome Page
                   
                   #######################################################################################
@@ -412,13 +411,12 @@ ui <- fluidPage(theme = my_theme,
                                       wellPanel(
                                         selectInput('index_map', 
                                                     label = 'Select Index Type:', 
-<<<<<<< HEAD
+
                                                     choices = unique(watershed_annual_avg$index_type)) 
-=======
+
                                                     choices = c()) ##### NEED TO PIVOT AND CREATE 
                                         
-  
->>>>>>> b139a9c1f23ded73630c16f7d9ce3117b4bd5e27
+
                                             
                                       ), #end index wellPanel
                                    

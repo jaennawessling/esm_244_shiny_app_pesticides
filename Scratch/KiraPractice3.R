@@ -28,7 +28,31 @@ watershed_annual_avg <- watershed_annual %>%
          sed_quart = ntile(avg_sed_invert, 4)) %>%
   select(year, huc, net_quart, fish_quart,
          water_invert_quart, plant_v_quart,
-         plant_nv_quart, sed_quart)
+         plant_nv_quart, sed_quart) %>% 
+  mutate(net_quart = case_when(net_quart == "1" ~ "negligible",
+                               net_quart == "2" ~ "low",
+                               net_quart == "3" ~ "moderate",
+                               net_quart == "4" ~ "high"),
+         fish_quart = case_when(fish_quart == "1" ~ "negligible",
+                                fish_quart == "2" ~ "low",
+                                fish_quart == "3" ~ "moderate",
+                                fish_quart == "4" ~ "high"),
+         water_invert_quart = case_when(water_invert_quart == "1" ~ "negligible",
+                                        water_invert_quart == "2" ~ "low",
+                                        water_invert_quart == "3" ~ "moderate",
+                                        water_invert_quart == "4" ~ "high"),
+         plant_v_quart = case_when(plant_v_quart == "1" ~ "negligible",
+                                   plant_v_quart == "2" ~ "low",
+                                   plant_v_quart == "3" ~ "moderate",
+                                   plant_v_quart == "4" ~ "high"),
+         plant_nv_quart = case_when(plant_nv_quart == "1" ~ "negligible",
+                                    plant_nv_quart == "2" ~ "low",
+                                    plant_nv_quart == "3" ~ "moderate",
+                                    plant_nv_quart == "4" ~ "high"),
+         sed_quart = case_when(sed_quart == "1" ~ "negligible",
+                               sed_quart == "2" ~ "low",
+                               sed_quart == "3" ~ "moderate",
+                               sed_quart == "4" ~ "high"))
 
 
 watersheds_sf <- read_sf(here::here("spatial_data/BDW_NearHUC12_Watersheds_Simplified/BDW_NearHUC12_Simp10m.shp")) %>%

@@ -248,7 +248,11 @@ ui <- fluidPage(theme = my_theme,
                      watersheds within ~100 km of the Bay Delta Watershed (22,000 km2)."),
                      br(),
                      p("For the analysis in this website, only pesticide exposure risk and days of exceedance of 
-                       pesticide concentration are utilized. Pesticide concentration values are not included in the analysis."),
+                       pesticide concentration are utilized. Pesticide concentration values are not included in the analysis. 
+                       The risk index is a measurement of the net toxic load of pesticide in soil and surface water, which indicates
+                       how much total toxicity is in the environment over time. 
+                       The days of exceedance are the number of days concentrations of pesticides exceed concentrations lethal to aquatic organisms.
+                       This shows how many runoff events in the simulation period exceeded concentrations that are lethal to aquatic organisms."),
                      
                      br(),
                      

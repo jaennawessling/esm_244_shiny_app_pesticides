@@ -149,11 +149,11 @@ days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) %>%
   rename("benthic invertebrates" = days_invertebrate_sed) %>% 
   rename("non-vascular plants" = days_plant_nonvascular) %>% 
   rename("vascular plants" = days_plant_vascular) %>% 
-  rename("any species" = days_any_species)  
+  rename("any taxa" = days_any_species)  
 
 ## Making a longer data frame to work with 
 exceed_longer <- days_exceed %>% 
-  pivot_longer(cols = fish:"any species", names_to = "species", values_to = "days") %>% 
+  pivot_longer(cols = fish:"any taxa", names_to = "species", values_to = "days") %>% 
   rename(watersheds = huc) %>% 
   mutate(pesticide = str_to_lower(pesticide),
          crop = str_to_lower(crop)) 
@@ -161,7 +161,7 @@ exceed_longer <- days_exceed %>%
 ##  Filtering only the days of exceedance for each individual species - but not "any" species)
 watershed_species_risk <- exceed_longer %>% 
   select(species, pesticide, watersheds, days) %>% 
-  filter(species != "any species")
+  filter(species != "any taxa")
 
 
 #######################################################################################
@@ -299,7 +299,7 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              
                              p(strong("Tab 1: Map of Pesticide Risk")), 
-                             p("An interactive map of the pesticide exposure risk to plant and animal species by watersheds within the San Francisco Bay Delta
+                             p("An interactive map of the pesticide exposure risk to plant and animal taxa by watersheds within the San Francisco Bay Delta
                                watershed. The map colors indicate risk severity, with each risk index divided into percentile categories based on their yearly averages:
                                Negligible Risk, Low Risk, Moderate Risk, and High Risk. Additionally, there is an interactive graph depicting total risk based on 
                                annual toxicity data."), 
@@ -312,7 +312,7 @@ ui <- fluidPage(theme = my_theme,
                        use in the Bay Delta Watershed. The overall net risk index can also be displayed."), 
                        br(),
                        
-                       p(strong("Tab 3: Pesticide Exceedance on Species and Crops")), 
+                       p(strong("Tab 3: Pesticide Exceedance on Taxa and Crops")), 
                        p("Interactive bar charts of the modeled number of days a pesticide in water 
                     exceeded the concentration at which severe and adverse effects would occur for various 
                     crops, and aquatic and sediment species. For the purpose of this analysis, only the top 
@@ -345,7 +345,7 @@ ui <- fluidPage(theme = my_theme,
                              p("Only pesticides contributing to the top 99.5% of toxicity levels were included in this analysis, 
                                the remaining 0.05% were omitted due to data size limitations and overall clarity."),
                              br(),
-                             p("There were five species analyzed in this data set including fish, aquatic and benthic invertebrates, and vascular and non-vascular plants. 
+                             p("There were five taxa analyzed in this data set including fish, aquatic and benthic invertebrates, and vascular and non-vascular plants. 
                                There were 39 crop (application site) types including almonds, grapes, flowers, nurseries, Christmas tree farms, fallow, olives, wheat, and more. 
                                The model data years ranged from 2015 - 2019."),
                      
@@ -533,13 +533,13 @@ ui <- fluidPage(theme = my_theme,
                         
                              p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each variety of crop at different times of the year. 
                              The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 
-                             The net risk index is the risk index observed for all species evaluated, summarized across all species. To change the information displayed on each chart, select different application site types, years, and risk indexes."),
+                             The net risk index is the risk index observed for all taxa evaluated, summarized across all taxa To change the information displayed on each chart, select different application site types, years, and risk indexes."),
                              
                              p(strong("The purpose of this tab is to:")), 
                              p("1) Evaluate primary sources of pesticide risk as well as their temporal variability."),
                              p("2) Analyze the cumulative risk of the hundreds of pesticides in use."),
                              p("3) Understand which activities are imposing the greatest pesticide risks to fish, invertebrates, and plants."),
-                             p("4) Compare pesticide exposure risk between species."),
+                             p("4) Compare pesticide exposure risk between taxa."),
                              
 
                              hr(),
@@ -653,9 +653,9 @@ ui <- fluidPage(theme = my_theme,
                   #######################################################################################
                   # Tab 3 - Species tab - Jaenna ----
                   # Species tab - Jaenna ----
-                  tabPanel("Pesticide Exceedance on Species and Crops",
+                  tabPanel("Pesticide Exceedance on Taxa and Crops",
                            hr(),
-                           h5("Daily Pesticide Exceedance on Species and Crops", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                           h5("Daily Pesticide Exceedance on Taxa and Crops", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                            p("The figures below illustrate the modeled number of days a pesticide in water
                              exceeded the concentration at which severe and adverse effects would occur for
                              various crops, and aquatic and benthic sediment species."),
@@ -665,7 +665,7 @@ ui <- fluidPage(theme = my_theme,
                        
                            br(),
                            p(strong("The purpose of this tab is to explore:")), 
-                           p("1) How often pesticide concentrations are predicted to exceed."),
+                           p("1) How often pesticide concentrations are predicted to exceed the concentration at which severe and adverse effects occur."),
                            p("2) How pesticide concentration exceedance differs between animals, plants, and crops."),
                            p("3) How the days of exceedance in animals, plants, and crops differ in each watershed."),
                            p("4) Which pesticide types most often contribute to days of exceedance in animals, plants, and crops."),
@@ -678,7 +678,7 @@ ui <- fluidPage(theme = my_theme,
                            hr(),
                            br(),
                            p(strong("Select a watershed from the dropdown menu to view the days of pesticide 
-                             concentration exceedance for species in the top chart and by crop 
+                             concentration exceedance for each taxa in the top chart and by crop 
                              (application site type) in the bottom chart:")),
                            
                            br(),
@@ -719,7 +719,7 @@ ui <- fluidPage(theme = my_theme,
                                     ## watershed drop down menu for species 
                                     wellPanel(
                                       
-                                      strong("Days of Exceedance Per Species"),
+                                      strong("Days of Exceedance Per Taxa"),
                                       br(),
                                       selectInput(
                                         inputId = 'watershed_species_select',

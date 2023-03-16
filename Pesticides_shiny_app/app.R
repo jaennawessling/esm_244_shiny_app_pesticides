@@ -531,9 +531,9 @@ ui <- fluidPage(theme = my_theme,
                            
                            fluidRow(
                         
-                             p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each type of crop. 
+                             p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each variety of crop at different times of the year. 
                              The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 
-                             The net risk index is the risk index observed for all species evaluated, summarized across all species."),
+                             The net risk index is the risk index observed for all species evaluated, summarized across all species. To change the information displayed on each chart, select different application site types, years, and risk indexes."),
                              
                              p(strong("The purpose of this tab is to:")), 
                              p("1) Evaluate primary sources of pesticide risk as well as their temporal variability."),

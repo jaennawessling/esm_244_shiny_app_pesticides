@@ -252,13 +252,13 @@ ui <- fluidPage(theme = my_theme,
                      
                      br(),
                      
-                     p(strong("The PMPM is designed to address limitations of existing tools for pesticide impact
+                     p(strong("The PMPM and EFT are designed to address limitations of existing tools for pesticide impact
                     analyses by integrating features into a single tool that can:")),
                     p("1) Quantify the risk to diverse taxa over tens of thousands of kilometers (hundreds of watersheds)."),
                     p("2) Evaluate primary sources of pesticide risk as well as their temporal variability."),
                     p("3) Analyze the cumulative risk of the hundreds of pesticides in use."),
                     p("4) Quantify how often pesticide concentrations are predicted to exceed."),
-                    
+                 
                     br(),
                     strong("Why is this analysis needed?"),
                     p("13% of California’s 
@@ -299,24 +299,24 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              
                              p(strong("Tab 1: Map of Pesticide Risk")), 
-                             p("An interactive map of the pesticide exposure risk (risk index) by watersheds within the San Francisco Bay Delta
-                       watershed. The pesticide risk can be analyzed annually with model data from 2015 to 2019."), 
+                             p("An interactive map of the pesticide exposure risk to plant and animal species by watersheds within the San Francisco Bay Delta
+                               watershed. The map colors indicate risk severity, with each risk index divided into percentile categories based on their yearly averages:
+                               Negligible Risk, Low Risk, Moderate Risk, and High Risk. Additionally, there is an interactive graph depicting total risk based on 
+                               annual toxicity data."), 
                        br(),
                        
                        p(strong("Tab 2: Temporal Trends by Application Site Type")), 
-                       p("Interactive time series graphs of the pesticide exposure risk (risk index) to fish, invertebrates 
+                       p("Interactive time series graphs of the pesticide exposure risk to fish, invertebrates 
                        (exposure through water or sediment), vascular plants, and nonvascular plants. The graphs are grouped
                        by application site type (crop type). Application site types describe the different types of crops associated with pesticide
-                       use in the Bay Delta Watershed. The overall net risk index can also be displayed.
-                       The pesticide risk graphs can be analyzed annually with model data from 2015 to 2019."), 
+                       use in the Bay Delta Watershed. The overall net risk index can also be displayed."), 
                        br(),
                        
                        p(strong("Tab 3: Pesticide Exceedance on Species and Crops")), 
                        p("Interactive bar charts of the modeled number of days a pesticide in water 
                     exceeded the concentration at which severe and adverse effects would occur for various 
                     crops, and aquatic and sediment species. For the purpose of this analysis, only the top 
-                    15 counts of days of exceedance were selected for each bar chart. 
-                    The model data is from 2015 - 2019. The bar charts are grouped by watershed."), 
+                    15 counts of days of exceedance were selected for each bar chart. The bar charts are grouped by watershed."), 
                     br(),
                       ), # End column 7
                     
@@ -338,9 +338,9 @@ ui <- fluidPage(theme = my_theme,
                       ## Data information 
                       column(width=8,
                              h4(strong("Data Summary"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                             p("In this analysis, 226 watersheds within Bay Delta Waterhshed were analyzed. 
+                             p("In this analysis, 226 watersheds within the Bay Delta Waterhshed were analyzed. 
                                Only portions of the San Francisco Bay and the Sacramento-San 
-                               Joaquin River Delta regions (dark green and orange regions) were analyzed."),
+                               Joaquin River Delta regions were analyzed."),
                              br(),
                              p("Only pesticides contributing to the top 99.5% of toxicity levels were included in this analysis, 
                                the remaining 0.05% were omitted due to data size limitations and overall clarity."),
@@ -405,13 +405,18 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              
                             
-                             p("Below is an interactive map of watersheds within Bay Delta region, color indicates risk severity. 
+                             p("Below is an interactive map of watersheds within the Bay Delta region, color indicates risk severity. 
                                Each risk index has been divided into percentile categories based on their yearly averages:
                                Negligible Risk, Low Risk, Moderate Risk, and High Risk. Years range from 2015 to 2019, and risk indices include overall risk, risk to fish, 
-                              risk to vascular and nonvascular plants, and risk to aquatic and benthic invertebrates. Select a year and risk index to begin."),
+                              risk to vascular and nonvascular plants, and risk to aquatic and benthic invertebrates."),
+                             
+                             br(), 
+                             p(strong("The purpose of this tab is to:")), 
+                             p("Visually categorize the risk to diverse taxa over several years and tens of thousands of kilometers (hundreds of watersheds)."),
                              hr(),
                              br(),
                              
+                             p(strong("Select a year and risk index to begin.")),
                              ### widgets for map
                              column(3, position = "right",
                                            
@@ -469,8 +474,10 @@ ui <- fluidPage(theme = my_theme,
                            ##### fluidRow for graph and graph widgets
                            fluidRow(
                              
-                             p("The graph below depicts total risk based on annual toxicity data. Use the above map to determine which watersheds you wish to focus on and 
-                               select each name below to see how net risk has changed through time."),
+                             p("The graph below depicts total risk based on annual toxicity data. 
+                               Use the above map to determine which watersheds you wish to focus on."),
+                             p(strong("Then select watershed names and year ranges below to see how net risk has changed through time. 
+                               Multiple watersheds and years may be selected.")),
                              
                              column(3,
                                     #widgets for graph 
@@ -527,6 +534,13 @@ ui <- fluidPage(theme = my_theme,
                              p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each type of crop. 
                              The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 
                              The net risk index is the risk index observed for all species evaluated, summarized across all species."),
+                             
+                             p(strong("The purpose of this tab is to:")), 
+                             p("1) Evaluate primary sources of pesticide risk as well as their temporal variability."),
+                             p("2) Analyze the cumulative risk of the hundreds of pesticides in use."),
+                             p("3) Understand which activities are imposing the greatest pesticide risks to fish, invertebrates, and plants."),
+                             p("4) Compare pesticide exposure risk between species."),
+                             
 
                              hr(),
                              br(),
@@ -644,20 +658,25 @@ ui <- fluidPage(theme = my_theme,
                            h5("Daily Pesticide Exceedance on Species and Crops", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                            p("The figures below illustrate the modeled number of days a pesticide in water
                              exceeded the concentration at which severe and adverse effects would occur for
-                             various crops, and aquatic and benthic sediment species. For this analysis, 
+                             various crops, and aquatic and benthic sediment species."),
+                           p("For this analysis, 
                              only the top 15 counts of days of exceedance were selected for 
                              each bar chart."),
-                           
-                           
+                       
                            br(),
-                           p("The purpose of this tab is to explore:"), 
-                           p("1) How pesticide concentration exceedance differs between animals, plants, and crops."),
-                           p("2) How days of exceedance in animals, plants, and crops differ by application site type."),
+                           p(strong("The purpose of this tab is to explore:")), 
+                           p("1) How often pesticide concentrations are predicted to exceed."),
+                           p("2) How pesticide concentration exceedance differs between animals, plants, and crops."),
+                           p("3) How the days of exceedance in animals, plants, and crops differ in each watershed."),
+                           p("4) Which pesticide types most often contribute to days of exceedance in animals, plants, and crops."),
+                           
+                           
                            br(), 
-                           p("Understanding these relationships illustrates which crop
-                             (application site) activities are related to the greatest days of exceedance."),
+                           p("Comparing these variables may increase our understanding of which crop
+                             (application site) activities contribute the greatest to pesticide exceedance days."),
                            
                            hr(),
+                           br(),
                            p(strong("Select a watershed from the dropdown menu to view the days of pesticide 
                              concentration exceedance for species in the top chart and by crop 
                              (application site type) in the bottom chart:")),

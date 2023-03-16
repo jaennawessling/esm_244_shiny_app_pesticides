@@ -490,7 +490,7 @@ ui <- fluidPage(theme = my_theme,
                                                           multiple = TRUE), #END Watershed dropdown
                                               
                                               sliderInput("tox_yr_slider", 
-                                                          label = h3("Select year range:"), 
+                                                          label = "Select year range:", 
                                                           min = 2015, 
                                                           max = 2019, value = c(2016, 2018), 
                                                           sep = "") #END year slider 

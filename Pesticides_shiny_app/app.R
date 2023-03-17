@@ -164,6 +164,8 @@ watershed_species_risk <- exceed_longer %>%
   filter(species != "any taxa")
 
 
+# pesticide_names <- as.vector(unique(exceed_longer$pesticide)) 
+
 #######################################################################################
 ### Spatial Data
 #######################################################################################
@@ -193,7 +195,21 @@ color_df <- data.frame(variable = c("net risk", "fish", "aquatic invertebrates",
 our_colors <- c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
                         "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
                         "#BBECF2", "#540B0C")
-                        
+
+
+# our_colors <- - data.frame(variable = c("chlorpyrifos", "dimethoate", "bifenthrin", "chlorantraniliprole", "azoxystrobin",
+#                                         "chlorothalonil", "lambda-cyhalothrin", "clothianidin", "difenoconazole",
+#                                         "dinotefuran", "pendimethalin", "simazine", "tebuconazole", "thiamethoxam",
+#                                         "2,4-d, dimethylamine salt", "glyphosate, potassium salt", "malathion", 
+#                                         "permethrin", "trifloxystrobin", "beta-cyfluthrin", "carbaryl", "esfenvalerate",
+#                                         "trifluralin", "flubendiamide", "2,4-d", "cyantraniliprole", "metribuzin",
+#                                         "oxamyl", "linuron", "cyfluthrin", "atrazine", "2,4-d, diethanolamine salt",
+#                                         "phorate", "(s)-cypermethrin", "atrazine, other related"),
+#                            color = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
+#                                               "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AF", "#483C32",
+#                                               "#BBECF2", "#540B0C", "#00aced", "#517fa4", "#ad5e8c", "#04d3d3", "#f4c254", "#9c9f5f", "#aec6cc", "#e3d195",
+#                                               "#613623", "#1c1d2f", "#007E45", "#984800", "#DCF8FF", "#FFE5FA", "#610044", "#CCD400", "#C2A789", "#F2FEDC"))
+                                              
 
 
 #######################################################################################
@@ -953,6 +969,7 @@ server <- function(input, output) {
       ggtitle(paste("Days of exceedance per crops within", 
                     input$crop_exceedance_select)) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
+      # scale_color_manual(breaks = our_colors()$variable, values = our_colors()$color) +
       coord_flip() +
       theme_minimal() + theme(axis.title.y = element_blank())
   }) # End crop type reactive plot
@@ -977,6 +994,7 @@ server <- function(input, output) {
       ggtitle(paste("Days of exceedance per taxa within", 
                     input$watershed_species_select)) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
+      # scale_color_manual(breaks = our_colors()$variable, values = our_colors()$color) +
       coord_flip() + 
       theme_minimal() + theme(axis.title.y = element_blank())
   }) # End species application site reactive plot

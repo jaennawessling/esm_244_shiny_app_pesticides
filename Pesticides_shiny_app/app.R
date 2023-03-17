@@ -163,8 +163,6 @@ watershed_species_risk <- exceed_longer %>%
   select(species, pesticide, watersheds, days) %>% 
   filter(species != "any taxa")
 
-## Extracting a vector of just the unique pesticide names
-# pesticide_names <- as.vector(unique(exceed_longer$pesticide))
 
 #######################################################################################
 ### Spatial Data
@@ -192,24 +190,10 @@ color_df <- data.frame(variable = c("net risk", "fish", "aquatic invertebrates",
                        color = c("#85d6a5", "#00796b", "#DBA507", "#CC7351", "#8EC7D2", "#d0c1db"))
 
 ### Creating a vector version of this, not connected to specific variables
-our_colors <- c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
+our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
                         "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
                         "#BBECF2", "#540B0C")
-
-
-# our_colors_df <- data.frame(variable = c("chlorpyrifos", "dimethoate", "bifenthrin", "chlorantraniliprole", "azoxystrobin",
-#                                            "chlorothalonil", "lambda-cyhalothrin", "clothianidin", "difenoconazole",
-#                                            "dinotefuran", "pendimethalin", "simazine", "tebuconazole", "thiamethoxam",
-#                                            "2,4-d, dimethylamine salt", "glyphosate, potassium salt", "malathion",
-#                                            "permethrin", "trifloxystrobin", "beta-cyfluthrin", "carbaryl", "esfenvalerate",
-#                                            "trifluralin", "flubendiamide", "2,4-d", "cyantraniliprole", "metribuzin",
-#                                            "oxamyl", "linuron", "cyfluthrin", "atrazine", "2,4-d, diethanolamine salt",
-#                                            "phorate", "(s)-cypermethrin", "atrazine, other related"),
-#                            color = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
-#                                               "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AF", "#483C32",
-#                                               "#BBECF2", "#540B0C", "#00aced", "#517fa4", "#ad5e8c", "#04d3d3", "#f4c254", "#9c9f5f", "#aec6cc", "#e3d195",
-#                                               "#613623", "#1c1d2f", "#007E45", "#984800", "#DCF8FF", "#FFE5FA", "#610044", "#CCD400", "#C2A789", "#F2FEDC"))
-
+                        
 
 
 #######################################################################################
@@ -294,7 +278,7 @@ ui <- fluidPage(theme = my_theme,
                     p("2) Who is responsible?"),
                     p("3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?") # end of background section 
-                             ), # end column 1 - home pagepurpose and background (fluidrow 1)
+                             ), # end column 5 fluidrow 
                     
                     column(
                       br(),
@@ -307,7 +291,7 @@ ui <- fluidPage(theme = my_theme,
                         (Photo courtesy of the United States Environmental Protection Agency.)",
                         br(),
                         style="text-align:justify;color:black, font-size:12px"),
-                      width=3) ## End column 2 - home page watershed image (fluidrow 1)
+                      width=3) ## End first fluid row column
                            ), # end fluidrow 1
                     
                     fluidRow(
@@ -338,7 +322,7 @@ ui <- fluidPage(theme = my_theme,
                     crops, and aquatic and sediment species. For the purpose of this analysis, only the top 
                     15 counts of days of exceedance were selected for each bar chart. The bar charts are grouped by watershed."), 
                     br(),
-                      ), # End column 1 - home page website contents (fluidrow 2)
+                      ), # End column 7
                     
                     column(width=3,
                            br(),
@@ -349,8 +333,8 @@ ui <- fluidPage(theme = my_theme,
                              (Photos courtesy of Modern Farmer, The Almond Doctor, and California Crossroads.)",
                            br(),
                            style="text-align:justify;color:black, font-size:12px"),
-                    ) ## End column 2 - home page crops photos (fluidrow 2)
-                    ), # end fluid row 2
+                    ) ## End column 6 - fluidrow
+                    ), # end fluid row
                     
                     
                     fluidRow(
@@ -367,7 +351,6 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              p("There were five taxa analyzed in this data set including fish, aquatic and benthic invertebrates, and vascular and non-vascular plants. 
                                There were 39 crop (application site) types including almonds, grapes, flowers, nurseries, Christmas tree farms, fallow, olives, wheat, and more. 
-                               35 pesticide types were analyzed in this data set.
                                The model data years ranged from 2015 - 2019."),
                      
                       br(),
@@ -384,7 +367,7 @@ ui <- fluidPage(theme = my_theme,
                       tags$p(HTML("To download the data and userguide, click 
                                 <a href=\"https://datadryad.org/stash/share/7a-F-jEXmlvWi3-xeRx_X4osZqXrr8Nh97tnx2bBOSk/\">here.</a>"))
                      
-                     ), ## End column 1 - home page data summary and source (fluidrow 3)
+                     ), ## End data source column
              
                       ## Species photo column
                       column(width=3,
@@ -396,7 +379,7 @@ ui <- fluidPage(theme = my_theme,
                                (Photos courtesy of iNaturalist Canada, Pearson Ecological, and Walla Walla University.)",
                              br(),
                              style="text-align:justify;color:black, font-size:12px"),
-                      ), ## End column 2 - home page tax photos (fluidrow 3)
+                      ), ## End column 4 - species photo column
                      hr()
                      ), # end fluidrow 3
                     
@@ -553,8 +536,9 @@ ui <- fluidPage(theme = my_theme,
                            fluidRow(
                         
                              p("Application site types describe the different croplands associated with pesticide use in the Bay Delta Watershed. Different amounts and types of pesticides are applied to each variety of crop at different times of the year. 
-                             The figures below show the pesticide exposure risk (risk index) to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 
-                             The net risk index is the risk index observed for all taxa evaluated, summarized across all taxa To change the information displayed on each chart, select different application site types, years, and risk indexes."),
+                             The figures below show the total toxicity in the environment over time due to pesticide exposure risk to fish, invertebrates (in water or benthic sediment), vascular plants, nonvascular plants, and the overall net risk index. 
+                             The exposure risk is described by the risk index, which is a measurement of the net toxic load of pesticides in soil and surface water. The net risk index is the risk index observed for all taxa evaluated, summarized across all taxa. 
+                             To change the information displayed on each chart, select different application site types, years, and risk indexes."),
                              
                              p(strong("The purpose of this tab is to:")), 
                              p("1) Evaluate primary sources of pesticide risk as well as their temporal variability."),
@@ -681,9 +665,8 @@ ui <- fluidPage(theme = my_theme,
                              exceeded the concentration at which they are lethal to 
                                aquatic taxa, which include vascular and nonvascular plants, fish, and aquatic and benthic invertebrates."),
                            p("For this analysis, 
-                            up to the top 15 counts of days of exceedance were selected for 
-                             each bar chart. Some watersheds, crops, and taxa did not have any modeled days of exceedance. 
-                            These appear as zero values on the charts."),
+                             only the top 15 counts of days of exceedance were selected for 
+                             each bar chart."),
                     
                        
                            br(),
@@ -955,38 +938,36 @@ server <- function(input, output) {
     exceed_longer %>%
       select(crop, pesticide, watersheds, days) %>%
       dplyr::filter(watersheds == input$crop_exceedance_select) %>% 
-      slice_max(days, n = 15) %>% # keeping up to 15 of the largest values of the counts by day
+      slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
       mutate(crop = fct_reorder(crop, -days))
   }) # End crop type reactive
   
   
-  # Creating bar charts of the top days of exceedance for every crop per watershed
+  # Creating bar charts of the days of exceedance for every crop per watershed
   output$crop_exceedance_plot <- renderPlotly({
     ggplot(data = crop_exceedance_select(),
            aes(y = days, x = crop, fill = pesticide)) +
       geom_col(position = "dodge", color = "white", size = 0.6) +
       labs(y = 'Days of Exceedance', x = "Crop (application site type)") + 
-      ggtitle(str_wrap(paste("Days of exceedance per crops within", 
-                    input$crop_exceedance_select))) +
+      ggtitle(paste("Days of exceedance per crops within", 
+                    input$crop_exceedance_select)) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
-      # scale_color_manual(breaks = our_colors_df()$variable, values = our_colors_df()$color) +
       coord_flip() +
-      theme_minimal() + 
-      theme(axis.title.y = element_blank())
+      theme_minimal() + theme(axis.title.y = element_blank())
   }) # End crop type reactive plot
   
   
-  # Creating reactive data input for the top days of exceedance for every species per watershed
+  # Creating reactive data input for the top 5 days of exceedance for every species per application site
   watershed_species_select <- reactive({
     watershed_species_risk %>%
       select(species, pesticide, watersheds, days) %>%
       dplyr::filter(watersheds == input$watershed_species_select) %>% 
-      slice_max(days, n = 15) %>% # keeping up to the 15 largest values of the counts by day
+      slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
       mutate(species = fct_reorder(species, -days))
   }) # End species application site reactive
   
   
-  # Creating bar charts of the days of exceedance for every species per watershed
+  # Creating bar charts of the days of exceedance for every species per application site type
   output$watershed_species_plot <- renderPlotly({
     ggplot(data = watershed_species_select(),
            aes(y = days, x = species, fill = pesticide)) +
@@ -995,10 +976,8 @@ server <- function(input, output) {
       ggtitle(paste("Days of exceedance per taxa within", 
                     input$watershed_species_select)) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
-      # scale_color_manual(breaks = our_colors_df()$variable, values = our_colors_df()$color) +
       coord_flip() + 
-      theme_minimal() + 
-      theme(axis.title.y = element_blank())
+      theme_minimal() + theme(axis.title.y = element_blank())
   }) # End species application site reactive plot
   
   

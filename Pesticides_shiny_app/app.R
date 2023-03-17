@@ -245,7 +245,7 @@ ui <- fluidPage(theme = my_theme,
                      data is compiled from pesticide use reports with data at the daily time-step (required
                      by growers in CA). Pesticide concentrations are predicted using mechanistic models that
                      consider climate, hydrology, irrigation practices, and pesticide properties in the 
-                     watersheds within ~100 km of the Bay Delta Watershed (22,000 km2)."),
+                     watersheds within ~100 km of the Bay Delta Watershed (22,000 square km)."),
                      br(),
                      p("For the analysis in this website, pesticide exposure risk and days of exceedance of 
                        pesticide concentration are utilized. 

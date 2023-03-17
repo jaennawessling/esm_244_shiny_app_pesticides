@@ -50,6 +50,16 @@ exceed_longer <- days_exceed %>%
   pivot_longer(cols = fish:"any species", names_to = "species", values_to = "days") %>% 
   rename(application_sites = huc) %>% 
     mutate(pesticide = str_to_lower(pesticide)) 
+
+
+pesticide_names <- as.vector(unique(exceed_longer$pesticide)) 
+
+our_colors_df <- data.frame(variable = pesticide_names, 
+                         color = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
+                        "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AF", "#483C32",
+                        "#BBECF2", "#540B0C", "#00aced", "#517fa4", "#ad5e8c", "#04d3d3", "#f4c254", "#9c9f5f", "#aec6cc", "#e3d195",
+                        "#613623", "#1c1d2f", "#007E45", "#984800", "#DCF8FF", "#FFE5FA", "#610044", "#CCD400", "#C2A789", "#F2FEDC"))
+                        
 ```
 
 

@@ -190,7 +190,7 @@ color_df <- data.frame(variable = c("net risk", "fish", "aquatic invertebrates",
                        color = c("#85d6a5", "#00796b", "#DBA507", "#CC7351", "#8EC7D2", "#d0c1db"))
 
 ### Creating a vector version of this, not connected to specific variables
-our_colors = c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
+our_colors <- c("#85d6a5", "#00796f", "#DBA507", "#CC7354", "#8EC7D2", "#d0c1db", "#355C7F", "#A23E49",
                         "#4d3591", "#966E5C", "#9B945F", "#ADDFB3", "#F2ACB9", "#A8A9AD", "#483C32",
                         "#BBECF2", "#540B0C")
                         
@@ -351,6 +351,7 @@ ui <- fluidPage(theme = my_theme,
                              br(),
                              p("There were five taxa analyzed in this data set including fish, aquatic and benthic invertebrates, and vascular and non-vascular plants. 
                                There were 39 crop (application site) types including almonds, grapes, flowers, nurseries, Christmas tree farms, fallow, olives, wheat, and more. 
+                               35 pesticide types were analyzed in this data set.
                                The model data years ranged from 2015 - 2019."),
                      
                       br(),
@@ -664,7 +665,7 @@ ui <- fluidPage(theme = my_theme,
                              exceeded the concentration at which they are lethal to 
                                aquatic taxa, which include vascular and nonvascular plants, fish, and aquatic and benthic invertebrates."),
                            p("For this analysis, 
-                             only the top 15 counts of days of exceedance were selected for 
+                            up to the top 15 counts of days of exceedance were selected for 
                              each bar chart."),
                     
                        
@@ -937,7 +938,7 @@ server <- function(input, output) {
     exceed_longer %>%
       select(crop, pesticide, watersheds, days) %>%
       dplyr::filter(watersheds == input$crop_exceedance_select) %>% 
-      slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
+      slice_max(days, n = 15) %>% # keeping up to 15 of the largest values of the counts by day
       mutate(crop = fct_reorder(crop, -days))
   }) # End crop type reactive
   
@@ -961,7 +962,7 @@ server <- function(input, output) {
     watershed_species_risk %>%
       select(species, pesticide, watersheds, days) %>%
       dplyr::filter(watersheds == input$watershed_species_select) %>% 
-      slice_max(days, n = 15) %>% # keeping the largest values of the counts by day
+      slice_max(days, n = 15) %>% # keeping up to the 15 largest values of the counts by day
       mutate(species = fct_reorder(species, -days))
   }) # End species application site reactive
   

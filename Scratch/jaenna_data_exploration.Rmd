@@ -188,7 +188,7 @@ watershed_data <- exceed_longer %>%
 almond_exceed <- exceed_longer %>%
       select(crop, pesticide, application_sites, days) %>%
       dplyr::filter(crop == "Almonds") %>%
-      slice_max(days, n = 5) %>% # keeping the largest values of the counts by lake
+      slice_max(days, n = 5) %>% # keeping the largest values of the counts by days
       mutate(application_sites = fct_reorder(application_sites, -days)) 
 ```
 
@@ -198,7 +198,7 @@ almond_exceed <- exceed_longer %>%
  huc_HUC180400020401_exceed <- exceed_longer %>%
       select(crop, pesticide, application_sites, days) %>%
       dplyr::filter(application_sites == "HUC180400020401") %>% 
-      slice_max(days, n = 20) %>% # keeping the largest values of the counts by day
+      slice_max(days, n = 20) %>% # keeping the largest values of the counts by days
       mutate(crop = fct_reorder(crop, -days))
 
 

@@ -278,7 +278,7 @@ ui <- fluidPage(theme = my_theme,
                     p("2) Who is responsible?"),
                     p("3) How can tradeoffs between the benefits of chemical use be managed to restore
                      and preserve ecosystem health?") # end of background section 
-                             ), # end column 5 fluidrow 
+                             ), # end column 1 - home pagepurpose and background (fluidrow 1)
                     
                     column(
                       br(),
@@ -291,7 +291,7 @@ ui <- fluidPage(theme = my_theme,
                         (Photo courtesy of the United States Environmental Protection Agency.)",
                         br(),
                         style="text-align:justify;color:black, font-size:12px"),
-                      width=3) ## End first fluid row column
+                      width=3) ## End column 2 - home page watershed image (fluidrow 1)
                            ), # end fluidrow 1
                     
                     fluidRow(
@@ -322,7 +322,7 @@ ui <- fluidPage(theme = my_theme,
                     crops, and aquatic and sediment species. For the purpose of this analysis, only the top 
                     15 counts of days of exceedance were selected for each bar chart. The bar charts are grouped by watershed."), 
                     br(),
-                      ), # End column 7
+                      ), # End column 1 - home page website contents (fluidrow 2)
                     
                     column(width=3,
                            br(),
@@ -333,8 +333,8 @@ ui <- fluidPage(theme = my_theme,
                              (Photos courtesy of Modern Farmer, The Almond Doctor, and California Crossroads.)",
                            br(),
                            style="text-align:justify;color:black, font-size:12px"),
-                    ) ## End column 6 - fluidrow
-                    ), # end fluid row
+                    ) ## End column 2 - home page crops photos (fluidrow 2)
+                    ), # end fluid row 2
                     
                     
                     fluidRow(
@@ -367,7 +367,7 @@ ui <- fluidPage(theme = my_theme,
                       tags$p(HTML("To download the data and userguide, click 
                                 <a href=\"https://datadryad.org/stash/share/7a-F-jEXmlvWi3-xeRx_X4osZqXrr8Nh97tnx2bBOSk/\">here.</a>"))
                      
-                     ), ## End data source column
+                     ), ## End column 1 - home page data summary and source (fluidrow 3)
              
                       ## Species photo column
                       column(width=3,
@@ -379,7 +379,7 @@ ui <- fluidPage(theme = my_theme,
                                (Photos courtesy of iNaturalist Canada, Pearson Ecological, and Walla Walla University.)",
                              br(),
                              style="text-align:justify;color:black, font-size:12px"),
-                      ), ## End column 4 - species photo column
+                      ), ## End column 2 - home page tax photos (fluidrow 3)
                      hr()
                      ), # end fluidrow 3
                     
@@ -942,7 +942,7 @@ server <- function(input, output) {
   }) # End crop type reactive
   
   
-  # Creating bar charts of the days of exceedance for every crop per watershed
+  # Creating bar charts of the top days of exceedance for every crop per watershed
   output$crop_exceedance_plot <- renderPlotly({
     ggplot(data = crop_exceedance_select(),
            aes(y = days, x = crop, fill = pesticide)) +
@@ -956,7 +956,7 @@ server <- function(input, output) {
   }) # End crop type reactive plot
   
   
-  # Creating reactive data input for the top 5 days of exceedance for every species per application site
+  # Creating reactive data input for the top days of exceedance for every species per watershed
   watershed_species_select <- reactive({
     watershed_species_risk %>%
       select(species, pesticide, watersheds, days) %>%
@@ -966,7 +966,7 @@ server <- function(input, output) {
   }) # End species application site reactive
   
   
-  # Creating bar charts of the days of exceedance for every species per application site type
+  # Creating bar charts of the days of exceedance for every species per watershed
   output$watershed_species_plot <- renderPlotly({
     ggplot(data = watershed_species_select(),
            aes(y = days, x = species, fill = pesticide)) +

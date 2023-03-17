@@ -666,7 +666,8 @@ ui <- fluidPage(theme = my_theme,
                                aquatic taxa, which include vascular and nonvascular plants, fish, and aquatic and benthic invertebrates."),
                            p("For this analysis, 
                             up to the top 15 counts of days of exceedance were selected for 
-                             each bar chart."),
+                             each bar chart. Some watersheds, crops, and taxa did not have any modeled days of exceedance. 
+                            These appear as zero values on the charts."),
                     
                        
                            br(),

@@ -657,19 +657,20 @@ ui <- fluidPage(theme = my_theme,
                   #######################################################################################
                   # Tab 3 - Species tab - Jaenna ----
                   # Species tab - Jaenna ----
-                  tabPanel("Pesticide Exceedance on Taxa and Crops",
+                  tabPanel("Days of Pesticide Exceedance",
                            hr(),
-                           h5("Daily Pesticide Exceedance on Taxa and Crops", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                           p("The figures below illustrate the modeled number of days a pesticide in water
-                             exceeded the concentration at which severe and adverse effects would occur for
-                             various crops, and aquatic and benthic sediment species."),
+                           h5("Days of Pesticide Exceedance by Taxa and Crop", style="text-align:center;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
+                           p("The figures below illustrate the modeled number of days in the simulation period that concentrations of pesticides
+                             exceeded the concentration at which they are lethal to 
+                               aquatic taxa, which include vascular and nonvascular plants, fish, and aquatic and benthic invertebrates."),
                            p("For this analysis, 
                              only the top 15 counts of days of exceedance were selected for 
                              each bar chart."),
+                    
                        
                            br(),
                            p(strong("The purpose of this tab is to explore:")), 
-                           p("1) How often pesticide concentrations are predicted to exceed the concentration at which severe and adverse effects occur."),
+                           p("1) How often pesticide concentrations are modeled to exceed the concentration at which severe and adverse effects occur."),
                            p("2) How pesticide concentration exceedance differs between animals, plants, and crops."),
                            p("3) How the days of exceedance in animals, plants, and crops differ in each watershed."),
                            p("4) Which pesticide types most often contribute to days of exceedance in animals, plants, and crops."),
@@ -947,7 +948,7 @@ server <- function(input, output) {
            aes(y = days, x = crop, fill = pesticide)) +
       geom_col(position = "dodge", color = "white", size = 0.6) +
       labs(y = 'Days of Exceedance', x = "Crop (application site type)") + 
-      ggtitle(paste("Days of crop exceedance within", 
+      ggtitle(paste("Days of exceedance per crops within", 
                     input$crop_exceedance_select)) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
       coord_flip() +
@@ -971,7 +972,7 @@ server <- function(input, output) {
            aes(y = days, x = species, fill = pesticide)) +
       geom_col(position = "dodge", color = "white", size = 0.6) +
       labs(y = 'Days of Exceedance', x = "Species") + 
-      ggtitle(paste("Days of species exceedance within", 
+      ggtitle(paste("Days of exceedance per taxa within", 
                     input$watershed_species_select)) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
       coord_flip() + 

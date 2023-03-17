@@ -240,7 +240,7 @@ ui <- fluidPage(theme = my_theme,
                                     h4(strong("Background"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
                                     strong("What does the Pesticide Management Prioritization Model (PMPM) - Environmental Fate Tool do?"),
                                     p("The data used in this analysis originated from the Environmental Fate Tool which analyzes pesticide risks across the United States. 
-                     The Environmental Fate Tool (EFT) is the second model of the Pesticide Management Prioritization Module (PMPM), 
+                     The Environmental Fate Tool (EFT) is the second model of the Pesticide Management Prioritization Model (PMPM), 
                      which predicts spatiotemporal explicit concentrations of pesticides from agricultural use in soil, water, and sediment. The use
                      data is compiled from pesticide use reports with data at the daily time-step (required
                      by growers in CA). Pesticide concentrations are predicted using mechanistic models that
@@ -249,7 +249,7 @@ ui <- fluidPage(theme = my_theme,
                      br(),
                      p("For the analysis in this website, pesticide exposure risk and days of exceedance of 
                        pesticide concentration are utilized. 
-                       The risk index is a measurement of the net toxic load of pesticide in soil and surface water, which indicates
+                       The risk index is a measurement of the net toxic load of pesticides in soil and surface water, which indicates
                        how much total toxicity is in the environment over time. 
                        The days of exceedance are the number of days that concentrations of pesticides exceed concentrations lethal to aquatic organisms.
                        This shows how many runoff events in the simulation period exceeded these lethal concentrations."),
@@ -342,7 +342,7 @@ ui <- fluidPage(theme = my_theme,
                       ## Data information 
                       column(width=8,
                              h4(strong("Data Summary"), style="text-align:justify;color:black;background-color:#85d6a5;padding:15px;border-radius:10px"),
-                             p("In this analysis, 226 watersheds within the Bay Delta Waterhshed were analyzed. 
+                             p("In this analysis, 226 watersheds within the Bay Delta Watershed were analyzed. 
                                Only portions of the San Francisco Bay and the Sacramento-San 
                                Joaquin River Delta regions were analyzed."),
                              br(),
@@ -485,7 +485,7 @@ ui <- fluidPage(theme = my_theme,
                              
                              column(3,
                                     #widgets for graph 
-                                    wellPanel(tags$strong("Overall Pesticide Toxicity Risk Over Time"), 
+                                    wellPanel(
                                               
                                               selectInput('watershed_select', 
                                                           label = 'Select watershed(s):', 
@@ -507,7 +507,7 @@ ui <- fluidPage(theme = my_theme,
                              ### Graph mainPanel
                              mainPanel(
                                column(12,
-                                      tags$strong("Overall Pesticide Toxicity Risk by Watershed"),
+                                      tags$strong("Overall Pesticide Toxicity Risk by Watershed Over Time"),
                                       
                                       plotlyOutput(outputId = 'watershed_yr_plot') %>% 
                                         withSpinner(color = "#00796b", type = 4, size = 1)
@@ -919,10 +919,11 @@ server <- function(input, output) {
       geom_col(fill = "#85d6a5") +
       coord_flip() +
       labs(x = "Application site type", y = "Average risk index across all years") +
-      ggtitle(paste("Top ten application site types with the highest risk index for", 
+      ggtitle(str_wrap(paste("Top ten application site types with the highest risk index for", 
                     input$index_top_ten_dropdown,
-                    "")) +
-      theme_minimal()
+                    ""))) +
+      theme_minimal() +
+      theme(axis.title.y = element_blank())
   })
   
 

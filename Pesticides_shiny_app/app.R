@@ -966,8 +966,8 @@ server <- function(input, output) {
            aes(y = days, x = crop, fill = pesticide)) +
       geom_col(position = "dodge", color = "white", size = 0.6) +
       labs(y = 'Days of Exceedance', x = "Crop (application site type)") + 
-      ggtitle(paste("Days of exceedance per crops within", 
-                    input$crop_exceedance_select)) +
+      ggtitle(str_wrap(paste("Days of exceedance per crops within", 
+                    input$crop_exceedance_select))) +
       scale_color_manual(values = our_colors, aesthetics = "fill") +
       # scale_color_manual(breaks = our_colors_df()$variable, values = our_colors_df()$color) +
       coord_flip() +

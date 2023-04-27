@@ -28,11 +28,11 @@ library(shinycssloaders)
 #######################################################################################
 
 #### Tab 1 annual data: annual watershed risk summary ----
-watershed_annual <- read_csv(here("Tab1_Watershed_RiskSummary_Annual.csv"))
+watershed_annual <- read_csv(here("data/Tab1_Watershed_RiskSummary_Annual.csv"))
 
 
 ### Tab 1 spatial watersheds
-watersheds_sf <- read_sf(here::here("spatial_data/BDW_NearHUC12_Watersheds_Simplified/BDW_NearHUC12_Simp10m.shp")) %>% 
+watersheds_sf <- read_sf(here::here("data/spatial_data/BDW_NearHUC12_Watersheds_Simplified/BDW_NearHUC12_Simp10m.shp")) %>% 
   st_transform('+proj=longlat +datum=WGS84')
 
 rmapshaper::ms_simplify(watersheds_sf)
@@ -96,7 +96,7 @@ watershed_sf_merge_clean <- watershed_sf_merge %>%
 
 #######################################################################################
 #### Tab 2 annual data: annual crop risk summary
-crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>% 
+crop_annual <- read_csv(here("data/Tab2_Crop_RiskSummary_Annual.csv")) %>% 
   rename("fish" = RI_fish, "aquatic invertebrates" = RI_invertebrate_water, "benthic invertebrates" = RI_invertebrate_sed,
         "vascular plants" = RI_plant_vascular, "non-vascular plants" = RI_plant_nonvascular, "net risk" = RI_net) %>% 
   pivot_longer("fish":"net risk", names_to = "index_type", values_to = "risk_index_value") %>% 
@@ -105,7 +105,7 @@ crop_annual <- read_csv(here("Tab2_Crop_RiskSummary_Annual.csv")) %>%
  
 
 #### Tab 2 monthly data: monthly crop risk summary
-crop_monthly <- read_csv(here("Tab2_Crop_RiskSummary_Monthly.csv"))%>% 
+crop_monthly <- read_csv(here("data/Tab2_Crop_RiskSummary_Monthly.csv"))%>% 
   separate(col = monthyear, into = c("month", "year"), sep = "-") 
 
 crop_monthly_mod <- crop_monthly %>% 
@@ -143,7 +143,7 @@ crop_monthly_final <- crop_monthly_mod %>%
 #### Tab 3 data: days exceeding health benchmarks
 
 ## Loading in data and renaming the column names
-days_exceed <- read_csv(here("Tab3_Days_ExceedHealthBenchmarks.csv")) %>% 
+days_exceed <- read_csv(here("data/Tab3_Days_ExceedHealthBenchmarks.csv")) %>% 
   rename(fish = days_fish) %>% 
   rename("aquatic invertebrates" = days_invertebrate_water) %>% 
   rename("benthic invertebrates" = days_invertebrate_sed) %>% 
@@ -169,7 +169,7 @@ watershed_species_risk <- exceed_longer %>%
 #######################################################################################
 
 # watershed outline shapefile
-watershed_shp <- read_sf(here("spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.shp"))
+watershed_shp <- read_sf(here("data", "spatial_data", "BDW_Watersheds", "BDW_Near_HUC12.shp"))
 
 
 #######################################################################################

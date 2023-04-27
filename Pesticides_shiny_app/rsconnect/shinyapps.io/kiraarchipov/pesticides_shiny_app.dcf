@@ -5,7 +5,7 @@ account: kiraarchipov
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 8972528
-bundleId: 7144422
+bundleId: 7144549
 url: https://kiraarchipov.shinyapps.io/pesticides_shiny_app/
-when: 1682616128.21899
-lastSyncTime: 1682616128.219
+when: 1682618238.26014
+lastSyncTime: 1682618238.2602
